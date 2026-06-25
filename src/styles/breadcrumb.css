@@ -1,0 +1,23 @@
+.lyra-breadcrumb-link {
+  color: var(--lyra-color-fg-link);
+  text-decoration: none;
+  cursor: pointer;
+}
+.lyra-breadcrumb-link:hover {
+  text-decoration: underline;
+}
+
+.lyra-sidebar-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--lyra-color-fg-link);
+  white-space: nowrap;
+}
+.lyra-sidebar-trigger:hover .lyra-breadcrumb-link {
+  text-decoration: underline;
+}

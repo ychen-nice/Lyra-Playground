@@ -1,0 +1,176 @@
+:root {
+  /* Surface */
+  --lyra-color-bg-surface-base: #FFFFFF;
+  --lyra-color-bg-surface-container: #FFFFFF;
+  --lyra-color-bg-surface-container-subtle: #FBFCFE;
+  --lyra-color-bg-surface-overlay: #FFFFFF;
+  --lyra-color-bg-surface-canvas: #FBFCFE;
+  --lyra-color-bg-surface-shell: #F5F7F9;
+  --lyra-color-bg-surface-backdrop: rgba(0,0,0,0.24);
+  --lyra-color-bg-surface-inverse: #2A2D32;
+
+  /* Background */
+  --lyra-color-bg-primary: #166CCA;
+  --lyra-color-bg-destructive: #BD2A2A;
+  --lyra-color-bg-secondary: #FFFFFF;
+  --lyra-color-bg-field: #FFFFFF;
+  --lyra-color-bg-ai: rgba(143,115,227,0.04);
+  --lyra-color-bg-ai-gradient-start: #7B61FF;
+  --lyra-color-bg-ai-gradient-end: #3B82F6;
+  --lyra-color-bg-control: #FFFFFF;
+  --lyra-color-bg-control-subtle: rgba(0,0,0,0.02);
+  --lyra-color-bg-disabled: rgba(0,0,0,0.06);
+  --lyra-color-bg-none: rgba(0,0,0,0);
+
+  /* Active Background */
+  --lyra-color-bg-active-strong: #166CCA;
+  --lyra-color-bg-active-moderate: #D3E6FD;
+  --lyra-color-bg-active-subtle: #F1F7FE;
+
+  /* Conversation */
+  --lyra-color-bg-conversation-AI: #F5F7F9;
+  --lyra-color-bg-conversation-agent: #E5EEFF;
+  --lyra-color-bg-conversation-customer: #DEF7E1;
+  --lyra-color-bg-conversation-user: #E5EEFF;
+
+  /* Foreground */
+  --lyra-color-fg-default: rgba(0,0,0,0.8);
+  --lyra-color-fg-secondary: rgba(0,0,0,0.6);
+  --lyra-color-fg-action: #5D6A79;
+  --lyra-color-fg-disabled: rgba(0,0,0,0.3);
+  --lyra-color-fg-link: #185BA4;
+  --lyra-color-fg-inverse: #FFFFFF;
+  --lyra-color-fg-inverse-disabled: rgba(255,255,255,0.3);
+  --lyra-color-fg-on-primary: #FFFFFF;
+  --lyra-color-fg-on-destructive: #FFFFFF;
+
+  /* Active Foreground */
+  --lyra-color-fg-active-strong: #185BA4;
+  --lyra-color-fg-active-subtle: #F6FAFE;
+
+  /* Border */
+  --lyra-color-border-subtle: rgba(0,0,0,0.1);
+  --lyra-color-border-soft: rgba(0,0,0,0.16);
+  --lyra-color-border-medium: rgba(0,0,0,0.32);
+  --lyra-color-border-strong: rgba(0,0,0,0.46);
+  --lyra-color-border-disabled: rgba(0,0,0,0.1);
+  --lyra-color-border-none: rgba(0,0,0,0);
+  --lyra-color-border-active: #185BA4;
+  --lyra-color-border-field-ai: #4E39A8;
+  --lyra-color-border-inverse: rgba(255,255,255,0.8);
+
+  /* Focus */
+  --lyra-color-border-focus-default: #185BA4;
+  --lyra-color-border-focus-inverse: #FACB33;
+  --lyra-color-border-focus-ring: rgba(44,138,242,0.25);
+
+  /* Status */
+  --lyra-color-status-success-strong: #23722D;
+  --lyra-color-status-success-medium: #64B96F;
+  --lyra-color-status-success-subtle: #EBFAED;
+  --lyra-color-status-info-strong: #2D5BB9;
+  --lyra-color-status-info-medium: #789FED;
+  --lyra-color-status-info-subtle: #F0F5FF;
+  --lyra-color-status-critical-strong: #BD2A2A;
+  --lyra-color-status-critical-medium: #FA7F7F;
+  --lyra-color-status-critical-subtle: #FFF0F0;
+  --lyra-color-status-warning-strong: #8E6800;
+  --lyra-color-status-warning-medium: #FACB33;
+  --lyra-color-status-warning-subtle: #FFFAE0;
+
+  /* Accent */
+  --lyra-color-accent-slate-soft: #ECEFF3;
+  --lyra-color-accent-slate-strong: #5D6A79;
+  --lyra-color-accent-red-soft: #FFE0E0;
+  --lyra-color-accent-red-strong: #BD2A2A;
+  --lyra-color-accent-orange-soft: #FFE5CC;
+  --lyra-color-accent-orange-strong: #A85000;
+  --lyra-color-accent-yellow-soft: #FFF3AD;
+  --lyra-color-accent-yellow-strong: #8E6800;
+  --lyra-color-accent-lime-soft: #E4F6BB;
+  --lyra-color-accent-lime-strong: #4E760C;
+  --lyra-color-accent-green-soft: #D2F4D5;
+  --lyra-color-accent-green-strong: #23722D;
+  --lyra-color-accent-teal-soft: #C8EDEF;
+  --lyra-color-accent-teal-strong: #11737C;
+  --lyra-color-accent-blue-soft: #D6E4FF;
+  --lyra-color-accent-blue-strong: #2D5BB9;
+  --lyra-color-accent-purple-soft: #E6E0FF;
+  --lyra-color-accent-purple-strong: #634DBD;
+  --lyra-color-accent-pink-soft: #FFE0F5;
+  --lyra-color-accent-pink-strong: #B03887;
+
+  /* Interactive States */
+  --lyra-color-state-bg-hover-opacity: rgba(0,0,0,0.04);
+  --lyra-color-state-bg-pressed-opacity: rgba(0,0,0,0.08);
+  --lyra-color-state-bg-hover-secondary: #FBFCFE;
+  --lyra-color-state-bg-pressed-secondary: #F5F7F9;
+  --lyra-color-state-bg-hover-active-subtle: #E8F1FC;
+  --lyra-color-state-bg-pressed-active-subtle: #D3E6FD;
+  --lyra-color-state-bg-hover-active-strong: #185BA4;
+  --lyra-color-state-bg-pressed-active-strong: #164479;
+  --lyra-color-state-bg-hover-primary: #185BA4;
+  --lyra-color-state-bg-pressed-primary: #164479;
+  --lyra-color-state-bg-hover-critical-strong: #A32424;
+  --lyra-color-state-bg-pressed-critical-strong: #8A1F1F;
+  --lyra-color-state-bg-hover-critical-subtle: #FFEBEB;
+  --lyra-color-state-bg-pressed-critical-subtle: #FFE0E0;
+  --lyra-color-state-border-hover-neutral: rgba(0,0,0,0.8);
+
+  /* Shadows */
+  --lyra-shadow-xl: 0px 20px 40px rgba(0, 0, 0, 0.12);
+  --lyra-shadow-lg: 0px 12px 24px rgba(0, 0, 0, 0.08);
+  --lyra-shadow-md: 0px 4px 12px rgba(0, 0, 0, 0.06);
+  --lyra-shadow-sm: 0px 2px 6px rgba(0, 0, 0, 0.04);
+  --lyra-shadow-none: none;
+
+  /* Spacing */
+  --lyra-spacing-0: 0px;
+  --lyra-spacing-05: 2px;
+  --lyra-spacing-1: 4px;
+  --lyra-spacing-2: 8px;
+  --lyra-spacing-3: 12px;
+  --lyra-spacing-4: 16px;
+  --lyra-spacing-5: 20px;
+  --lyra-spacing-6: 24px;
+  --lyra-spacing-7: 28px;
+  --lyra-spacing-8: 32px;
+  --lyra-spacing-9: 36px;
+  --lyra-spacing-10: 40px;
+
+  /* Border Radius */
+  --lyra-radius-none: 0px;
+  --lyra-radius-xs: 4px;
+  --lyra-radius-sm: 6px;
+  --lyra-radius-md: 8px;
+  --lyra-radius-lg: 12px;
+  --lyra-radius-xl: 16px;
+  --lyra-radius-round: 999px;
+
+  /* Border Width */
+  --lyra-border-none: 0px;
+  --lyra-border-default: 1px;
+  --lyra-border-md: 2px;
+  --lyra-border-lg: 4px;
+
+  /* Control Height */
+  --lyra-control-height-2xs: 16px;
+  --lyra-control-height-xs: 20px;
+  --lyra-control-height-sm: 24px;
+  --lyra-control-height-md: 32px;
+  --lyra-control-height-lg: 36px;
+  --lyra-control-height-xl: 40px;
+
+  /* Icon Size */
+  --lyra-icon-size-xs: 12px;
+  --lyra-icon-size-sm: 16px;
+  --lyra-icon-size-md: 20px;
+  --lyra-icon-size-lg: 24px;
+
+  /* Row Height */
+  --lyra-row-height-sm: 32px;
+  --lyra-row-height-md: 36px;
+  --lyra-row-height-lg: 40px;
+  --lyra-row-height-xl: 48px;
+  --lyra-row-height-2xl: 56px;
+}

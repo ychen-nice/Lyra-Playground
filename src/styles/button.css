@@ -1,0 +1,15 @@
+.lyra-btn {
+  /* reset browser defaults */
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+}
+
+.lyra-btn:focus-visible {
+  outline: 2px solid var(--lyra-color-border-focus-default);
+  outline-offset: 2px;
+}
+
+.lyra-btn:disabled {
+  cursor: not-allowed;
+}

@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
+
+/* ── Lyra Typography Classes ─────────────────────────────────────────────────
+   Based on the Lyra design system type scale.
+   All classes set font-family, size, weight, line-height, and letter-spacing.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.lyra-heading-xl {
+  font-family: Inter, sans-serif;
+  font-size: 1.5rem;       /* 24px */
+  font-weight: 500;
+  line-height: 1.75rem;    /* 28px */
+  letter-spacing: -0.02rem;
+  font-style: normal;
+}
+
+.lyra-heading-lg {
+  font-family: Inter, sans-serif;
+  font-size: 1.25rem;      /* 20px */
+  font-weight: 500;
+  line-height: 1.5rem;     /* 24px */
+  letter-spacing: -0.01rem;
+  font-style: normal;
+}
+
+.lyra-heading-md {
+  font-family: Inter, sans-serif;
+  font-size: 1rem;         /* 16px */
+  font-weight: 500;
+  line-height: 1.25rem;    /* 20px */
+  letter-spacing: -0.01rem;
+  font-style: normal;
+}
+
+.lyra-heading-sm {
+  font-family: Inter, sans-serif;
+  font-size: 0.875rem;     /* 14px */
+  font-weight: 500;
+  line-height: 1.125rem;   /* 18px */
+  letter-spacing: 0;
+  font-style: normal;
+}
+
+.lyra-heading-xs {
+  font-family: Inter, sans-serif;
+  font-size: 0.75rem;      /* 12px */
+  font-weight: 500;
+  line-height: 1rem;       /* 16px */
+  letter-spacing: 0.01rem;
+  font-style: normal;
+}
+
+.lyra-body-lg {
+  font-family: Inter, sans-serif;
+  font-size: 1rem;         /* 16px */
+  font-weight: 400;
+  line-height: 1.5rem;     /* 24px */
+  letter-spacing: -0.01rem;
+  font-style: normal;
+}
+
+.lyra-body-lg-em {
+  font-family: Inter, sans-serif;
+  font-size: 1rem;         /* 16px */
+  font-weight: 500;
+  line-height: 1.5rem;     /* 24px */
+  letter-spacing: -0.01rem;
+  font-style: normal;
+}
+
+.lyra-body-md {
+  font-family: Inter, sans-serif;
+  font-size: 0.875rem;     /* 14px */
+  font-weight: 400;
+  line-height: 1.25rem;    /* 20px */
+  letter-spacing: 0;
+  font-style: normal;
+}
+
+.lyra-body-md-em {
+  font-family: Inter, sans-serif;
+  font-size: 0.875rem;     /* 14px */
+  font-weight: 500;
+  line-height: 1.25rem;    /* 20px */
+  letter-spacing: 0;
+  font-style: normal;
+}
+
+.lyra-body-sm {
+  font-family: Inter, sans-serif;
+  font-size: 0.75rem;      /* 12px */
+  font-weight: 400;
+  line-height: 1rem;       /* 16px */
+  letter-spacing: 0.01rem;
+  font-style: normal;
+}
+
+.lyra-body-sm-em {
+  font-family: Inter, sans-serif;
+  font-size: 0.75rem;      /* 12px */
+  font-weight: 500;
+  line-height: 1rem;       /* 16px */
+  letter-spacing: 0.01rem;
+  font-style: normal;
+}
+
+.lyra-label {
+  font-family: Inter, sans-serif;
+  font-size: 0.875rem;     /* 14px */
+  font-weight: 500;
+  line-height: 1.25rem;    /* 20px */
+  letter-spacing: 0;
+  font-style: normal;
+}
