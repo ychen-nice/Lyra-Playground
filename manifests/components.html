@@ -1,0 +1,3887 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Components Manifest</title>
+  <style>
+      :root {
+          --bg: #0b0c10;
+          --panel: #121318;
+          --muted: #9aa0a6;
+          --fg: #e8eaed;
+          --ok: #22c55e;
+          --info: #1e88e5;
+          --err: #c62828;
+          --ok-bg: #0c1a13;
+          --info-bg: #0c1624;
+          --err-bg: #1a0e0e;
+          --chip: #1f2330;
+          --border: #2b2f3a;
+          --link: #8ab4f8;
+          --active-ring: 1px; /* 1px active ring for pills and toggles */
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
+      html,
+      body {
+          margin: 0;
+          background: var(--bg);
+          color: var(--fg);
+          font: 14px/1.5 system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Ubuntu,
+          Cantarell,
+          'Helvetica Neue',
+          Arial,
+          'Noto Sans';
+      }
+
+      .wrap {
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 16px 20px;
+      }
+
+      header {
+          position: sticky;
+          top: 0;
+          backdrop-filter: blur(6px);
+          background: color-mix(in srgb, var(--bg) 84%, transparent);
+          border-bottom: 1px solid var(--border);
+          z-index: 10;
+      }
+
+      h1 {
+          font-size: 20px;
+          margin: 0 0 6px;
+      }
+
+      .summary {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          align-items: center;
+      }
+
+      /* Top filter pills */
+      .filter-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          border: 1px solid var(--border);
+          border-radius: 999px;
+          background: var(--panel);
+          text-decoration: none;
+          cursor: pointer;
+          user-select: none;
+          color: var(--fg);
+      }
+
+      .filter-pill.ok {
+          color: #b9f6ca;
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+          background: color-mix(in srgb, var(--ok) 18%, #000);
+      }
+
+      .filter-pill.info {
+          color: #b3d9ff;
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+          background: var(--info-bg);
+      }
+
+      .filter-pill.err {
+          color: #ff9aa0;
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+          background: var(--err-bg);
+      }
+
+      .filter-pill.all {
+          color: #d7dbe0;
+          border-color: var(--border);
+          background: var(--panel);
+      }
+
+      .filter-pill[aria-disabled='true'] {
+          cursor: default;
+          text-decoration: none;
+      }
+
+      .filter-pill:focus,
+      .filter-pill:active {
+          outline: none;
+          box-shadow: none;
+      }
+
+      /* Selected top pill ring via :target */
+      #filter-all:target ~ header .filter-pill[data-k='all'],
+      #filter-errors:target ~ header .filter-pill[data-k='errors'],
+      #filter-infos:target ~ header .filter-pill[data-k='infos'],
+      #filter-story-errors:target ~ header .filter-pill[data-k='story-errors'],
+      #filter-doc-errors:target ~ header .filter-pill[data-k='docs'],
+      #filter-docs:target ~ header .filter-pill[data-k='docs'] {
+          box-shadow: 0 0 0 var(--active-ring) currentColor;
+          border-color: currentColor;
+      }
+
+      /* Hidden targets for filtering */
+      #filter-all,
+      #filter-errors,
+      #filter-infos,
+      #filter-story-errors,
+      #filter-doc-errors,
+      #filter-docs {
+          display: none;
+      }
+
+      main {
+          padding: 36px 0 40px;
+      }
+
+      .grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 18px;
+      }
+
+      /* one card per row */
+
+      .card {
+          border: 1px solid var(--border);
+          background: var(--panel);
+          border-radius: 14px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+      }
+
+      .head {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+      }
+
+      .title {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+      }
+
+      .title h2 {
+          font-size: 16px;
+          margin: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .meta {
+          font-size: 12px;
+          color: var(--muted);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .kv {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+      }
+
+      .chip {
+          font-size: 12px;
+          padding: 4px 8px;
+          border-radius: 999px;
+          background: var(--chip);
+          border: 1px solid var(--border);
+      }
+
+      .hint {
+          color: var(--muted);
+          font-size: 12px;
+      }
+
+      .badges {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+      }
+
+      /* Per-card badges: labels become toggles when clickable */
+      .badge {
+          font-size: 12px;
+          padding: 3px 8px;
+          border-radius: 999px;
+          border: 1px solid var(--border);
+          background: var(--chip);
+          color: #d7dbe0;
+      }
+
+      .badge.ok {
+          color: #b9f6ca;
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+      }
+
+      .badge.info {
+          color: #b3d9ff;
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+      }
+
+      .badge.err {
+          color: #ff9aa0;
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+      }
+
+      .as-toggle {
+          cursor: pointer;
+      }
+
+      /* 1px ring on active toggle */
+      .tg-err:checked + label.as-toggle,
+      .tg-info:checked + label.as-toggle,
+      .tg-stories:checked + label.as-toggle,
+      .tg-docs:checked + label.as-toggle,
+      .tg-subcomponents:checked + label.as-toggle,
+      .tg-content:checked + label.as-toggle,
+      .tg-props:checked + label.as-toggle {
+          box-shadow: 0 0 0 var(--active-ring) currentColor;
+          border-color: currentColor;
+      }
+
+      /* Panels: hidden by default, shown when respective toggle checked */
+      .panels {
+          display: grid;
+          gap: 10px;
+      }
+
+      .panel {
+          display: none;
+      }
+
+      .tg-err:checked ~ .panels .panel-err {
+          display: grid;
+      }
+
+      .tg-info:checked ~ .panels .panel-info {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-stories:checked ~ .panels .panel-stories {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-docs:checked ~ .panels .panel-docs {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-subcomponents:checked ~ .panels .panel-subcomponents {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-content:checked ~ .panels .panel-content {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-props:checked ~ .panels .panel-props {
+          display: grid;
+      }
+
+      /* Colored notes for prop type error + info */
+      .note {
+          padding: 12px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+      }
+
+      .note.err {
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+          background: var(--err-bg);
+          color: #ffd1d4;
+      }
+
+      .note.info {
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+          background: var(--info-bg);
+          color: #d6e8ff;
+      }
+
+      .note.ok {
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+          background: var(--ok-bg);
+          color: var(--fg);
+      }
+
+      .note-title {
+          font-weight: 600;
+          margin-bottom: 6px;
+      }
+
+      .note-body {
+          white-space: normal;
+      }
+
+      /* Story error cards */
+      .ex {
+          padding: 10px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          background: #0f131b;
+      }
+
+      .ex.err {
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+      }
+
+      .row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+      }
+
+      .status-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          display: inline-block;
+      }
+
+      .dot-ok {
+          background: var(--ok);
+      }
+
+      .dot-err {
+          background: var(--err);
+      }
+
+      .ex-name {
+          font-weight: 600;
+      }
+
+      /* Error groups (visible in errors filter) */
+      .error-groups {
+          display: none;
+          margin-bottom: 16px;
+      }
+
+      .group {
+          border: 1px solid var(--border);
+          background: var(--panel);
+          border-radius: 14px;
+          overflow: hidden;
+      }
+
+      .group + .group {
+          margin-top: 12px;
+      }
+
+      .group-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 14px;
+          cursor: pointer;
+          border-bottom: 1px solid var(--border);
+      }
+
+      .group-header:hover {
+          background: #141722;
+      }
+
+      .group-title {
+          font-weight: 600;
+          flex: 1;
+      }
+
+      .group-count {
+          font-size: 12px;
+          color: var(--muted);
+      }
+
+      .group-cards {
+          display: none;
+          padding: 12px;
+      }
+
+      .group .card {
+          margin: 12px 0;
+      }
+
+      .group .card:first-child {
+          margin-top: 0;
+      }
+
+      .group .card:last-child {
+          margin-bottom: 0;
+      }
+
+      /* caret rotation */
+      .group-tg:checked + label .caret {
+          transform: rotate(90deg);
+      }
+
+      .caret {
+          transition: transform 0.15s ease;
+      }
+
+      /* toggle body */
+      .group-tg:checked ~ .group-cards {
+          display: block;
+      }
+
+      /* CSS-only filtering of cards via top pills */
+      #filter-errors:target ~ main .card:not(.has-error):not(.has-story-error) {
+          display: none;
+      }
+
+      #filter-infos:target ~ main .card:not(.has-info) {
+          display: none;
+      }
+
+      #filter-story-errors:target ~ main .card:not(.has-story-error) {
+          display: none;
+      }
+
+      #filter-doc-errors:target ~ main .card:not(.has-doc-error) {
+          display: none;
+      }
+
+      #filter-docs:target ~ main .card:has(> .tg-docs),
+      #filter-docs:target ~ main .card.is-doc {
+          display: block;
+      }
+
+      #filter-docs:target ~ main .card:not(:has(> .tg-docs)):not(.is-doc) {
+          display: none;
+      }
+
+      #filter-all:target ~ main .card {
+          display: block;
+      }
+
+      /* In errors view, hide standalone component-error cards in the regular grid (they will appear in groups) */
+      #filter-errors:target ~ main .grid .card.has-error {
+          display: none;
+      }
+
+      /* Show grouped section only in errors view */
+      #filter-errors:target ~ main .error-groups {
+          display: block;
+      }
+
+      /* Section titles */
+      .section-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--muted);
+          margin: 24px 0 12px;
+          padding-bottom: 8px;
+          border-bottom: 1px solid var(--border);
+      }
+      .section-title:first-child {
+          margin-top: 0;
+      }
+
+      /* When a toggle is checked, show the corresponding panel */
+      .card > .tg-err:checked ~ .panels .panel-err {
+          display: grid;
+      }
+      
+      .card > .tg-info:checked ~ .panels .panel-info {
+          display: grid;
+      }
+      
+      .card > .tg-stories:checked ~ .panels .panel-stories {
+          display: grid;
+      }
+
+      .card > .tg-docs:checked ~ .panels .panel-docs {
+          display: grid;
+      }
+
+      .card > .tg-subcomponents:checked ~ .panels .panel-subcomponents {
+          display: grid;
+      }
+
+      .card > .tg-content:checked ~ .panels .panel-content {
+          display: grid;
+      }
+
+      /* Add vertical spacing around panels only when any panel is visible */
+      .card > .tg-err:checked ~ .panels,
+      .card > .tg-info:checked ~ .panels,
+      .card > .tg-stories:checked ~ .panels,
+      .card > .tg-docs:checked ~ .panels,
+      .card > .tg-subcomponents:checked ~ .panels,
+      .card > .tg-content:checked ~ .panels,
+      .card > .tg-props:checked ~ .panels {
+          margin: 10px 0;
+      }
+
+      /* Optional: a subtle 1px ring on the active badge, using :has() if available */
+      @supports selector(.card:has(.tg-err:checked)) {
+          .card:has(.tg-err:checked) label[for$='-err'],
+          .card:has(.tg-info:checked) label[for$='-info'],
+          .card:has(.tg-stories:checked) label[for$='-stories'],
+          .card:has(.tg-docs:checked) label[for$='-docs'],
+          .card:has(.tg-subcomponents:checked) label[for$='-subcomponents'],
+          .card:has(.tg-content:checked) label[for$='-content'],
+          .card:has(.tg-props:checked) label[for$='-props'] {
+              box-shadow: 0 0 0 1px currentColor;
+              border-color: currentColor;
+          }
+      }
+
+      /* Wrap long lines in code blocks at ~120 characters */
+      pre, code {
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      }
+      pre {
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          overflow-x: auto; /* fallback for extremely long tokens */
+          margin: 8px 0 0;
+      }
+      pre > code {
+          display: block;
+          white-space: inherit;
+          overflow-wrap: inherit;
+          word-break: inherit;
+          inline-size: min(100%, 120ch);
+      }
+
+      /* MDX content container for docs */
+      .mdx-content {
+          background: #0f131b;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          padding: 12px;
+          max-height: 400px;
+          overflow-y: auto;
+          margin-top: 8px;
+      }
+  </style>
+</head>
+<body>
+<!-- Hidden targets for the top-level filters -->
+<span id="filter-all"></span>
+<span id="filter-errors"></span>
+<span id="filter-infos"></span>
+<span id="filter-story-errors"></span>
+<span id="filter-doc-errors"></span>
+<span id="filter-docs"></span>
+<header>
+  <div class="wrap">
+    <h1>Manifest Debugger</h1>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">3/11 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">10/11 infos</a><span class="filter-pill ok" aria-disabled="true">44 stories ok</span></div>
+  </div>
+</header>
+<main>
+  <div class="wrap">
+    <div class="note info" style="margin-bottom: 16px;">
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>0.3s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <pre><code>typescript: {
+  reactDocgen: 'react-docgen-typescript',
+}</code></pre>
+            Note: <code>react-docgen-typescript</code> can be slower. If performance is acceptable for your project, it generally produces better results.
+            <a href="https://storybook.js.org/docs/api/main-config/main-config-typescript#reactdocgen" target="_blank">Learn more</a>
+          </div>
+    <h2 class="section-title">Components</h2>
+    <div class="grid" role="list">
+      
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="AiAssistantPanel">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> AiAssistantPanel</h2>
+      <div class="badges">
+        <label for="c-0-components-ai-assistant-panel-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-0-components-ai-assistant-panel-info" class="badge info as-toggle">1 info</label>
+        <label for="c-0-components-ai-assistant-panel-stories" class="badge ok as-toggle">3 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/AiAssistantPanel.stories.jsx">components-ai-assistant-panel · ./src/components/AiAssistantPanel.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-0-components-ai-assistant-panel-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-0-components-ai-assistant-panel-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-0-components-ai-assistant-panel-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">6 prop types</span>
+            </div>
+            <pre><code>Component: src/components/AiAssistantPanel.jsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>embedded?: any = false
+
+initialMessages?: any = [
+  { id: 1, role: &quot;user&quot;, text: &quot;Hey — give me a quick read on where we stand right now. Queue&#39;s feeling heavy.&quot; },
+  { id: 2, role: &quot;ai&quot;,
+    reasoning: &quot;The user is asking for a real-time queue summary. I should pull the current call counts, wait times, available agents, and any SLA risk signals — then frame it concisely so they can act fast.&quot;,
+    content: [
+      { type: &quot;text&quot;, text: &quot;You&#39;re right to flag it. Here&#39;s the snapshot:&quot; },
+      { type: &quot;list&quot;, items: [&quot;Calls in queue: 12 (↑4 from 10 min ago)&quot;, &quot;Longest wait: 6:48&quot;, &quot;Agents available: 2 of 6&quot;, &quot;SLA at risk: Billing queue – projected breach in ~8 minutes&quot;] },
+      { type: &quot;text&quot;, text: &quot;James R. finishes his current call in about 90 seconds. Routing him straight to Billing would close the gap before the breach.&quot; },
+    ]},
+  { id: 3, role: &quot;user&quot;, text: &quot;Diego&#39;s been struggling all afternoon. His handle time is way up and his last two CSAT scores were low. What&#39;s going on with him?&quot; },
+  { id: 4, role: &quot;ai&quot;,
+    reasoning: &quot;Diego&#39;s metrics look unusual. High handle time combined with low CSAT often signals either a tool or process issue rather than a motivation problem. Let me check call sentiment data and see if there&#39;s a pattern in the specific call types he&#39;s been handling.&quot;,
+    content: [
+      { type: &quot;text&quot;, text: &quot;I&#39;ve been watching Diego&#39;s session. Here&#39;s the pattern:&quot; },
+      { type: &quot;list&quot;, items: [&quot;Avg handle time today: 7:14 (team avg: 4:22)&quot;, &quot;CSAT last 5 calls: 2.8 / 5&quot;, &quot;Escalations today: 2&quot;] },
+      { type: &quot;text&quot;, text: &quot;Sentiment analysis on his last 3 calls shows he&#39;s using filler phrases under pressure and pausing too long during account lookups. This looks like a tooling familiarity issue, not attitude. A quick side-by-side or a tip about the billing tool shortcut (Ctrl+Shift+B) could turn this around fast.&quot; },
+    ]},
+]
+
+showSuggestionButton?: any = true
+
+suggestions?: any = [
+  &quot;Create an AI Agent&quot;,
+  &quot;See what has changed since yesterday&quot;,
+  &quot;How can I manually configure AI Agents?&quot;,
+]
+
+userName?: any = &quot;John&quot;
+
+width?: any = 400</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { AiAssistantPanel } from "ai-assistant-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;AiAssistantPanel width={400} showSuggestionButton /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Empty Conversation</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const EmptyConversation = () =&gt; &lt;AiAssistantPanel width={400} showSuggestionButton initialMessages={[]} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Mobile Viewport</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Mobile = () =&gt; &lt;AiAssistantPanel width={400} showSuggestionButton /&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Breadcrumb">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Breadcrumb</h2>
+      <div class="badges">
+        <label for="c-1-navigation-title-breadcrumb-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-1-navigation-title-breadcrumb-info" class="badge info as-toggle">1 info</label>
+        <label for="c-1-navigation-title-breadcrumb-stories" class="badge ok as-toggle">5 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/TitleBreadcrumb.stories.jsx">navigation-title-breadcrumb · ./src/components/TitleBreadcrumb.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-1-navigation-title-breadcrumb-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-1-navigation-title-breadcrumb-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-1-navigation-title-breadcrumb-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">6 prop types</span>
+            </div>
+            <pre><code>Component: src/components/TitleBreadcrumb.jsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>layout?: any = &#39;inline&#39;
+
+levels?: any = []
+
+showStatusBadge?: any = false
+
+sidenavSlot?: any = null
+
+statusBadgeLabel?: any = &#39;Active&#39;
+
+title?: any = &#39;Page Title&#39;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Breadcrumb } from "ai-assistant-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;BreadcrumbStory
+    title=&quot;Page Title&quot;
+    showStatusBadge={false}
+    statusBadgeLabel=&quot;Active&quot;
+    levelCount={3}
+    linksStartAt={1} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Status Badge</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithStatusBadge = () =&gt; &lt;BreadcrumbStory
+    title=&quot;Page Title&quot;
+    showStatusBadge
+    statusBadgeLabel=&quot;Active&quot;
+    levelCount={3}
+    linksStartAt={1} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Title Only</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const TitleOnly = () =&gt; &lt;BreadcrumbStory
+    title=&quot;Page Title&quot;
+    showStatusBadge={false}
+    statusBadgeLabel=&quot;Active&quot;
+    levelCount={0}
+    linksStartAt={1} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Many Levels (≥ 4)</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ManyLevels = () =&gt; &lt;BreadcrumbStory
+    title=&quot;Current Page&quot;
+    showStatusBadge={false}
+    statusBadgeLabel=&quot;Active&quot;
+    levelCount={6}
+    linksStartAt={1} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Width Simulation</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WidthSimulation = (args) =&gt; {
+  const { levelCount, linksStartAt, title, showStatusBadge, statusBadgeLabel } = args;
+  const levels = buildLevels(levelCount, linksStartAt);
+  return (
+    &lt;div style={{ display: &#39;flex&#39;, flexDirection: &#39;column&#39;, gap: 32 }}&gt;
+      {[700, 400, 220].map(w =&gt; (
+        &lt;div key={w}&gt;
+          &lt;div style={{ fontSize: 11, color: &#39;var(--lyra-color-fg-secondary)&#39;, marginBottom: 6 }}&gt;
+            {w}px
+          &lt;/div&gt;
+          &lt;div style={{
+            width:        w,
+            padding:      &#39;0 var(--lyra-spacing-8)&#39;,
+            borderBottom: &#39;var(--lyra-border-default) solid var(--lyra-color-border-subtle)&#39;,
+            height:       &#39;4.5rem&#39;,
+            display:      &#39;flex&#39;,
+            alignItems:   &#39;center&#39;,
+            boxSizing:    &#39;border-box&#39;,
+            background:   &#39;var(--lyra-color-bg-surface-base)&#39;,
+          }}&gt;
+            &lt;Breadcrumb
+              levels={levels}
+              title={title}
+              showStatusBadge={showStatusBadge}
+              statusBadgeLabel={statusBadgeLabel}
+            /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Button">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Button</h2>
+      <div class="badges">
+        <label for="c-2-components-button-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-2-components-button-info" class="badge info as-toggle">1 info</label>
+        <label for="c-2-components-button-stories" class="badge ok as-toggle">10 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/Button.stories.jsx">components-button · ./src/stories/Button.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-2-components-button-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-2-components-button-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-2-components-button-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">5 prop types</span>
+            </div>
+            <pre><code>Component: src/components/Button.jsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>disabled?: any = false
+
+forcePressed?: any = false
+
+iconOnly?: any = false
+
+size?: any = &#39;md&#39;
+
+variant?: any = &#39;primary&#39;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Button } from "ai-assistant-storybook";
+import { ChevronRight, Download, Plus, Search, Settings, Sparkles, Trash2, X } from "lucide-react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Playground</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Playground = () =&gt; &lt;Button variant=&quot;primary&quot; size=&quot;md&quot; disabled={false}&gt;Button&lt;/Button&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Variants</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Variants = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 12, alignItems: &#39;center&#39; }}&gt;
+    &lt;Button variant=&quot;primary&quot;&gt;Primary&lt;/Button&gt;
+    &lt;Button variant=&quot;secondary&quot;&gt;Secondary&lt;/Button&gt;
+    &lt;Button variant=&quot;ghost&quot;&gt;Ghost&lt;/Button&gt;
+    &lt;Button variant=&quot;destructive&quot;&gt;Destructive&lt;/Button&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Sizes = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 12, alignItems: &#39;center&#39; }}&gt;
+    &lt;Button variant=&quot;primary&quot; size=&quot;sm&quot;&gt;Small&lt;/Button&gt;
+    &lt;Button variant=&quot;primary&quot; size=&quot;md&quot;&gt;Medium&lt;/Button&gt;
+    &lt;Button variant=&quot;primary&quot; size=&quot;lg&quot;&gt;Large&lt;/Button&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Left Icon</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithLeftIcon = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 12, alignItems: &#39;center&#39; }}&gt;
+    &lt;Button variant=&quot;primary&quot;     leftIcon={&lt;Plus /&gt;}&gt;Add item&lt;/Button&gt;
+    &lt;Button variant=&quot;secondary&quot;   leftIcon={&lt;Download /&gt;}&gt;Export&lt;/Button&gt;
+    &lt;Button variant=&quot;ghost&quot;       leftIcon={&lt;Sparkles /&gt;}&gt;AI&lt;/Button&gt;
+    &lt;Button variant=&quot;destructive&quot; leftIcon={&lt;Trash2 /&gt;}&gt;Delete&lt;/Button&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Right Icon</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithRightIcon = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 12, alignItems: &#39;center&#39; }}&gt;
+    &lt;Button variant=&quot;primary&quot;   rightIcon={&lt;ChevronRight /&gt;}&gt;Next&lt;/Button&gt;
+    &lt;Button variant=&quot;secondary&quot; rightIcon={&lt;ChevronRight /&gt;}&gt;Next&lt;/Button&gt;
+    &lt;Button variant=&quot;ghost&quot;     rightIcon={&lt;ChevronRight /&gt;}&gt;Next&lt;/Button&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Both Icons</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithBothIcons = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 12, alignItems: &#39;center&#39; }}&gt;
+    &lt;Button variant=&quot;primary&quot;   leftIcon={&lt;Sparkles /&gt;} rightIcon={&lt;ChevronRight /&gt;}&gt;Generate&lt;/Button&gt;
+    &lt;Button variant=&quot;secondary&quot; leftIcon={&lt;Download /&gt;} rightIcon={&lt;ChevronRight /&gt;}&gt;Export all&lt;/Button&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Icon Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const IconSizes = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 12, alignItems: &#39;center&#39; }}&gt;
+    &lt;Button variant=&quot;secondary&quot; size=&quot;sm&quot; leftIcon={&lt;Plus /&gt;}&gt;Small (12px icon)&lt;/Button&gt;
+    &lt;Button variant=&quot;secondary&quot; size=&quot;md&quot; leftIcon={&lt;Plus /&gt;}&gt;Medium (16px icon)&lt;/Button&gt;
+    &lt;Button variant=&quot;secondary&quot; size=&quot;lg&quot; leftIcon={&lt;Plus /&gt;}&gt;Large (16px icon)&lt;/Button&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Icon Only</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const IconOnly = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, flexDirection: &#39;column&#39;, gap: 16 }}&gt;
+    {/* Sizes */}
+    &lt;div style={{ display: &#39;flex&#39;, gap: 8, alignItems: &#39;center&#39; }}&gt;
+      &lt;Button variant=&quot;ghost&quot; size=&quot;sm&quot; iconOnly aria-label=&quot;Search&quot;&gt;&lt;Search /&gt;&lt;/Button&gt;
+      &lt;Button variant=&quot;ghost&quot; size=&quot;md&quot; iconOnly aria-label=&quot;Search&quot;&gt;&lt;Search /&gt;&lt;/Button&gt;
+      &lt;Button variant=&quot;ghost&quot; size=&quot;lg&quot; iconOnly aria-label=&quot;Search&quot;&gt;&lt;Search /&gt;&lt;/Button&gt;
+    &lt;/div&gt;
+    {/* Variants */}
+    &lt;div style={{ display: &#39;flex&#39;, gap: 8, alignItems: &#39;center&#39; }}&gt;
+      &lt;Button variant=&quot;primary&quot;     size=&quot;md&quot; iconOnly aria-label=&quot;Add&quot;&gt;&lt;Plus /&gt;&lt;/Button&gt;
+      &lt;Button variant=&quot;secondary&quot;   size=&quot;md&quot; iconOnly aria-label=&quot;Settings&quot;&gt;&lt;Settings /&gt;&lt;/Button&gt;
+      &lt;Button variant=&quot;ghost&quot;       size=&quot;md&quot; iconOnly aria-label=&quot;Close&quot;&gt;&lt;X /&gt;&lt;/Button&gt;
+      &lt;Button variant=&quot;destructive&quot; size=&quot;md&quot; iconOnly aria-label=&quot;Delete&quot;&gt;&lt;Trash2 /&gt;&lt;/Button&gt;
+    &lt;/div&gt;
+    {/* Disabled */}
+    &lt;div style={{ display: &#39;flex&#39;, gap: 8, alignItems: &#39;center&#39; }}&gt;
+      &lt;Button variant=&quot;primary&quot;     size=&quot;md&quot; iconOnly disabled aria-label=&quot;Add&quot;&gt;&lt;Plus /&gt;&lt;/Button&gt;
+      &lt;Button variant=&quot;secondary&quot;   size=&quot;md&quot; iconOnly disabled aria-label=&quot;Settings&quot;&gt;&lt;Settings /&gt;&lt;/Button&gt;
+      &lt;Button variant=&quot;ghost&quot;       size=&quot;md&quot; iconOnly disabled aria-label=&quot;Close&quot;&gt;&lt;X /&gt;&lt;/Button&gt;
+      &lt;Button variant=&quot;destructive&quot; size=&quot;md&quot; iconOnly disabled aria-label=&quot;Delete&quot;&gt;&lt;Trash2 /&gt;&lt;/Button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Disabled = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, gap: 12, alignItems: &#39;center&#39; }}&gt;
+    &lt;Button variant=&quot;primary&quot;     disabled&gt;Primary&lt;/Button&gt;
+    &lt;Button variant=&quot;secondary&quot;   disabled&gt;Secondary&lt;/Button&gt;
+    &lt;Button variant=&quot;ghost&quot;       disabled&gt;Ghost&lt;/Button&gt;
+    &lt;Button variant=&quot;destructive&quot; disabled&gt;Destructive&lt;/Button&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Matrix</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Matrix = () =&gt; {
+  const variants = [&#39;primary&#39;, &#39;secondary&#39;, &#39;ghost&#39;, &#39;destructive&#39;];
+  const sizes    = [&#39;sm&#39;, &#39;md&#39;, &#39;lg&#39;];
+  return (
+    &lt;div style={{ display: &#39;flex&#39;, flexDirection: &#39;column&#39;, gap: 16 }}&gt;
+      {sizes.map(size =&gt; (
+        &lt;div key={size} style={{ display: &#39;flex&#39;, gap: 12, alignItems: &#39;center&#39; }}&gt;
+          {variants.map(variant =&gt; (
+            &lt;Button key={variant} variant={variant} size={size} leftIcon={&lt;Plus /&gt;}&gt;
+              {variant.charAt(0).toUpperCase() + variant.slice(1)}
+            &lt;/Button&gt;
+          ))}
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="ChatBubble">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> ChatBubble</h2>
+      <div class="badges">
+        <label for="c-3-components-chat-bubble-props" class="badge ok as-toggle">5 prop types</label>
+        
+        <label for="c-3-components-chat-bubble-stories" class="badge ok as-toggle">2 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/ChatBubble.stories.jsx">components-chat-bubble · ./src/stories/ChatBubble.stories.jsx</div>
+    
+    <div class="hint">Unified chat bubble component. Props: variant    — &quot;user&quot; | &quot;ai&quot; content    — string (user) | string | Array&lt;{type,text}|{type,items}&gt; (ai) reasoning  — string (ai only) — collapsible reasoning/thinking section isLatest   — boolean (ai only) — keeps action bar always visible</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-3-components-chat-bubble-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-3-components-chat-bubble-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">5 prop types</span>
+            </div>
+            <pre><code>Component: src/components/ChatBubble.jsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>content?: any = &quot;&quot;
+
+isLatest?: any = false
+
+isThinking?: any = false
+
+reasoning?: any = &quot;&quot;
+
+variant?: any = &quot;user&quot;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { ChatBubble } from "ai-assistant-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">User</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const User = () =&gt; &lt;ChatBubble
+    variant=&quot;user&quot;
+    content=&quot;Hey — give me a quick read on where we stand right now. Queue&#39;s feeling heavy.&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">AI Answer</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AI = () =&gt; &lt;ChatBubble
+    variant=&quot;ai&quot;
+    isLatest
+    reasoning=&quot;The user is asking about queue status. I should check for SLA risks first, then look at agent availability. Billing queue shows a projected breach in ~8 minutes based on current call volume and agent capacity. James R. is the best candidate to re-route since he&#39;ll be free in ~90 seconds.&quot;
+    content={[
+      { type: &quot;text&quot;, text: &quot;You&#39;re right to flag it. Here&#39;s the snapshot:&quot; },
+      { type: &quot;list&quot;, items: [
+        &quot;Calls in queue: 12 (↑4 from 10 min ago)&quot;,
+        &quot;Longest wait: 6:48&quot;,
+        &quot;Agents available: 2 of 6&quot;,
+        &quot;SLA at risk: Billing queue – projected breach in ~8 minutes&quot;,
+      ]},
+      { type: &quot;text&quot;, text: &quot;James R. finishes his current call in about 90 seconds. Routing him straight to Billing would close the gap before the breach.&quot; },
+    ]} /&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Colors">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> Colors</h2>
+      <div class="badges">
+        <label for="c-4-foundation-colors-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-4-foundation-colors-info" class="badge info as-toggle">2 infos</label>
+        <label for="c-4-foundation-colors-stories" class="badge ok as-toggle">3 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/Colors.stories.jsx">foundation-colors · ./src/stories/Colors.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-4-foundation-colors-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-4-foundation-colors-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-4-foundation-colors-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>We could not detect the component from your story file. Specify meta.component.
+  45 |
+  46 | /* ─── Stories ──────────────────────────────────────────────────────────────── */
+&gt; 47 | export default {
+     | ^
+  48 |   title: &#39;Foundation/Colors&#39;,
+  49 |   parameters: {
+  50 |     layout: &#39;padded&#39;,
+
+./src/stories/Colors.stories.jsx:
+import &quot;../styles/typography.css&quot;;
+import { SEMANTIC_SECTIONS, SIZE_SECTIONS } from &quot;../tokens.js&quot;;
+
+const FF = &quot;Inter, sans-serif&quot;;
+const MONO = &quot;&#39;SF Mono&#39;,&#39;Fira Code&#39;,&#39;Consolas&#39;,monospace&quot;;
+
+/* ─── Base palette ─────────────────────────────────────────────────────────── */
+const PALETTE = {
+  Gray:   [[&#39;25&#39;,&#39;#FAFAFA&#39;],[&#39;50&#39;,&#39;#F5F5F5&#39;],[&#39;100&#39;,&#39;#EDEDED&#39;],[&#39;200&#39;,&#39;#D1D1D1&#39;],[&#39;300&#39;,&#39;#B5B5B5&#39;],[&#39;400&#39;,&#39;#828282&#39;],[&#39;500&#39;,&#39;#5C5C5C&#39;],[&#39;600&#39;,&#39;#454545&#39;],[&#39;700&#39;,&#39;#2E2E2E&#39;],[&#39;800&#39;,&#39;#262626&#39;],[&#39;900&#39;,&#39;#1F1F1E&#39;],[&#39;950&#39;,&#39;#141414&#39;]],
+  Slate:  [[&#39;25&#39;,&#39;#FBFCFE&#39;],[&#39;50&#39;,&#39;#F5F7F9&#39;],[&#39;100&#39;,&#39;#ECEFF3&#39;],[&#39;200&#39;,&#39;#D0D6DC&#39;],[&#39;300&#39;,&#39;#ACB7C3&#39;],[&#39;400&#39;,&#39;#7F8B9A&#39;],[&#39;500&#39;,&#39;#5D6A79&#39;],[&#39;600&#39;,&#39;#49515A&#39;],[&#39;700&#39;,&#39;#363D44&#39;],[&#39;800&#39;,&#39;#2A2D32&#39;],[&#39;900&#39;,&#39;#1E2124&#39;],[&#39;950&#39;,&#39;#171A1C&#39;]],
+  Brand:  [[&#39;25&#39;,&#39;#F6FAFE&#39;],[&#39;50&#39;,&#39;#F1F7FE&#39;],[&#39;100&#39;,&#39;#E8F1FC&#39;],[&#39;200&#39;,&#39;#D3E6FD&#39;],[&#39;300&#39;,&#39;#A7D0FE&#39;],[&#39;400&#39;,&#39;#4896EC&#39;],[&#39;500&#39;,&#39;#166CCA&#39;],[&#39;600&#39;,&#39;#185BA4&#39;],[&#39;700&#39;,&#39;#164479&#39;],[&#39;800&#39;,&#39;#11375F&#39;],[&#39;900&#39;,&#39;#0C2845&#39;],[&#39;950&#39;,&#39;#081C30&#39;]],
+  Red:    [[&#39;25&#39;,&#39;#FFF0F0&#39;],[&#39;50&#39;,&#39;#FFEBEB&#39;],[&#39;100&#39;,&#39;#FFE0E0&#39;],[&#39;200&#39;,&#39;#FFB8B8&#39;],[&#39;300&#39;,&#39;#FA7F7F&#39;],[&#39;400&#39;,&#39;#E34545&#39;],[&#39;500&#39;,&#39;#BD2A2A&#39;],[&#39;600&#39;,&#39;#A32424&#39;],[&#39;700&#39;,&#39;#8A1F1F&#39;],[&#39;800&#39;,&#39;#641616&#39;],[&#39;900&#39;,&#39;#430F0F&#39;],[&#39;950&#39;,&#39;#211717&#39;]],
+  Orange: [[&#39;25&#39;,&#39;#FFF4EB&#39;],[&#39;50&#39;,&#39;#FFECDB&#39;],[&#39;100&#39;,&#39;#FFE5CC&#39;],[&#39;200&#39;,&#39;#FFCC9E&#39;],[&#39;300&#39;,&#39;#F89D4E&#39;],[&#39;400&#39;,&#39;#E1710B&#39;],[&#39;500&#39;,&#39;#A85000&#39;],[&#39;600&#39;,&#39;#7D420C&#39;],[&#39;700&#39;,&#39;#63360D&#39;],[&#39;800&#39;,&#39;#4F2C0D&#39;],[&#39;900&#39;,&#39;#3C220B&#39;],[&#39;950&#39;,&#39;#25190E&#39;]],
+  Yellow: [[&#39;25&#39;,&#39;#FFFAE0&#39;],[&#39;50&#39;,&#39;#FFF7C7&#39;],[&#39;100&#39;,&#39;#FFF3AD&#39;],[&#39;200&#39;,&#39;#FFE680&#39;],[&#39;300&#39;,&#39;#FACB33&#39;],[&#39;400&#39;,&#39;#B58709&#39;],[&#39;500&#39;,&#39;#8E6800&#39;],[&#39;600&#39;,&#39;#674B13&#39;],[&#39;700&#39;,&#39;#513D15&#39;],[&#39;800&#39;,&#39;#3D3014&#39;],[&#39;900&#39;,&#39;#2E2614&#39;],[&#39;950&#39;,&#39;#221D11&#39;]],
+  Lime:   [[&#39;25&#39;,&#39;#F7FEE7&#39;],[&#39;50&#39;,&#39;#EEFBD0&#39;],[&#39;100&#39;,&#39;#E4F6BB&#39;],[&#39;200&#39;,&#39;#C9EA80&#39;],[&#39;300&#39;,&#39;#9DC940&#39;],[&#39;400&#39;,&#39;#67980B&#39;],[&#39;500&#39;,&#39;#4E760C&#39;],[&#39;600&#39;,&#39;#446311&#39;],[&#39;700&#39;,&#39;#3A5413&#39;],[&#39;800&#39;,&#39;#2E430F&#39;],[&#39;900&#39;,&#39;#1D2E05&#39;],[&#39;950&#39;,&#39;#172108&#39;]],
+  Green:  [[&#39;25&#39;,&#39;#EBFAED&#39;],[&#39;50&#39;,&#39;#DEF7E1&#39;],[&#39;100&#39;,&#39;#D2F4D5&#39;],[&#39;200&#39;,&#39;#B0E8B7&#39;],[&#39;300&#39;,&#39;#64B96F&#39;],[&#39;400&#39;,&#39;#288D34&#39;],[&#39;500&#39;,&#39;#23722D&#39;],[&#39;600&#39;,&#39;#1F5C27&#39;],[&#39;700&#39;,&#39;#1B4C22&#39;],[&#39;800&#39;,&#39;#153C1B&#39;],[&#39;900&#39;,&#39;#0F2A13&#39;],[&#39;950&#39;,&#39;#0E2010&#39;]],
+  Teal:   [[&#39;25&#39;,&#39;#EBF8F9&#39;],[&#39;50&#39;,&#39;#D8F1F3&#39;],[&#39;100&#39;,&#39;#C8EDEF&#39;],[&#39;200&#39;,&#39;#AAE0E5&#39;],[&#39;300&#39;,&#39;#62C4CB&#39;],[&#39;400&#39;,&#39;#09939E&#39;],[&#39;500&#39;,&#39;#11737C&#39;],[&#39;600&#39;,&#39;#1B636A&#39;],[&#39;700&#39;,&#39;#194D52&#39;],[&#39;800&#39;,&#39;#173B3F&#39;],[&#39;900&#39;,&#39;#12292C&#39;],[&#39;950&#39;,&#39;#102123&#39;]],
+  Blue:   [[&#39;25&#39;,&#39;#F0F5FF&#39;],[&#39;50&#39;,&#39;#E5EEFF&#39;],[&#39;100&#39;,&#39;#D6E4FF&#39;],[&#39;200&#39;,&#39;#B9CEF8&#39;],[&#39;300&#39;,&#39;#789FED&#39;],[&#39;400&#39;,&#39;#4977D4&#39;],[&#39;500&#39;,&#39;#2D5BB9&#39;],[&#39;600&#39;,&#39;#264C97&#39;],[&#39;700&#39;,&#39;#1F3B75&#39;],[&#39;800&#39;,&#39;#192E57&#39;],[&#39;900&#39;,&#39;#131F3A&#39;],[&#39;950&#39;,&#39;#121826&#39;]],
+  Purple: [[&#39;25&#39;,&#39;#F7F5FF&#39;],[&#39;50&#39;,&#39;#EFEBFF&#39;],[&#39;100&#39;,&#39;#E6E0FF&#39;],[&#39;200&#39;,&#39;#D1C9F2&#39;],[&#39;300&#39;,&#39;#A998E7&#39;],[&#39;400&#39;,&#39;#816AD7&#39;],[&#39;500&#39;,&#39;#634DBD&#39;],[&#39;600&#39;,&#39;#4E39A8&#39;],[&#39;700&#39;,&#39;#42308D&#39;],[&#39;800&#39;,&#39;#31265F&#39;],[&#39;900&#39;,&#39;#231D3F&#39;],[&#39;950&#39;,&#39;#1B172B&#39;]],
+  Pink:   [[&#39;25&#39;,&#39;#FFF5FC&#39;],[&#39;50&#39;,&#39;#FFEBF8&#39;],[&#39;100&#39;,&#39;#FFE0F5&#39;],[&#39;200&#39;,&#39;#FCCAEB&#39;],[&#39;300&#39;,&#39;#F099D3&#39;],[&#39;400&#39;,&#39;#D756AC&#39;],[&#39;500&#39;,&#39;#B03887&#39;],[&#39;600&#39;,&#39;#91296E&#39;],[&#39;700&#39;,&#39;#702055&#39;],[&#39;800&#39;,&#39;#4F173C&#39;],[&#39;900&#39;,&#39;#331429&#39;],[&#39;950&#39;,&#39;#25131F&#39;]],
+};
+
+const NEUTRALS = [[&#39;White&#39;,&#39;#FFFFFF&#39;],[&#39;Black&#39;,&#39;#000000&#39;]];
+
+/* ─── Helper components ────────────────────────────────────────────────────── */
+function Swatch({ hex, size = 32 }) {
+  const isTransparent = hex === &#39;rgba(0,0,0,0)&#39; || hex === &#39;rgba(255,255,255,0)&#39;;
+  return (
+    &lt;div style={{
+      width: size, height: size, borderRadius: 5, flexShrink: 0,
+      border: &#39;1px solid rgba(0,0,0,0.1)&#39;,
+      background: isTransparent
+        ? &#39;linear-gradient(45deg,#ddd 25%,#fff 25%,#fff 75%,#ddd 75%), linear-gradient(45deg,#ddd 25%,#fff 25%,#fff 75%,#ddd 75%)&#39;
+        : hex,
+      backgroundSize: isTransparent ? &#39;8px 8px&#39; : undefined,
+      backgroundPosition: isTransparent ? &#39;0 0, 4px 4px&#39; : undefined,
+    }} /&gt;
+  );
+}
+
+const PAGE_TITLE = { fontSize: 11, fontWeight: 600, letterSpacing: &#39;0.08em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, marginBottom: 32 };
+const SECTION_HDR = { fontSize: &#39;0.875rem&#39;, fontWeight: 600, color: &#39;var(--lyra-color-fg-default)&#39;, marginBottom: 4, paddingBottom: 8, borderBottom: &#39;2px solid rgba(0,0,0,0.08)&#39;, marginTop: 40 };
+const COL_HDR = { fontSize: &#39;0.6875rem&#39;, fontWeight: 600, letterSpacing: &#39;0.06em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, fontFamily: FF };
+const GROUP_HDR = { fontSize: &#39;0.6875rem&#39;, fontWeight: 600, letterSpacing: &#39;0.06em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, marginBottom: 8 };
+
+/* ─── Stories ──────────────────────────────────────────────────────────────── */
+export default {
+  title: &#39;Foundation/Colors&#39;,
+  parameters: {
+    layout: &#39;padded&#39;,
+    controls: { disable: true },
+    actions: { disable: true },
+    forceLight: true,
+  },
+};
+
+/* Base Colors */
+export const BaseColors = {
+  name: &#39;Base Colors&#39;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 960, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+      &lt;h1 style={PAGE_TITLE}&gt;Base Colors&lt;/h1&gt;
+
+      {/* Neutrals */}
+      &lt;div style={GROUP_HDR}&gt;Neutrals&lt;/div&gt;
+      &lt;div style={{ display: &#39;flex&#39;, gap: 8, marginBottom: 36 }}&gt;
+        {NEUTRALS.map(([name, hex]) =&gt; (
+          &lt;div key={name} style={{ width: 72 }}&gt;
+            &lt;div style={{ height: 56, borderRadius: 8, background: hex, border: &#39;1px solid rgba(0,0,0,0.1)&#39;, marginBottom: 6 }} /&gt;
+            &lt;div style={{ fontSize: 11, fontWeight: 600, color: &#39;var(--lyra-color-fg-default)&#39;, fontFamily: FF }}&gt;{name}&lt;/div&gt;
+            &lt;div style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39; }}&gt;{hex}&lt;/div&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+
+      {/* Shade headers */}
+      &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;72px repeat(12, 1fr)&#39;, gap: &#39;0 4px&#39;, marginBottom: 6 }}&gt;
+        &lt;span /&gt;
+        {[&#39;25&#39;,&#39;50&#39;,&#39;100&#39;,&#39;200&#39;,&#39;300&#39;,&#39;400&#39;,&#39;500&#39;,&#39;600&#39;,&#39;700&#39;,&#39;800&#39;,&#39;900&#39;,&#39;950&#39;].map(s =&gt; (
+          &lt;span key={s} style={{ fontSize: 9, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;center&#39;, fontFamily: MONO, letterSpacing: &#39;0.02em&#39; }}&gt;{s}&lt;/span&gt;
+        ))}
+      &lt;/div&gt;
+
+      {/* Color families */}
+      {Object.entries(PALETTE).map(([family, shades]) =&gt; (
+        &lt;div key={family} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;72px repeat(12, 1fr)&#39;, gap: &#39;0 4px&#39;, marginBottom: 4, alignItems: &#39;center&#39; }}&gt;
+          &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, fontWeight: 500, paddingRight: 8 }}&gt;{family}&lt;/span&gt;
+          {shades.map(([shade, hex]) =&gt; (
+            &lt;div key={shade} title={`${family} ${shade} — ${hex}`}&gt;
+              &lt;div style={{ height: 40, borderRadius: 5, background: hex, border: &#39;1px solid rgba(0,0,0,0.06)&#39; }} /&gt;
+              &lt;div style={{ fontSize: 9, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;center&#39;, marginTop: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{hex}&lt;/div&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  ),
+};
+
+/* Semantic Colors */
+export const SemanticColors = {
+  name: &#39;Semantic Colors&#39;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 960, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+      &lt;h1 style={PAGE_TITLE}&gt;Semantic Colors&lt;/h1&gt;
+
+      {SEMANTIC_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
+        &lt;div key={title}&gt;
+          &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+
+          {/* Column headers: swatch | token | light | dark | description */}
+          &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+            &lt;span /&gt;
+            &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
+            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+              &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#FFFFFF&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
+              &lt;span style={COL_HDR}&gt;Light&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+              &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#2A2D32&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
+              &lt;span style={COL_HDR}&gt;Dark&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;span style={COL_HDR}&gt;Description&lt;/span&gt;
+          &lt;/div&gt;
+
+          {tokens.map(({ name, light, dark, desc }) =&gt; (
+            &lt;div key={name} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
+              {/* Light swatch */}
+              &lt;Swatch hex={light} size={28} /&gt;
+              {/* Token name */}
+              &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;
+                {prefix}{name}
+              &lt;/code&gt;
+              {/* Light value */}
+              &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+                &lt;Swatch hex={light} size={18} /&gt;
+                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{light}&lt;/span&gt;
+              &lt;/div&gt;
+              {/* Dark value */}
+              &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+                &lt;Swatch hex={dark} size={18} /&gt;
+                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{dark}&lt;/span&gt;
+              &lt;/div&gt;
+              {/* Description */}
+              &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39; }}&gt;
+                {desc || &#39;&#39;}
+              &lt;/span&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  ),
+};
+
+/* ─── Per-category size visualisations ────────────────────────────────────── */
+function SizeVisual({ title, v }) {
+  const active  = &#39;var(--lyra-color-bg-active-moderate)&#39;;
+  const bActive = &#39;var(--lyra-color-border-active)&#39;;
+  const fgAct   = &#39;var(--lyra-color-fg-action)&#39;;
+
+  /* Spacing — left/right border ticks with the gap filled */
+  if (title === &#39;Spacing&#39;) {
+    return (
+      &lt;div style={{ display: &#39;inline-flex&#39;, alignItems: &#39;center&#39;, height: 28 }}&gt;
+        &lt;div style={{ width: 1.5, height: 20, background: bActive, flexShrink: 0 }} /&gt;
+        &lt;div style={{ width: v, height: 20, background: active, flexShrink: 0 }} /&gt;
+        &lt;div style={{ width: 1.5, height: 20, background: bActive, flexShrink: 0 }} /&gt;
+      &lt;/div&gt;
+    );
+  }
+
+  /* Border Radius — same rectangle, corner radius changes per token */
+  if (title === &#39;Border Radius&#39;) {
+    return (
+      &lt;div style={{
+        width: 72, height: 32, flexShrink: 0,
+        borderRadius: v &gt;= 999 ? &#39;999px&#39; : `${v}px`,
+        border: `1.5px solid ${bActive}`,
+        background: active,
+      }} /&gt;
+    );
+  }
+
+  /* Border Width — box whose border thickness equals the token value */
+  if (title === &#39;Border Width&#39;) {
+    return (
+      &lt;div style={{
+        width: 64, height: 28, flexShrink: 0,
+        borderRadius: 4,
+        border: v === 0 ? &#39;1px dashed rgba(0,0,0,0.22)&#39; : `${v}px solid ${bActive}`,
+        background: active,
+      }} /&gt;
+    );
+  }
+
+  /* Control Height — a button-like pill whose height is the token value */
+  if (title === &#39;Control Height&#39;) {
+    return (
+      &lt;div style={{
+        height: v, width: 96, flexShrink: 0,
+        background: active,
+        border: `1px solid ${bActive}`,
+        borderRadius: 6,
+      }} /&gt;
+    );
+  }
+
+  /* Icon Size — a solid square whose width &amp; height equal the token value */
+  if (title === &#39;Icon Size&#39;) {
+    return (
+      &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, height: 28 }}&gt;
+        &lt;div style={{
+          width: v, height: v, flexShrink: 0,
+          background: fgAct,
+          borderRadius: 2,
+        }} /&gt;
+      &lt;/div&gt;
+    );
+  }
+
+  /* Row Height — top/bottom border lines with the space between them filled */
+  if (title === &#39;Row Height&#39;) {
+    return (
+      &lt;div style={{
+        height: v,
+        borderTop:    `1.5px solid ${bActive}`,
+        borderBottom: `1.5px solid ${bActive}`,
+        background: active,
+      }} /&gt;
+    );
+  }
+
+  return null;
+}
+
+/* Semantic Sizes */
+export const SemanticSizes = {
+  name: &#39;Semantic Sizes&#39;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 720, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+      &lt;h1 style={PAGE_TITLE}&gt;Semantic Sizes&lt;/h1&gt;
+
+      {SIZE_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
+        &lt;div key={title}&gt;
+          &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+          &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+            &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
+            &lt;span style={COL_HDR}&gt;Visual&lt;/span&gt;
+            &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
+          &lt;/div&gt;
+          {tokens.map(({ n, v }) =&gt; (
+            &lt;div key={n} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;10px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
+              &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39; }}&gt;
+                {prefix}{n}
+              &lt;/code&gt;
+              &lt;SizeVisual title={title} v={v} /&gt;
+              &lt;span style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;right&#39; }}&gt;
+                {v === 999 ? &#39;∞&#39; : `${v}px`}
+              &lt;/span&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  ),
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">Specify an @import jsdoc tag on your component or your stories meta such as @import import { Colors } from &#39;my-design-system&#39;;</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Base Colors</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const BaseColors = () =&gt; (
+  &lt;div style={{ maxWidth: 960, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+    &lt;h1 style={PAGE_TITLE}&gt;Base Colors&lt;/h1&gt;
+
+    {/* Neutrals */}
+    &lt;div style={GROUP_HDR}&gt;Neutrals&lt;/div&gt;
+    &lt;div style={{ display: &#39;flex&#39;, gap: 8, marginBottom: 36 }}&gt;
+      {NEUTRALS.map(([name, hex]) =&gt; (
+        &lt;div key={name} style={{ width: 72 }}&gt;
+          &lt;div style={{ height: 56, borderRadius: 8, background: hex, border: &#39;1px solid rgba(0,0,0,0.1)&#39;, marginBottom: 6 }} /&gt;
+          &lt;div style={{ fontSize: 11, fontWeight: 600, color: &#39;var(--lyra-color-fg-default)&#39;, fontFamily: FF }}&gt;{name}&lt;/div&gt;
+          &lt;div style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39; }}&gt;{hex}&lt;/div&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+
+    {/* Shade headers */}
+    &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;72px repeat(12, 1fr)&#39;, gap: &#39;0 4px&#39;, marginBottom: 6 }}&gt;
+      &lt;span /&gt;
+      {[&#39;25&#39;,&#39;50&#39;,&#39;100&#39;,&#39;200&#39;,&#39;300&#39;,&#39;400&#39;,&#39;500&#39;,&#39;600&#39;,&#39;700&#39;,&#39;800&#39;,&#39;900&#39;,&#39;950&#39;].map(s =&gt; (
+        &lt;span key={s} style={{ fontSize: 9, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;center&#39;, fontFamily: MONO, letterSpacing: &#39;0.02em&#39; }}&gt;{s}&lt;/span&gt;
+      ))}
+    &lt;/div&gt;
+
+    {/* Color families */}
+    {Object.entries(PALETTE).map(([family, shades]) =&gt; (
+      &lt;div key={family} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;72px repeat(12, 1fr)&#39;, gap: &#39;0 4px&#39;, marginBottom: 4, alignItems: &#39;center&#39; }}&gt;
+        &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, fontWeight: 500, paddingRight: 8 }}&gt;{family}&lt;/span&gt;
+        {shades.map(([shade, hex]) =&gt; (
+          &lt;div key={shade} title={`${family} ${shade} — ${hex}`}&gt;
+            &lt;div style={{ height: 40, borderRadius: 5, background: hex, border: &#39;1px solid rgba(0,0,0,0.06)&#39; }} /&gt;
+            &lt;div style={{ fontSize: 9, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;center&#39;, marginTop: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{hex}&lt;/div&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Semantic Colors</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SemanticColors = () =&gt; (
+  &lt;div style={{ maxWidth: 960, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+    &lt;h1 style={PAGE_TITLE}&gt;Semantic Colors&lt;/h1&gt;
+
+    {SEMANTIC_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
+      &lt;div key={title}&gt;
+        &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+
+        {/* Column headers: swatch | token | light | dark | description */}
+        &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+          &lt;span /&gt;
+          &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
+          &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+            &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#FFFFFF&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
+            &lt;span style={COL_HDR}&gt;Light&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+            &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#2A2D32&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
+            &lt;span style={COL_HDR}&gt;Dark&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;span style={COL_HDR}&gt;Description&lt;/span&gt;
+        &lt;/div&gt;
+
+        {tokens.map(({ name, light, dark, desc }) =&gt; (
+          &lt;div key={name} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
+            {/* Light swatch */}
+            &lt;Swatch hex={light} size={28} /&gt;
+            {/* Token name */}
+            &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;
+              {prefix}{name}
+            &lt;/code&gt;
+            {/* Light value */}
+            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+              &lt;Swatch hex={light} size={18} /&gt;
+              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{light}&lt;/span&gt;
+            &lt;/div&gt;
+            {/* Dark value */}
+            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+              &lt;Swatch hex={dark} size={18} /&gt;
+              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{dark}&lt;/span&gt;
+            &lt;/div&gt;
+            {/* Description */}
+            &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39; }}&gt;
+              {desc || &#39;&#39;}
+            &lt;/span&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Semantic Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SemanticSizes = () =&gt; (
+  &lt;div style={{ maxWidth: 720, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+    &lt;h1 style={PAGE_TITLE}&gt;Semantic Sizes&lt;/h1&gt;
+
+    {SIZE_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
+      &lt;div key={title}&gt;
+        &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+        &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+          &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
+          &lt;span style={COL_HDR}&gt;Visual&lt;/span&gt;
+          &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
+        &lt;/div&gt;
+        {tokens.map(({ n, v }) =&gt; (
+          &lt;div key={n} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;10px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
+            &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39; }}&gt;
+              {prefix}{n}
+            &lt;/code&gt;
+            &lt;SizeVisual title={title} v={v} /&gt;
+            &lt;span style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;right&#39; }}&gt;
+              {v === 999 ? &#39;∞&#39; : `${v}px`}
+            &lt;/span&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Effects">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> Effects</h2>
+      <div class="badges">
+        <label for="c-5-foundation-effects-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-5-foundation-effects-info" class="badge info as-toggle">2 infos</label>
+        <label for="c-5-foundation-effects-stories" class="badge ok as-toggle">1 story</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/Effects.stories.jsx">foundation-effects · ./src/stories/Effects.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-5-foundation-effects-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-5-foundation-effects-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-5-foundation-effects-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>We could not detect the component from your story file. Specify meta.component.
+   9 | const COL_HDR = { fontSize: &#39;0.6875rem&#39;, fontWeight: 600, letterSpacing: &#39;0.06em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, fontFamily: FF };
+  10 |
+&gt; 11 | export default {
+     | ^
+  12 |   title: &#39;Foundation/Effects&#39;,
+  13 |   parameters: {
+  14 |     layout: &#39;padded&#39;,
+
+./src/stories/Effects.stories.jsx:
+import &quot;../styles/typography.css&quot;;
+import { SHADOWS } from &quot;../tokens.js&quot;;
+
+const FF = &quot;Inter, sans-serif&quot;;
+const MONO = &quot;&#39;SF Mono&#39;,&#39;Fira Code&#39;,&#39;Consolas&#39;,monospace&quot;;
+
+const PAGE_TITLE = { fontSize: 11, fontWeight: 600, letterSpacing: &#39;0.08em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, marginBottom: 32 };
+const SECTION_HDR = { fontSize: &#39;0.875rem&#39;, fontWeight: 600, color: &#39;var(--lyra-color-fg-default)&#39;, marginBottom: 4, paddingBottom: 8, borderBottom: &#39;2px solid rgba(0,0,0,0.08)&#39;, marginTop: 40 };
+const COL_HDR = { fontSize: &#39;0.6875rem&#39;, fontWeight: 600, letterSpacing: &#39;0.06em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, fontFamily: FF };
+
+export default {
+  title: &#39;Foundation/Effects&#39;,
+  parameters: {
+    layout: &#39;padded&#39;,
+    controls: { disable: true },
+    actions: { disable: true },
+    forceLight: true,
+  },
+};
+
+export const Shadows = {
+  name: &#39;Shadows&#39;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 840, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+      &lt;h1 style={PAGE_TITLE}&gt;Effects&lt;/h1&gt;
+
+      &lt;h2 style={SECTION_HDR}&gt;Shadows&lt;/h2&gt;
+
+      {/* Column headers */}
+      &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;200px 140px 1fr&#39;, gap: &#39;0 24px&#39;, padding: &#39;4px 0 8px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+        &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
+        &lt;span style={COL_HDR}&gt;Preview&lt;/span&gt;
+        &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
+      &lt;/div&gt;
+
+      {SHADOWS.map(({ name, value, desc }) =&gt; (
+        &lt;div
+          key={name}
+          style={{
+            display: &#39;grid&#39;,
+            gridTemplateColumns: &#39;200px 140px 1fr&#39;,
+            gap: &#39;0 24px&#39;,
+            alignItems: &#39;center&#39;,
+            padding: &#39;20px 0&#39;,
+            borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39;,
+          }}
+        &gt;
+          {/* Token name + description */}
+          &lt;div&gt;
+            &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, display: &#39;inline-block&#39;, marginBottom: 6 }}&gt;
+              {name}
+            &lt;/code&gt;
+            {desc &amp;&amp; (
+              &lt;div style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: &#39;italic&#39; }}&gt;
+                {desc}
+              &lt;/div&gt;
+            )}
+          &lt;/div&gt;
+
+          {/* Preview card */}
+          &lt;div style={{ padding: &#39;16px 0&#39; }}&gt;
+            &lt;div style={{
+              width: 100,
+              height: 64,
+              borderRadius: 10,
+              background: &#39;#FFFFFF&#39;,
+              boxShadow: value,
+              border: value === &#39;none&#39; ? &#39;1px dashed rgba(0,0,0,0.12)&#39; : &#39;1px solid rgba(0,0,0,0.03)&#39;,
+            }} /&gt;
+          &lt;/div&gt;
+
+          {/* CSS value */}
+          &lt;code style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, wordBreak: &#39;break-all&#39;, lineHeight: 1.6 }}&gt;
+            {value}
+          &lt;/code&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  ),
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">Specify an @import jsdoc tag on your component or your stories meta such as @import import { Effects } from &#39;my-design-system&#39;;</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Shadows</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Shadows = () =&gt; (
+  &lt;div style={{ maxWidth: 840, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+    &lt;h1 style={PAGE_TITLE}&gt;Effects&lt;/h1&gt;
+
+    &lt;h2 style={SECTION_HDR}&gt;Shadows&lt;/h2&gt;
+
+    {/* Column headers */}
+    &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;200px 140px 1fr&#39;, gap: &#39;0 24px&#39;, padding: &#39;4px 0 8px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+      &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
+      &lt;span style={COL_HDR}&gt;Preview&lt;/span&gt;
+      &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
+    &lt;/div&gt;
+
+    {SHADOWS.map(({ name, value, desc }) =&gt; (
+      &lt;div
+        key={name}
+        style={{
+          display: &#39;grid&#39;,
+          gridTemplateColumns: &#39;200px 140px 1fr&#39;,
+          gap: &#39;0 24px&#39;,
+          alignItems: &#39;center&#39;,
+          padding: &#39;20px 0&#39;,
+          borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39;,
+        }}
+      &gt;
+        {/* Token name + description */}
+        &lt;div&gt;
+          &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, display: &#39;inline-block&#39;, marginBottom: 6 }}&gt;
+            {name}
+          &lt;/code&gt;
+          {desc &amp;&amp; (
+            &lt;div style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: &#39;italic&#39; }}&gt;
+              {desc}
+            &lt;/div&gt;
+          )}
+        &lt;/div&gt;
+
+        {/* Preview card */}
+        &lt;div style={{ padding: &#39;16px 0&#39; }}&gt;
+          &lt;div style={{
+            width: 100,
+            height: 64,
+            borderRadius: 10,
+            background: &#39;#FFFFFF&#39;,
+            boxShadow: value,
+            border: value === &#39;none&#39; ? &#39;1px dashed rgba(0,0,0,0.12)&#39; : &#39;1px solid rgba(0,0,0,0.03)&#39;,
+          }} /&gt;
+        &lt;/div&gt;
+
+        {/* CSS value */}
+        &lt;code style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, wordBreak: &#39;break-all&#39;, lineHeight: 1.6 }}&gt;
+          {value}
+        &lt;/code&gt;
+      &lt;/div&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="PageContent">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> PageContent</h2>
+      <div class="badges">
+        <label for="c-6-content-panel-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-6-content-panel-info" class="badge info as-toggle">1 info</label>
+        <label for="c-6-content-panel-stories" class="badge ok as-toggle">6 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/PageContent.stories.jsx">content-panel · ./src/components/PageContent.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-6-content-panel-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-6-content-panel-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-6-content-panel-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">1 prop type</span>
+            </div>
+            <pre><code>Component: src/components/PageContent.jsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>contentBreakpoint?: any = 720</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { DashboardList, PageContent, PageHeader } from "ai-assistant-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Interactive V1</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithHeader = (args) =&gt; (
+  &lt;PageContent
+    header={
+      &lt;PageHeader
+        levels={buildLevels(args.levelCount)}
+        showSideNavTrigger={args.showSideNavTrigger}
+        showAiTrigger={args.showAiTrigger}
+        showStatusBadge={args.showStatusBadge}
+        statusBadgeLabel={args.statusBadgeLabel}
+      /&gt;
+    }
+    contentBreakpoint={clampBreakpoint(args.contentBreakpoint)}
+  /&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Header + Sidebar Opened</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const HeaderAndSidebarOpened = (args) =&gt; (
+  &lt;PageContent
+    header={&lt;PageHeader levels={buildLevels(args.levelCount)} /&gt;}
+    sidebar={&lt;DashboardList /&gt;}
+    sidebarState=&quot;opened&quot;
+  /&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Header + Sidebar Overlay</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const HeaderAndSidebarOverlay = (args) =&gt; (
+  &lt;PageContent
+    header={&lt;PageHeader levels={buildLevels(args.levelCount)} /&gt;}
+    sidebar={&lt;DashboardList /&gt;}
+    sidebarState=&quot;overlay&quot;
+  /&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sidebar — Hidden</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SidebarHidden = () =&gt; &lt;PageContent sidebar={&lt;DashboardList /&gt;} sidebarState=&quot;hidden&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sidebar — Opened</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SidebarOpened = () =&gt; &lt;PageContent sidebar={&lt;DashboardList /&gt;} sidebarState=&quot;opened&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sidebar — Overlay</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SidebarOverlay = () =&gt; &lt;PageContent sidebar={&lt;DashboardList /&gt;} sidebarState=&quot;overlay&quot; /&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="PageHeader">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> PageHeader</h2>
+      <div class="badges">
+        <label for="c-7-content-panel-page-header-props" class="badge ok as-toggle">10 prop types</label>
+        <label for="c-7-content-panel-page-header-info" class="badge info as-toggle">1 info</label>
+        <label for="c-7-content-panel-page-header-stories" class="badge ok as-toggle">6 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/PageHeader.stories.jsx">content-panel-page-header · ./src/components/PageHeader.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-7-content-panel-page-header-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-7-content-panel-page-header-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-7-content-panel-page-header-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">10 prop types</span>
+            </div>
+            <pre><code>Component: src/components/PageHeader.jsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>_sidebarOpen?: any = false
+
+_sidebarTransitioning?: any = false
+
+headerLayout?: any = &#39;default&#39;
+
+levels?: any = []
+
+showAiTrigger?: any = true
+
+showBreadcrumb?: any = true
+
+showSideNavTrigger?: any = true
+
+showStatusBadge?: any = false
+
+statusBadgeLabel?: any = &#39;Active&#39;
+
+title?: any = &#39;Page Title&#39;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { PageHeader } from "ai-assistant-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;HeaderStory
+    title=&quot;Page Title&quot;
+    levelCount={1}
+    linksStartAt={1}
+    showSideNavTrigger
+    showBreadcrumb
+    showStatusBadge={false}
+    statusBadgeLabel=&quot;Active&quot;
+    showAiTrigger /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Status Badge</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithStatusBadge = () =&gt; &lt;HeaderStory
+    title=&quot;Page Title&quot;
+    levelCount={1}
+    linksStartAt={1}
+    showSideNavTrigger
+    showBreadcrumb
+    showStatusBadge
+    statusBadgeLabel=&quot;Active&quot;
+    showAiTrigger /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">No Side Nav Trigger</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NoSideNav = () =&gt; &lt;HeaderStory
+    title=&quot;Page Title&quot;
+    levelCount={1}
+    linksStartAt={1}
+    showSideNavTrigger={false}
+    showBreadcrumb={false}
+    showStatusBadge={false}
+    statusBadgeLabel=&quot;Active&quot;
+    showAiTrigger /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">No AI Trigger</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NoAiTrigger = () =&gt; &lt;HeaderStory
+    title=&quot;Page Title&quot;
+    levelCount={1}
+    linksStartAt={1}
+    showSideNavTrigger
+    showBreadcrumb
+    showStatusBadge={false}
+    statusBadgeLabel=&quot;Active&quot;
+    showAiTrigger={false} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Many Levels (≥ 4)</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ManyLevels = () =&gt; &lt;HeaderStory
+    title=&quot;Product Detail&quot;
+    levelCount={5}
+    linksStartAt={1}
+    showSideNavTrigger
+    showBreadcrumb
+    showStatusBadge={false}
+    statusBadgeLabel=&quot;Active&quot;
+    showAiTrigger /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Full Featured</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const FullFeatured = () =&gt; &lt;HeaderStory
+    title=&quot;Case Management&quot;
+    levelCount={1}
+    linksStartAt={1}
+    showSideNavTrigger
+    showBreadcrumb
+    showStatusBadge
+    statusBadgeLabel=&quot;Active&quot;
+    showAiTrigger /&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Shell">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Shell</h2>
+      <div class="badges">
+        <label for="c-8-shell-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-8-shell-info" class="badge info as-toggle">1 info</label>
+        <label for="c-8-shell-stories" class="badge ok as-toggle">2 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/Shell.stories.jsx">shell · ./src/components/Shell.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-8-shell-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-8-shell-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-8-shell-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">3 prop types</span>
+            </div>
+            <pre><code>Component: src/components/Shell.jsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>contentBreakpoint?: any = 720
+
+navTrigger?: any = &#39;floating&#39;
+
+showAiPanel?: any = true</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { PageHeader, Shell } from "ai-assistant-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Shell — Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;Shell
+    showAiPanel
+    contentBreakpoint={720}
+    navTrigger=&quot;floating&quot;
+    aiUserName=&quot;John&quot;
+    header={
+      &lt;PageHeader
+        levels={buildLevels(args.levelCount)}
+        showSideNavTrigger={args.showSideNavTrigger}
+        showAiTrigger
+      /&gt;
+    } /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Shell — No AI Panel</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NoAiPanel = () =&gt; &lt;Shell
+    showAiPanel={false}
+    contentBreakpoint={720}
+    navTrigger=&quot;floating&quot;
+    header={
+      &lt;PageHeader
+        levels={buildLevels(args.levelCount)}
+        showSideNavTrigger={args.showSideNavTrigger}
+        showAiTrigger={false}
+      /&gt;
+    } /&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="SideNavigation">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> SideNavigation</h2>
+      <div class="badges">
+        <label for="c-9-shell-side-navigation-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-9-shell-side-navigation-info" class="badge info as-toggle">1 info</label>
+        <label for="c-9-shell-side-navigation-stories" class="badge ok as-toggle">3 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/SideNavigation.stories.jsx">shell-side-navigation · ./src/components/SideNavigation.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-9-shell-side-navigation-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-9-shell-side-navigation-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-9-shell-side-navigation-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: src/components/SideNavigation.jsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>minimized?: any = false
+
+navItems?: any = [
+  { id: &#39;evaluation&#39;, type: &#39;page&#39;, label: &#39;Evaluation Tasks&#39;, icon: ListCheck },
+  { id: &#39;quality&#39;, type: &#39;page&#39;, label: &#39;Quality Performance&#39;, icon: UserRoundCheck, active: true },
+  { id: &#39;dashboards&#39;, type: &#39;page&#39;, label: &#39;Dashboards&#39;, icon: LayoutDashboard },
+  { id: &#39;search&#39;, type: &#39;page&#39;, label: &#39;Interaction Search&#39;, icon: DatabaseSearch },
+  { id: &#39;settings&#39;, type: &#39;page&#39;, label: &#39;Settings&#39;, icon: Settings },
+]
+
+triggerVisibility?: any = &#39;always&#39;
+
+version?: any = &#39;v1&#39;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { SideNavigation } from "ai-assistant-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Open</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Open = () =&gt; &lt;InteractiveNav initialMinimized={false} trigger=&quot;floating&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Minimized</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Minimized = () =&gt; &lt;InteractiveNav initialMinimized={true} trigger=&quot;floating&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Interactive (toggle via control)</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Interactive = () =&gt; &lt;InteractiveNav initialMinimized={false} trigger=&quot;floating&quot; /&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Typography">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> Typography</h2>
+      <div class="badges">
+        <label for="c-10-foundation-typography-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-10-foundation-typography-info" class="badge info as-toggle">2 infos</label>
+        <label for="c-10-foundation-typography-stories" class="badge ok as-toggle">3 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/Typography.stories.jsx">foundation-typography · ./src/stories/Typography.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-10-foundation-typography-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-10-foundation-typography-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-10-foundation-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>We could not detect the component from your story file. Specify meta.component.
+  1 | import &quot;../styles/typography.css&quot;;
+  2 |
+&gt; 3 | export default {
+    | ^
+  4 |   title: &quot;Foundation/Typography&quot;,
+  5 |   parameters: {
+  6 |     layout: &quot;padded&quot;,
+
+./src/stories/Typography.stories.jsx:
+import &quot;../styles/typography.css&quot;;
+
+export default {
+  title: &quot;Foundation/Typography&quot;,
+  parameters: {
+    layout: &quot;padded&quot;,
+    controls: { disable: true },
+    actions: { disable: true },
+    forceLight: true,
+  },
+};
+
+const SCALE = [
+  { class: &quot;lyra-heading-xl&quot;,  label: &quot;Heading XL&quot;,          specimen: &quot;The quick brown fox&quot; },
+  { class: &quot;lyra-heading-lg&quot;,  label: &quot;Heading LG&quot;,          specimen: &quot;The quick brown fox&quot; },
+  { class: &quot;lyra-heading-md&quot;,  label: &quot;Heading MD&quot;,          specimen: &quot;The quick brown fox&quot; },
+  { class: &quot;lyra-heading-sm&quot;,  label: &quot;Heading SM&quot;,          specimen: &quot;The quick brown fox&quot; },
+  { class: &quot;lyra-heading-xs&quot;,  label: &quot;Heading XS&quot;,          specimen: &quot;The quick brown fox&quot; },
+  { class: &quot;lyra-body-lg&quot;,     label: &quot;Body LG&quot;,             specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+  { class: &quot;lyra-body-lg-em&quot;,  label: &quot;Body LG Emphasized&quot;,  specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+  { class: &quot;lyra-body-md&quot;,     label: &quot;Body MD&quot;,             specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+  { class: &quot;lyra-body-md-em&quot;,  label: &quot;Body MD Emphasized&quot;,  specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+  { class: &quot;lyra-body-sm&quot;,     label: &quot;Body SM&quot;,             specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+  { class: &quot;lyra-body-sm-em&quot;,  label: &quot;Body SM Emphasized&quot;,  specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+  { class: &quot;lyra-label&quot;,       label: &quot;Label&quot;,               specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+];
+
+const DIVIDER_BEFORE = new Set([&quot;lyra-body-lg&quot;, &quot;lyra-label&quot;]);
+
+const meta = {
+  fontSize: &quot;0.6875rem&quot;,
+  fontFamily: &quot;Inter, sans-serif&quot;,
+  color: &quot;rgba(0,0,0,0.4)&quot;,
+  letterSpacing: &quot;0.06em&quot;,
+  textTransform: &quot;uppercase&quot;,
+  fontWeight: 500,
+};
+
+export const AllStyles = {
+  name: &quot;All Styles&quot;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 800, margin: &quot;0 auto&quot;, fontFamily: &quot;Inter, sans-serif&quot; }}&gt;
+      &lt;h1 style={{ fontFamily: &quot;Inter, sans-serif&quot;, fontSize: 11, fontWeight: 600, letterSpacing: &quot;0.08em&quot;, textTransform: &quot;uppercase&quot;, color: &quot;rgba(0,0,0,0.35)&quot;, marginBottom: 32 }}&gt;
+        Lyra Type Scale
+      &lt;/h1&gt;
+
+      {/* Header row */}
+      &lt;div style={{ display: &quot;grid&quot;, gridTemplateColumns: &quot;180px 1fr 56px 56px 80px 96px&quot;, gap: &quot;0 16px&quot;, paddingBottom: 8, borderBottom: &quot;1px solid rgba(0,0,0,0.08)&quot;, marginBottom: 4 }}&gt;
+        {[&quot;Style&quot;, &quot;Specimen&quot;, &quot;Size&quot;, &quot;Weight&quot;, &quot;Line Ht&quot;, &quot;Tracking&quot;].map(h =&gt; (
+          &lt;span key={h} style={meta}&gt;{h}&lt;/span&gt;
+        ))}
+      &lt;/div&gt;
+
+      {SCALE.map(({ class: cls, label, specimen }) =&gt; {
+        const el = document.createElement(&quot;span&quot;);
+        el.className = cls;
+        document.body.appendChild(el);
+        const cs = getComputedStyle(el);
+        const size = cs.fontSize;
+        const weight = cs.fontWeight;
+        const lineH = cs.lineHeight;
+        const tracking = cs.letterSpacing;
+        document.body.removeChild(el);
+
+        return (
+          &lt;div key={cls}&gt;
+            {DIVIDER_BEFORE.has(cls) &amp;&amp; (
+              &lt;div style={{ borderTop: &quot;1px solid rgba(0,0,0,0.08)&quot;, margin: &quot;4px 0&quot; }} /&gt;
+            )}
+            &lt;div style={{
+              display: &quot;grid&quot;,
+              gridTemplateColumns: &quot;180px 1fr 56px 56px 80px 96px&quot;,
+              gap: &quot;0 16px&quot;,
+              alignItems: &quot;baseline&quot;,
+              padding: &quot;10px 0&quot;,
+              borderBottom: &quot;1px solid rgba(0,0,0,0.05)&quot;,
+            }}&gt;
+              &lt;span style={{ ...meta, textTransform: &quot;none&quot;, letterSpacing: 0, fontSize: &quot;0.75rem&quot;, color: &quot;rgba(0,0,0,0.45)&quot; }}&gt;
+                {label}
+                &lt;br /&gt;
+                &lt;code style={{ fontSize: 10, background: &quot;rgba(0,0,0,0.05)&quot;, padding: &quot;1px 4px&quot;, borderRadius: 3, letterSpacing: 0 }}&gt;.{cls}&lt;/code&gt;
+              &lt;/span&gt;
+              &lt;span className={cls} style={{ color: &quot;rgba(0,0,0,0.85)&quot; }}&gt;{specimen}&lt;/span&gt;
+              &lt;span style={meta}&gt;{size}&lt;/span&gt;
+              &lt;span style={meta}&gt;{weight}&lt;/span&gt;
+              &lt;span style={meta}&gt;{lineH}&lt;/span&gt;
+              &lt;span style={meta}&gt;{tracking}&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        );
+      })}
+    &lt;/div&gt;
+  ),
+};
+
+export const Headings = {
+  name: &quot;Headings&quot;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 600, margin: &quot;0 auto&quot;, display: &quot;flex&quot;, flexDirection: &quot;column&quot;, gap: 24 }}&gt;
+      {SCALE.filter(s =&gt; s.class.startsWith(&quot;lyra-heading&quot;)).map(({ class: cls, label }) =&gt; (
+        &lt;div key={cls}&gt;
+          &lt;p style={meta}&gt;{label}&lt;/p&gt;
+          &lt;p className={cls} style={{ color: &quot;rgba(0,0,0,0.85)&quot;, marginTop: 4 }}&gt;AI Assistant — How can I help?&lt;/p&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  ),
+};
+
+export const Body = {
+  name: &quot;Body&quot;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 600, margin: &quot;0 auto&quot;, display: &quot;flex&quot;, flexDirection: &quot;column&quot;, gap: 24 }}&gt;
+      {SCALE.filter(s =&gt; s.class.startsWith(&quot;lyra-body&quot;) || s.class === &quot;lyra-label&quot;).map(({ class: cls, label }) =&gt; (
+        &lt;div key={cls}&gt;
+          &lt;p style={meta}&gt;{label}&lt;/p&gt;
+          &lt;p className={cls} style={{ color: &quot;rgba(0,0,0,0.85)&quot;, marginTop: 4 }}&gt;
+            Sentiment analysis on his last 3 calls shows he&#39;s using filler phrases under pressure and pausing too long during account lookups.
+          &lt;/p&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  ),
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">Specify an @import jsdoc tag on your component or your stories meta such as @import import { Typography } from &#39;my-design-system&#39;;</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">All Styles</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllStyles = () =&gt; (
+  &lt;div style={{ maxWidth: 800, margin: &quot;0 auto&quot;, fontFamily: &quot;Inter, sans-serif&quot; }}&gt;
+    &lt;h1 style={{ fontFamily: &quot;Inter, sans-serif&quot;, fontSize: 11, fontWeight: 600, letterSpacing: &quot;0.08em&quot;, textTransform: &quot;uppercase&quot;, color: &quot;rgba(0,0,0,0.35)&quot;, marginBottom: 32 }}&gt;
+      Lyra Type Scale
+    &lt;/h1&gt;
+
+    {/* Header row */}
+    &lt;div style={{ display: &quot;grid&quot;, gridTemplateColumns: &quot;180px 1fr 56px 56px 80px 96px&quot;, gap: &quot;0 16px&quot;, paddingBottom: 8, borderBottom: &quot;1px solid rgba(0,0,0,0.08)&quot;, marginBottom: 4 }}&gt;
+      {[&quot;Style&quot;, &quot;Specimen&quot;, &quot;Size&quot;, &quot;Weight&quot;, &quot;Line Ht&quot;, &quot;Tracking&quot;].map(h =&gt; (
+        &lt;span key={h} style={meta}&gt;{h}&lt;/span&gt;
+      ))}
+    &lt;/div&gt;
+
+    {SCALE.map(({ class: cls, label, specimen }) =&gt; {
+      const el = document.createElement(&quot;span&quot;);
+      el.className = cls;
+      document.body.appendChild(el);
+      const cs = getComputedStyle(el);
+      const size = cs.fontSize;
+      const weight = cs.fontWeight;
+      const lineH = cs.lineHeight;
+      const tracking = cs.letterSpacing;
+      document.body.removeChild(el);
+
+      return (
+        &lt;div key={cls}&gt;
+          {DIVIDER_BEFORE.has(cls) &amp;&amp; (
+            &lt;div style={{ borderTop: &quot;1px solid rgba(0,0,0,0.08)&quot;, margin: &quot;4px 0&quot; }} /&gt;
+          )}
+          &lt;div style={{
+            display: &quot;grid&quot;,
+            gridTemplateColumns: &quot;180px 1fr 56px 56px 80px 96px&quot;,
+            gap: &quot;0 16px&quot;,
+            alignItems: &quot;baseline&quot;,
+            padding: &quot;10px 0&quot;,
+            borderBottom: &quot;1px solid rgba(0,0,0,0.05)&quot;,
+          }}&gt;
+            &lt;span style={{ ...meta, textTransform: &quot;none&quot;, letterSpacing: 0, fontSize: &quot;0.75rem&quot;, color: &quot;rgba(0,0,0,0.45)&quot; }}&gt;
+              {label}
+              &lt;br /&gt;
+              &lt;code style={{ fontSize: 10, background: &quot;rgba(0,0,0,0.05)&quot;, padding: &quot;1px 4px&quot;, borderRadius: 3, letterSpacing: 0 }}&gt;.{cls}&lt;/code&gt;
+            &lt;/span&gt;
+            &lt;span className={cls} style={{ color: &quot;rgba(0,0,0,0.85)&quot; }}&gt;{specimen}&lt;/span&gt;
+            &lt;span style={meta}&gt;{size}&lt;/span&gt;
+            &lt;span style={meta}&gt;{weight}&lt;/span&gt;
+            &lt;span style={meta}&gt;{lineH}&lt;/span&gt;
+            &lt;span style={meta}&gt;{tracking}&lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      );
+    })}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Headings</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Headings = () =&gt; (
+  &lt;div style={{ maxWidth: 600, margin: &quot;0 auto&quot;, display: &quot;flex&quot;, flexDirection: &quot;column&quot;, gap: 24 }}&gt;
+    {SCALE.filter(s =&gt; s.class.startsWith(&quot;lyra-heading&quot;)).map(({ class: cls, label }) =&gt; (
+      &lt;div key={cls}&gt;
+        &lt;p style={meta}&gt;{label}&lt;/p&gt;
+        &lt;p className={cls} style={{ color: &quot;rgba(0,0,0,0.85)&quot;, marginTop: 4 }}&gt;AI Assistant — How can I help?&lt;/p&gt;
+      &lt;/div&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Body</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Body = () =&gt; (
+  &lt;div style={{ maxWidth: 600, margin: &quot;0 auto&quot;, display: &quot;flex&quot;, flexDirection: &quot;column&quot;, gap: 24 }}&gt;
+    {SCALE.filter(s =&gt; s.class.startsWith(&quot;lyra-body&quot;) || s.class === &quot;lyra-label&quot;).map(({ class: cls, label }) =&gt; (
+      &lt;div key={cls}&gt;
+        &lt;p style={meta}&gt;{label}&lt;/p&gt;
+        &lt;p className={cls} style={{ color: &quot;rgba(0,0,0,0.85)&quot;, marginTop: 4 }}&gt;
+          Sentiment analysis on his last 3 calls shows he&#39;s using filler phrases under pressure and pausing too long during account lookups.
+        &lt;/p&gt;
+      &lt;/div&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+    </div>
+    <div class="error-groups" role="region" aria-label="Prop type error groups">
+        <section class="group">
+          <input id="no-component-found-toggle" class="group-tg" type="checkbox" hidden />
+          <label for="no-component-found-toggle" class="group-header">
+            <span class="caret">▸</span>
+            <span class="group-title">No component found</span>
+            <span class="group-count">3</span>
+          </label>
+          <div class="group-cards">
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Colors">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> Colors</h2>
+      <div class="badges">
+        <label for="c-error-0-foundation-colors-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-0-foundation-colors-info" class="badge info as-toggle">2 infos</label>
+        <label for="c-error-0-foundation-colors-stories" class="badge ok as-toggle">3 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/Colors.stories.jsx">foundation-colors · ./src/stories/Colors.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-0-foundation-colors-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-0-foundation-colors-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-0-foundation-colors-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>We could not detect the component from your story file. Specify meta.component.
+  45 |
+  46 | /* ─── Stories ──────────────────────────────────────────────────────────────── */
+&gt; 47 | export default {
+     | ^
+  48 |   title: &#39;Foundation/Colors&#39;,
+  49 |   parameters: {
+  50 |     layout: &#39;padded&#39;,
+
+./src/stories/Colors.stories.jsx:
+import &quot;../styles/typography.css&quot;;
+import { SEMANTIC_SECTIONS, SIZE_SECTIONS } from &quot;../tokens.js&quot;;
+
+const FF = &quot;Inter, sans-serif&quot;;
+const MONO = &quot;&#39;SF Mono&#39;,&#39;Fira Code&#39;,&#39;Consolas&#39;,monospace&quot;;
+
+/* ─── Base palette ─────────────────────────────────────────────────────────── */
+const PALETTE = {
+  Gray:   [[&#39;25&#39;,&#39;#FAFAFA&#39;],[&#39;50&#39;,&#39;#F5F5F5&#39;],[&#39;100&#39;,&#39;#EDEDED&#39;],[&#39;200&#39;,&#39;#D1D1D1&#39;],[&#39;300&#39;,&#39;#B5B5B5&#39;],[&#39;400&#39;,&#39;#828282&#39;],[&#39;500&#39;,&#39;#5C5C5C&#39;],[&#39;600&#39;,&#39;#454545&#39;],[&#39;700&#39;,&#39;#2E2E2E&#39;],[&#39;800&#39;,&#39;#262626&#39;],[&#39;900&#39;,&#39;#1F1F1E&#39;],[&#39;950&#39;,&#39;#141414&#39;]],
+  Slate:  [[&#39;25&#39;,&#39;#FBFCFE&#39;],[&#39;50&#39;,&#39;#F5F7F9&#39;],[&#39;100&#39;,&#39;#ECEFF3&#39;],[&#39;200&#39;,&#39;#D0D6DC&#39;],[&#39;300&#39;,&#39;#ACB7C3&#39;],[&#39;400&#39;,&#39;#7F8B9A&#39;],[&#39;500&#39;,&#39;#5D6A79&#39;],[&#39;600&#39;,&#39;#49515A&#39;],[&#39;700&#39;,&#39;#363D44&#39;],[&#39;800&#39;,&#39;#2A2D32&#39;],[&#39;900&#39;,&#39;#1E2124&#39;],[&#39;950&#39;,&#39;#171A1C&#39;]],
+  Brand:  [[&#39;25&#39;,&#39;#F6FAFE&#39;],[&#39;50&#39;,&#39;#F1F7FE&#39;],[&#39;100&#39;,&#39;#E8F1FC&#39;],[&#39;200&#39;,&#39;#D3E6FD&#39;],[&#39;300&#39;,&#39;#A7D0FE&#39;],[&#39;400&#39;,&#39;#4896EC&#39;],[&#39;500&#39;,&#39;#166CCA&#39;],[&#39;600&#39;,&#39;#185BA4&#39;],[&#39;700&#39;,&#39;#164479&#39;],[&#39;800&#39;,&#39;#11375F&#39;],[&#39;900&#39;,&#39;#0C2845&#39;],[&#39;950&#39;,&#39;#081C30&#39;]],
+  Red:    [[&#39;25&#39;,&#39;#FFF0F0&#39;],[&#39;50&#39;,&#39;#FFEBEB&#39;],[&#39;100&#39;,&#39;#FFE0E0&#39;],[&#39;200&#39;,&#39;#FFB8B8&#39;],[&#39;300&#39;,&#39;#FA7F7F&#39;],[&#39;400&#39;,&#39;#E34545&#39;],[&#39;500&#39;,&#39;#BD2A2A&#39;],[&#39;600&#39;,&#39;#A32424&#39;],[&#39;700&#39;,&#39;#8A1F1F&#39;],[&#39;800&#39;,&#39;#641616&#39;],[&#39;900&#39;,&#39;#430F0F&#39;],[&#39;950&#39;,&#39;#211717&#39;]],
+  Orange: [[&#39;25&#39;,&#39;#FFF4EB&#39;],[&#39;50&#39;,&#39;#FFECDB&#39;],[&#39;100&#39;,&#39;#FFE5CC&#39;],[&#39;200&#39;,&#39;#FFCC9E&#39;],[&#39;300&#39;,&#39;#F89D4E&#39;],[&#39;400&#39;,&#39;#E1710B&#39;],[&#39;500&#39;,&#39;#A85000&#39;],[&#39;600&#39;,&#39;#7D420C&#39;],[&#39;700&#39;,&#39;#63360D&#39;],[&#39;800&#39;,&#39;#4F2C0D&#39;],[&#39;900&#39;,&#39;#3C220B&#39;],[&#39;950&#39;,&#39;#25190E&#39;]],
+  Yellow: [[&#39;25&#39;,&#39;#FFFAE0&#39;],[&#39;50&#39;,&#39;#FFF7C7&#39;],[&#39;100&#39;,&#39;#FFF3AD&#39;],[&#39;200&#39;,&#39;#FFE680&#39;],[&#39;300&#39;,&#39;#FACB33&#39;],[&#39;400&#39;,&#39;#B58709&#39;],[&#39;500&#39;,&#39;#8E6800&#39;],[&#39;600&#39;,&#39;#674B13&#39;],[&#39;700&#39;,&#39;#513D15&#39;],[&#39;800&#39;,&#39;#3D3014&#39;],[&#39;900&#39;,&#39;#2E2614&#39;],[&#39;950&#39;,&#39;#221D11&#39;]],
+  Lime:   [[&#39;25&#39;,&#39;#F7FEE7&#39;],[&#39;50&#39;,&#39;#EEFBD0&#39;],[&#39;100&#39;,&#39;#E4F6BB&#39;],[&#39;200&#39;,&#39;#C9EA80&#39;],[&#39;300&#39;,&#39;#9DC940&#39;],[&#39;400&#39;,&#39;#67980B&#39;],[&#39;500&#39;,&#39;#4E760C&#39;],[&#39;600&#39;,&#39;#446311&#39;],[&#39;700&#39;,&#39;#3A5413&#39;],[&#39;800&#39;,&#39;#2E430F&#39;],[&#39;900&#39;,&#39;#1D2E05&#39;],[&#39;950&#39;,&#39;#172108&#39;]],
+  Green:  [[&#39;25&#39;,&#39;#EBFAED&#39;],[&#39;50&#39;,&#39;#DEF7E1&#39;],[&#39;100&#39;,&#39;#D2F4D5&#39;],[&#39;200&#39;,&#39;#B0E8B7&#39;],[&#39;300&#39;,&#39;#64B96F&#39;],[&#39;400&#39;,&#39;#288D34&#39;],[&#39;500&#39;,&#39;#23722D&#39;],[&#39;600&#39;,&#39;#1F5C27&#39;],[&#39;700&#39;,&#39;#1B4C22&#39;],[&#39;800&#39;,&#39;#153C1B&#39;],[&#39;900&#39;,&#39;#0F2A13&#39;],[&#39;950&#39;,&#39;#0E2010&#39;]],
+  Teal:   [[&#39;25&#39;,&#39;#EBF8F9&#39;],[&#39;50&#39;,&#39;#D8F1F3&#39;],[&#39;100&#39;,&#39;#C8EDEF&#39;],[&#39;200&#39;,&#39;#AAE0E5&#39;],[&#39;300&#39;,&#39;#62C4CB&#39;],[&#39;400&#39;,&#39;#09939E&#39;],[&#39;500&#39;,&#39;#11737C&#39;],[&#39;600&#39;,&#39;#1B636A&#39;],[&#39;700&#39;,&#39;#194D52&#39;],[&#39;800&#39;,&#39;#173B3F&#39;],[&#39;900&#39;,&#39;#12292C&#39;],[&#39;950&#39;,&#39;#102123&#39;]],
+  Blue:   [[&#39;25&#39;,&#39;#F0F5FF&#39;],[&#39;50&#39;,&#39;#E5EEFF&#39;],[&#39;100&#39;,&#39;#D6E4FF&#39;],[&#39;200&#39;,&#39;#B9CEF8&#39;],[&#39;300&#39;,&#39;#789FED&#39;],[&#39;400&#39;,&#39;#4977D4&#39;],[&#39;500&#39;,&#39;#2D5BB9&#39;],[&#39;600&#39;,&#39;#264C97&#39;],[&#39;700&#39;,&#39;#1F3B75&#39;],[&#39;800&#39;,&#39;#192E57&#39;],[&#39;900&#39;,&#39;#131F3A&#39;],[&#39;950&#39;,&#39;#121826&#39;]],
+  Purple: [[&#39;25&#39;,&#39;#F7F5FF&#39;],[&#39;50&#39;,&#39;#EFEBFF&#39;],[&#39;100&#39;,&#39;#E6E0FF&#39;],[&#39;200&#39;,&#39;#D1C9F2&#39;],[&#39;300&#39;,&#39;#A998E7&#39;],[&#39;400&#39;,&#39;#816AD7&#39;],[&#39;500&#39;,&#39;#634DBD&#39;],[&#39;600&#39;,&#39;#4E39A8&#39;],[&#39;700&#39;,&#39;#42308D&#39;],[&#39;800&#39;,&#39;#31265F&#39;],[&#39;900&#39;,&#39;#231D3F&#39;],[&#39;950&#39;,&#39;#1B172B&#39;]],
+  Pink:   [[&#39;25&#39;,&#39;#FFF5FC&#39;],[&#39;50&#39;,&#39;#FFEBF8&#39;],[&#39;100&#39;,&#39;#FFE0F5&#39;],[&#39;200&#39;,&#39;#FCCAEB&#39;],[&#39;300&#39;,&#39;#F099D3&#39;],[&#39;400&#39;,&#39;#D756AC&#39;],[&#39;500&#39;,&#39;#B03887&#39;],[&#39;600&#39;,&#39;#91296E&#39;],[&#39;700&#39;,&#39;#702055&#39;],[&#39;800&#39;,&#39;#4F173C&#39;],[&#39;900&#39;,&#39;#331429&#39;],[&#39;950&#39;,&#39;#25131F&#39;]],
+};
+
+const NEUTRALS = [[&#39;White&#39;,&#39;#FFFFFF&#39;],[&#39;Black&#39;,&#39;#000000&#39;]];
+
+/* ─── Helper components ────────────────────────────────────────────────────── */
+function Swatch({ hex, size = 32 }) {
+  const isTransparent = hex === &#39;rgba(0,0,0,0)&#39; || hex === &#39;rgba(255,255,255,0)&#39;;
+  return (
+    &lt;div style={{
+      width: size, height: size, borderRadius: 5, flexShrink: 0,
+      border: &#39;1px solid rgba(0,0,0,0.1)&#39;,
+      background: isTransparent
+        ? &#39;linear-gradient(45deg,#ddd 25%,#fff 25%,#fff 75%,#ddd 75%), linear-gradient(45deg,#ddd 25%,#fff 25%,#fff 75%,#ddd 75%)&#39;
+        : hex,
+      backgroundSize: isTransparent ? &#39;8px 8px&#39; : undefined,
+      backgroundPosition: isTransparent ? &#39;0 0, 4px 4px&#39; : undefined,
+    }} /&gt;
+  );
+}
+
+const PAGE_TITLE = { fontSize: 11, fontWeight: 600, letterSpacing: &#39;0.08em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, marginBottom: 32 };
+const SECTION_HDR = { fontSize: &#39;0.875rem&#39;, fontWeight: 600, color: &#39;var(--lyra-color-fg-default)&#39;, marginBottom: 4, paddingBottom: 8, borderBottom: &#39;2px solid rgba(0,0,0,0.08)&#39;, marginTop: 40 };
+const COL_HDR = { fontSize: &#39;0.6875rem&#39;, fontWeight: 600, letterSpacing: &#39;0.06em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, fontFamily: FF };
+const GROUP_HDR = { fontSize: &#39;0.6875rem&#39;, fontWeight: 600, letterSpacing: &#39;0.06em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, marginBottom: 8 };
+
+/* ─── Stories ──────────────────────────────────────────────────────────────── */
+export default {
+  title: &#39;Foundation/Colors&#39;,
+  parameters: {
+    layout: &#39;padded&#39;,
+    controls: { disable: true },
+    actions: { disable: true },
+    forceLight: true,
+  },
+};
+
+/* Base Colors */
+export const BaseColors = {
+  name: &#39;Base Colors&#39;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 960, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+      &lt;h1 style={PAGE_TITLE}&gt;Base Colors&lt;/h1&gt;
+
+      {/* Neutrals */}
+      &lt;div style={GROUP_HDR}&gt;Neutrals&lt;/div&gt;
+      &lt;div style={{ display: &#39;flex&#39;, gap: 8, marginBottom: 36 }}&gt;
+        {NEUTRALS.map(([name, hex]) =&gt; (
+          &lt;div key={name} style={{ width: 72 }}&gt;
+            &lt;div style={{ height: 56, borderRadius: 8, background: hex, border: &#39;1px solid rgba(0,0,0,0.1)&#39;, marginBottom: 6 }} /&gt;
+            &lt;div style={{ fontSize: 11, fontWeight: 600, color: &#39;var(--lyra-color-fg-default)&#39;, fontFamily: FF }}&gt;{name}&lt;/div&gt;
+            &lt;div style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39; }}&gt;{hex}&lt;/div&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+
+      {/* Shade headers */}
+      &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;72px repeat(12, 1fr)&#39;, gap: &#39;0 4px&#39;, marginBottom: 6 }}&gt;
+        &lt;span /&gt;
+        {[&#39;25&#39;,&#39;50&#39;,&#39;100&#39;,&#39;200&#39;,&#39;300&#39;,&#39;400&#39;,&#39;500&#39;,&#39;600&#39;,&#39;700&#39;,&#39;800&#39;,&#39;900&#39;,&#39;950&#39;].map(s =&gt; (
+          &lt;span key={s} style={{ fontSize: 9, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;center&#39;, fontFamily: MONO, letterSpacing: &#39;0.02em&#39; }}&gt;{s}&lt;/span&gt;
+        ))}
+      &lt;/div&gt;
+
+      {/* Color families */}
+      {Object.entries(PALETTE).map(([family, shades]) =&gt; (
+        &lt;div key={family} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;72px repeat(12, 1fr)&#39;, gap: &#39;0 4px&#39;, marginBottom: 4, alignItems: &#39;center&#39; }}&gt;
+          &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, fontWeight: 500, paddingRight: 8 }}&gt;{family}&lt;/span&gt;
+          {shades.map(([shade, hex]) =&gt; (
+            &lt;div key={shade} title={`${family} ${shade} — ${hex}`}&gt;
+              &lt;div style={{ height: 40, borderRadius: 5, background: hex, border: &#39;1px solid rgba(0,0,0,0.06)&#39; }} /&gt;
+              &lt;div style={{ fontSize: 9, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;center&#39;, marginTop: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{hex}&lt;/div&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  ),
+};
+
+/* Semantic Colors */
+export const SemanticColors = {
+  name: &#39;Semantic Colors&#39;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 960, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+      &lt;h1 style={PAGE_TITLE}&gt;Semantic Colors&lt;/h1&gt;
+
+      {SEMANTIC_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
+        &lt;div key={title}&gt;
+          &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+
+          {/* Column headers: swatch | token | light | dark | description */}
+          &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+            &lt;span /&gt;
+            &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
+            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+              &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#FFFFFF&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
+              &lt;span style={COL_HDR}&gt;Light&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+              &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#2A2D32&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
+              &lt;span style={COL_HDR}&gt;Dark&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;span style={COL_HDR}&gt;Description&lt;/span&gt;
+          &lt;/div&gt;
+
+          {tokens.map(({ name, light, dark, desc }) =&gt; (
+            &lt;div key={name} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
+              {/* Light swatch */}
+              &lt;Swatch hex={light} size={28} /&gt;
+              {/* Token name */}
+              &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;
+                {prefix}{name}
+              &lt;/code&gt;
+              {/* Light value */}
+              &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+                &lt;Swatch hex={light} size={18} /&gt;
+                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{light}&lt;/span&gt;
+              &lt;/div&gt;
+              {/* Dark value */}
+              &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+                &lt;Swatch hex={dark} size={18} /&gt;
+                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{dark}&lt;/span&gt;
+              &lt;/div&gt;
+              {/* Description */}
+              &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39; }}&gt;
+                {desc || &#39;&#39;}
+              &lt;/span&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  ),
+};
+
+/* ─── Per-category size visualisations ────────────────────────────────────── */
+function SizeVisual({ title, v }) {
+  const active  = &#39;var(--lyra-color-bg-active-moderate)&#39;;
+  const bActive = &#39;var(--lyra-color-border-active)&#39;;
+  const fgAct   = &#39;var(--lyra-color-fg-action)&#39;;
+
+  /* Spacing — left/right border ticks with the gap filled */
+  if (title === &#39;Spacing&#39;) {
+    return (
+      &lt;div style={{ display: &#39;inline-flex&#39;, alignItems: &#39;center&#39;, height: 28 }}&gt;
+        &lt;div style={{ width: 1.5, height: 20, background: bActive, flexShrink: 0 }} /&gt;
+        &lt;div style={{ width: v, height: 20, background: active, flexShrink: 0 }} /&gt;
+        &lt;div style={{ width: 1.5, height: 20, background: bActive, flexShrink: 0 }} /&gt;
+      &lt;/div&gt;
+    );
+  }
+
+  /* Border Radius — same rectangle, corner radius changes per token */
+  if (title === &#39;Border Radius&#39;) {
+    return (
+      &lt;div style={{
+        width: 72, height: 32, flexShrink: 0,
+        borderRadius: v &gt;= 999 ? &#39;999px&#39; : `${v}px`,
+        border: `1.5px solid ${bActive}`,
+        background: active,
+      }} /&gt;
+    );
+  }
+
+  /* Border Width — box whose border thickness equals the token value */
+  if (title === &#39;Border Width&#39;) {
+    return (
+      &lt;div style={{
+        width: 64, height: 28, flexShrink: 0,
+        borderRadius: 4,
+        border: v === 0 ? &#39;1px dashed rgba(0,0,0,0.22)&#39; : `${v}px solid ${bActive}`,
+        background: active,
+      }} /&gt;
+    );
+  }
+
+  /* Control Height — a button-like pill whose height is the token value */
+  if (title === &#39;Control Height&#39;) {
+    return (
+      &lt;div style={{
+        height: v, width: 96, flexShrink: 0,
+        background: active,
+        border: `1px solid ${bActive}`,
+        borderRadius: 6,
+      }} /&gt;
+    );
+  }
+
+  /* Icon Size — a solid square whose width &amp; height equal the token value */
+  if (title === &#39;Icon Size&#39;) {
+    return (
+      &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, height: 28 }}&gt;
+        &lt;div style={{
+          width: v, height: v, flexShrink: 0,
+          background: fgAct,
+          borderRadius: 2,
+        }} /&gt;
+      &lt;/div&gt;
+    );
+  }
+
+  /* Row Height — top/bottom border lines with the space between them filled */
+  if (title === &#39;Row Height&#39;) {
+    return (
+      &lt;div style={{
+        height: v,
+        borderTop:    `1.5px solid ${bActive}`,
+        borderBottom: `1.5px solid ${bActive}`,
+        background: active,
+      }} /&gt;
+    );
+  }
+
+  return null;
+}
+
+/* Semantic Sizes */
+export const SemanticSizes = {
+  name: &#39;Semantic Sizes&#39;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 720, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+      &lt;h1 style={PAGE_TITLE}&gt;Semantic Sizes&lt;/h1&gt;
+
+      {SIZE_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
+        &lt;div key={title}&gt;
+          &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+          &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+            &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
+            &lt;span style={COL_HDR}&gt;Visual&lt;/span&gt;
+            &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
+          &lt;/div&gt;
+          {tokens.map(({ n, v }) =&gt; (
+            &lt;div key={n} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;10px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
+              &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39; }}&gt;
+                {prefix}{n}
+              &lt;/code&gt;
+              &lt;SizeVisual title={title} v={v} /&gt;
+              &lt;span style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;right&#39; }}&gt;
+                {v === 999 ? &#39;∞&#39; : `${v}px`}
+              &lt;/span&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  ),
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">Specify an @import jsdoc tag on your component or your stories meta such as @import import { Colors } from &#39;my-design-system&#39;;</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Base Colors</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const BaseColors = () =&gt; (
+  &lt;div style={{ maxWidth: 960, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+    &lt;h1 style={PAGE_TITLE}&gt;Base Colors&lt;/h1&gt;
+
+    {/* Neutrals */}
+    &lt;div style={GROUP_HDR}&gt;Neutrals&lt;/div&gt;
+    &lt;div style={{ display: &#39;flex&#39;, gap: 8, marginBottom: 36 }}&gt;
+      {NEUTRALS.map(([name, hex]) =&gt; (
+        &lt;div key={name} style={{ width: 72 }}&gt;
+          &lt;div style={{ height: 56, borderRadius: 8, background: hex, border: &#39;1px solid rgba(0,0,0,0.1)&#39;, marginBottom: 6 }} /&gt;
+          &lt;div style={{ fontSize: 11, fontWeight: 600, color: &#39;var(--lyra-color-fg-default)&#39;, fontFamily: FF }}&gt;{name}&lt;/div&gt;
+          &lt;div style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39; }}&gt;{hex}&lt;/div&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+
+    {/* Shade headers */}
+    &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;72px repeat(12, 1fr)&#39;, gap: &#39;0 4px&#39;, marginBottom: 6 }}&gt;
+      &lt;span /&gt;
+      {[&#39;25&#39;,&#39;50&#39;,&#39;100&#39;,&#39;200&#39;,&#39;300&#39;,&#39;400&#39;,&#39;500&#39;,&#39;600&#39;,&#39;700&#39;,&#39;800&#39;,&#39;900&#39;,&#39;950&#39;].map(s =&gt; (
+        &lt;span key={s} style={{ fontSize: 9, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;center&#39;, fontFamily: MONO, letterSpacing: &#39;0.02em&#39; }}&gt;{s}&lt;/span&gt;
+      ))}
+    &lt;/div&gt;
+
+    {/* Color families */}
+    {Object.entries(PALETTE).map(([family, shades]) =&gt; (
+      &lt;div key={family} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;72px repeat(12, 1fr)&#39;, gap: &#39;0 4px&#39;, marginBottom: 4, alignItems: &#39;center&#39; }}&gt;
+        &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, fontWeight: 500, paddingRight: 8 }}&gt;{family}&lt;/span&gt;
+        {shades.map(([shade, hex]) =&gt; (
+          &lt;div key={shade} title={`${family} ${shade} — ${hex}`}&gt;
+            &lt;div style={{ height: 40, borderRadius: 5, background: hex, border: &#39;1px solid rgba(0,0,0,0.06)&#39; }} /&gt;
+            &lt;div style={{ fontSize: 9, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;center&#39;, marginTop: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{hex}&lt;/div&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Semantic Colors</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SemanticColors = () =&gt; (
+  &lt;div style={{ maxWidth: 960, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+    &lt;h1 style={PAGE_TITLE}&gt;Semantic Colors&lt;/h1&gt;
+
+    {SEMANTIC_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
+      &lt;div key={title}&gt;
+        &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+
+        {/* Column headers: swatch | token | light | dark | description */}
+        &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+          &lt;span /&gt;
+          &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
+          &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+            &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#FFFFFF&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
+            &lt;span style={COL_HDR}&gt;Light&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+            &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#2A2D32&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
+            &lt;span style={COL_HDR}&gt;Dark&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;span style={COL_HDR}&gt;Description&lt;/span&gt;
+        &lt;/div&gt;
+
+        {tokens.map(({ name, light, dark, desc }) =&gt; (
+          &lt;div key={name} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
+            {/* Light swatch */}
+            &lt;Swatch hex={light} size={28} /&gt;
+            {/* Token name */}
+            &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;
+              {prefix}{name}
+            &lt;/code&gt;
+            {/* Light value */}
+            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+              &lt;Swatch hex={light} size={18} /&gt;
+              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{light}&lt;/span&gt;
+            &lt;/div&gt;
+            {/* Dark value */}
+            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
+              &lt;Swatch hex={dark} size={18} /&gt;
+              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{dark}&lt;/span&gt;
+            &lt;/div&gt;
+            {/* Description */}
+            &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39; }}&gt;
+              {desc || &#39;&#39;}
+            &lt;/span&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Semantic Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SemanticSizes = () =&gt; (
+  &lt;div style={{ maxWidth: 720, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+    &lt;h1 style={PAGE_TITLE}&gt;Semantic Sizes&lt;/h1&gt;
+
+    {SIZE_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
+      &lt;div key={title}&gt;
+        &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+        &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+          &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
+          &lt;span style={COL_HDR}&gt;Visual&lt;/span&gt;
+          &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
+        &lt;/div&gt;
+        {tokens.map(({ n, v }) =&gt; (
+          &lt;div key={n} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;10px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
+            &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39; }}&gt;
+              {prefix}{n}
+            &lt;/code&gt;
+            &lt;SizeVisual title={title} v={v} /&gt;
+            &lt;span style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;right&#39; }}&gt;
+              {v === 999 ? &#39;∞&#39; : `${v}px`}
+            &lt;/span&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Effects">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> Effects</h2>
+      <div class="badges">
+        <label for="c-error-1-foundation-effects-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-1-foundation-effects-info" class="badge info as-toggle">2 infos</label>
+        <label for="c-error-1-foundation-effects-stories" class="badge ok as-toggle">1 story</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/Effects.stories.jsx">foundation-effects · ./src/stories/Effects.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-1-foundation-effects-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-1-foundation-effects-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-1-foundation-effects-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>We could not detect the component from your story file. Specify meta.component.
+   9 | const COL_HDR = { fontSize: &#39;0.6875rem&#39;, fontWeight: 600, letterSpacing: &#39;0.06em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, fontFamily: FF };
+  10 |
+&gt; 11 | export default {
+     | ^
+  12 |   title: &#39;Foundation/Effects&#39;,
+  13 |   parameters: {
+  14 |     layout: &#39;padded&#39;,
+
+./src/stories/Effects.stories.jsx:
+import &quot;../styles/typography.css&quot;;
+import { SHADOWS } from &quot;../tokens.js&quot;;
+
+const FF = &quot;Inter, sans-serif&quot;;
+const MONO = &quot;&#39;SF Mono&#39;,&#39;Fira Code&#39;,&#39;Consolas&#39;,monospace&quot;;
+
+const PAGE_TITLE = { fontSize: 11, fontWeight: 600, letterSpacing: &#39;0.08em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, marginBottom: 32 };
+const SECTION_HDR = { fontSize: &#39;0.875rem&#39;, fontWeight: 600, color: &#39;var(--lyra-color-fg-default)&#39;, marginBottom: 4, paddingBottom: 8, borderBottom: &#39;2px solid rgba(0,0,0,0.08)&#39;, marginTop: 40 };
+const COL_HDR = { fontSize: &#39;0.6875rem&#39;, fontWeight: 600, letterSpacing: &#39;0.06em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, fontFamily: FF };
+
+export default {
+  title: &#39;Foundation/Effects&#39;,
+  parameters: {
+    layout: &#39;padded&#39;,
+    controls: { disable: true },
+    actions: { disable: true },
+    forceLight: true,
+  },
+};
+
+export const Shadows = {
+  name: &#39;Shadows&#39;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 840, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+      &lt;h1 style={PAGE_TITLE}&gt;Effects&lt;/h1&gt;
+
+      &lt;h2 style={SECTION_HDR}&gt;Shadows&lt;/h2&gt;
+
+      {/* Column headers */}
+      &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;200px 140px 1fr&#39;, gap: &#39;0 24px&#39;, padding: &#39;4px 0 8px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+        &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
+        &lt;span style={COL_HDR}&gt;Preview&lt;/span&gt;
+        &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
+      &lt;/div&gt;
+
+      {SHADOWS.map(({ name, value, desc }) =&gt; (
+        &lt;div
+          key={name}
+          style={{
+            display: &#39;grid&#39;,
+            gridTemplateColumns: &#39;200px 140px 1fr&#39;,
+            gap: &#39;0 24px&#39;,
+            alignItems: &#39;center&#39;,
+            padding: &#39;20px 0&#39;,
+            borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39;,
+          }}
+        &gt;
+          {/* Token name + description */}
+          &lt;div&gt;
+            &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, display: &#39;inline-block&#39;, marginBottom: 6 }}&gt;
+              {name}
+            &lt;/code&gt;
+            {desc &amp;&amp; (
+              &lt;div style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: &#39;italic&#39; }}&gt;
+                {desc}
+              &lt;/div&gt;
+            )}
+          &lt;/div&gt;
+
+          {/* Preview card */}
+          &lt;div style={{ padding: &#39;16px 0&#39; }}&gt;
+            &lt;div style={{
+              width: 100,
+              height: 64,
+              borderRadius: 10,
+              background: &#39;#FFFFFF&#39;,
+              boxShadow: value,
+              border: value === &#39;none&#39; ? &#39;1px dashed rgba(0,0,0,0.12)&#39; : &#39;1px solid rgba(0,0,0,0.03)&#39;,
+            }} /&gt;
+          &lt;/div&gt;
+
+          {/* CSS value */}
+          &lt;code style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, wordBreak: &#39;break-all&#39;, lineHeight: 1.6 }}&gt;
+            {value}
+          &lt;/code&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  ),
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">Specify an @import jsdoc tag on your component or your stories meta such as @import import { Effects } from &#39;my-design-system&#39;;</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Shadows</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Shadows = () =&gt; (
+  &lt;div style={{ maxWidth: 840, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+    &lt;h1 style={PAGE_TITLE}&gt;Effects&lt;/h1&gt;
+
+    &lt;h2 style={SECTION_HDR}&gt;Shadows&lt;/h2&gt;
+
+    {/* Column headers */}
+    &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;200px 140px 1fr&#39;, gap: &#39;0 24px&#39;, padding: &#39;4px 0 8px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+      &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
+      &lt;span style={COL_HDR}&gt;Preview&lt;/span&gt;
+      &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
+    &lt;/div&gt;
+
+    {SHADOWS.map(({ name, value, desc }) =&gt; (
+      &lt;div
+        key={name}
+        style={{
+          display: &#39;grid&#39;,
+          gridTemplateColumns: &#39;200px 140px 1fr&#39;,
+          gap: &#39;0 24px&#39;,
+          alignItems: &#39;center&#39;,
+          padding: &#39;20px 0&#39;,
+          borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39;,
+        }}
+      &gt;
+        {/* Token name + description */}
+        &lt;div&gt;
+          &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, display: &#39;inline-block&#39;, marginBottom: 6 }}&gt;
+            {name}
+          &lt;/code&gt;
+          {desc &amp;&amp; (
+            &lt;div style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: &#39;italic&#39; }}&gt;
+              {desc}
+            &lt;/div&gt;
+          )}
+        &lt;/div&gt;
+
+        {/* Preview card */}
+        &lt;div style={{ padding: &#39;16px 0&#39; }}&gt;
+          &lt;div style={{
+            width: 100,
+            height: 64,
+            borderRadius: 10,
+            background: &#39;#FFFFFF&#39;,
+            boxShadow: value,
+            border: value === &#39;none&#39; ? &#39;1px dashed rgba(0,0,0,0.12)&#39; : &#39;1px solid rgba(0,0,0,0.03)&#39;,
+          }} /&gt;
+        &lt;/div&gt;
+
+        {/* CSS value */}
+        &lt;code style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, wordBreak: &#39;break-all&#39;, lineHeight: 1.6 }}&gt;
+          {value}
+        &lt;/code&gt;
+      &lt;/div&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Typography">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> Typography</h2>
+      <div class="badges">
+        <label for="c-error-2-foundation-typography-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-2-foundation-typography-info" class="badge info as-toggle">2 infos</label>
+        <label for="c-error-2-foundation-typography-stories" class="badge ok as-toggle">3 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/Typography.stories.jsx">foundation-typography · ./src/stories/Typography.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-2-foundation-typography-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-2-foundation-typography-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-2-foundation-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>We could not detect the component from your story file. Specify meta.component.
+  1 | import &quot;../styles/typography.css&quot;;
+  2 |
+&gt; 3 | export default {
+    | ^
+  4 |   title: &quot;Foundation/Typography&quot;,
+  5 |   parameters: {
+  6 |     layout: &quot;padded&quot;,
+
+./src/stories/Typography.stories.jsx:
+import &quot;../styles/typography.css&quot;;
+
+export default {
+  title: &quot;Foundation/Typography&quot;,
+  parameters: {
+    layout: &quot;padded&quot;,
+    controls: { disable: true },
+    actions: { disable: true },
+    forceLight: true,
+  },
+};
+
+const SCALE = [
+  { class: &quot;lyra-heading-xl&quot;,  label: &quot;Heading XL&quot;,          specimen: &quot;The quick brown fox&quot; },
+  { class: &quot;lyra-heading-lg&quot;,  label: &quot;Heading LG&quot;,          specimen: &quot;The quick brown fox&quot; },
+  { class: &quot;lyra-heading-md&quot;,  label: &quot;Heading MD&quot;,          specimen: &quot;The quick brown fox&quot; },
+  { class: &quot;lyra-heading-sm&quot;,  label: &quot;Heading SM&quot;,          specimen: &quot;The quick brown fox&quot; },
+  { class: &quot;lyra-heading-xs&quot;,  label: &quot;Heading XS&quot;,          specimen: &quot;The quick brown fox&quot; },
+  { class: &quot;lyra-body-lg&quot;,     label: &quot;Body LG&quot;,             specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+  { class: &quot;lyra-body-lg-em&quot;,  label: &quot;Body LG Emphasized&quot;,  specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+  { class: &quot;lyra-body-md&quot;,     label: &quot;Body MD&quot;,             specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+  { class: &quot;lyra-body-md-em&quot;,  label: &quot;Body MD Emphasized&quot;,  specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+  { class: &quot;lyra-body-sm&quot;,     label: &quot;Body SM&quot;,             specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+  { class: &quot;lyra-body-sm-em&quot;,  label: &quot;Body SM Emphasized&quot;,  specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+  { class: &quot;lyra-label&quot;,       label: &quot;Label&quot;,               specimen: &quot;The quick brown fox jumps over the lazy dog&quot; },
+];
+
+const DIVIDER_BEFORE = new Set([&quot;lyra-body-lg&quot;, &quot;lyra-label&quot;]);
+
+const meta = {
+  fontSize: &quot;0.6875rem&quot;,
+  fontFamily: &quot;Inter, sans-serif&quot;,
+  color: &quot;rgba(0,0,0,0.4)&quot;,
+  letterSpacing: &quot;0.06em&quot;,
+  textTransform: &quot;uppercase&quot;,
+  fontWeight: 500,
+};
+
+export const AllStyles = {
+  name: &quot;All Styles&quot;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 800, margin: &quot;0 auto&quot;, fontFamily: &quot;Inter, sans-serif&quot; }}&gt;
+      &lt;h1 style={{ fontFamily: &quot;Inter, sans-serif&quot;, fontSize: 11, fontWeight: 600, letterSpacing: &quot;0.08em&quot;, textTransform: &quot;uppercase&quot;, color: &quot;rgba(0,0,0,0.35)&quot;, marginBottom: 32 }}&gt;
+        Lyra Type Scale
+      &lt;/h1&gt;
+
+      {/* Header row */}
+      &lt;div style={{ display: &quot;grid&quot;, gridTemplateColumns: &quot;180px 1fr 56px 56px 80px 96px&quot;, gap: &quot;0 16px&quot;, paddingBottom: 8, borderBottom: &quot;1px solid rgba(0,0,0,0.08)&quot;, marginBottom: 4 }}&gt;
+        {[&quot;Style&quot;, &quot;Specimen&quot;, &quot;Size&quot;, &quot;Weight&quot;, &quot;Line Ht&quot;, &quot;Tracking&quot;].map(h =&gt; (
+          &lt;span key={h} style={meta}&gt;{h}&lt;/span&gt;
+        ))}
+      &lt;/div&gt;
+
+      {SCALE.map(({ class: cls, label, specimen }) =&gt; {
+        const el = document.createElement(&quot;span&quot;);
+        el.className = cls;
+        document.body.appendChild(el);
+        const cs = getComputedStyle(el);
+        const size = cs.fontSize;
+        const weight = cs.fontWeight;
+        const lineH = cs.lineHeight;
+        const tracking = cs.letterSpacing;
+        document.body.removeChild(el);
+
+        return (
+          &lt;div key={cls}&gt;
+            {DIVIDER_BEFORE.has(cls) &amp;&amp; (
+              &lt;div style={{ borderTop: &quot;1px solid rgba(0,0,0,0.08)&quot;, margin: &quot;4px 0&quot; }} /&gt;
+            )}
+            &lt;div style={{
+              display: &quot;grid&quot;,
+              gridTemplateColumns: &quot;180px 1fr 56px 56px 80px 96px&quot;,
+              gap: &quot;0 16px&quot;,
+              alignItems: &quot;baseline&quot;,
+              padding: &quot;10px 0&quot;,
+              borderBottom: &quot;1px solid rgba(0,0,0,0.05)&quot;,
+            }}&gt;
+              &lt;span style={{ ...meta, textTransform: &quot;none&quot;, letterSpacing: 0, fontSize: &quot;0.75rem&quot;, color: &quot;rgba(0,0,0,0.45)&quot; }}&gt;
+                {label}
+                &lt;br /&gt;
+                &lt;code style={{ fontSize: 10, background: &quot;rgba(0,0,0,0.05)&quot;, padding: &quot;1px 4px&quot;, borderRadius: 3, letterSpacing: 0 }}&gt;.{cls}&lt;/code&gt;
+              &lt;/span&gt;
+              &lt;span className={cls} style={{ color: &quot;rgba(0,0,0,0.85)&quot; }}&gt;{specimen}&lt;/span&gt;
+              &lt;span style={meta}&gt;{size}&lt;/span&gt;
+              &lt;span style={meta}&gt;{weight}&lt;/span&gt;
+              &lt;span style={meta}&gt;{lineH}&lt;/span&gt;
+              &lt;span style={meta}&gt;{tracking}&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        );
+      })}
+    &lt;/div&gt;
+  ),
+};
+
+export const Headings = {
+  name: &quot;Headings&quot;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 600, margin: &quot;0 auto&quot;, display: &quot;flex&quot;, flexDirection: &quot;column&quot;, gap: 24 }}&gt;
+      {SCALE.filter(s =&gt; s.class.startsWith(&quot;lyra-heading&quot;)).map(({ class: cls, label }) =&gt; (
+        &lt;div key={cls}&gt;
+          &lt;p style={meta}&gt;{label}&lt;/p&gt;
+          &lt;p className={cls} style={{ color: &quot;rgba(0,0,0,0.85)&quot;, marginTop: 4 }}&gt;AI Assistant — How can I help?&lt;/p&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  ),
+};
+
+export const Body = {
+  name: &quot;Body&quot;,
+  render: () =&gt; (
+    &lt;div style={{ maxWidth: 600, margin: &quot;0 auto&quot;, display: &quot;flex&quot;, flexDirection: &quot;column&quot;, gap: 24 }}&gt;
+      {SCALE.filter(s =&gt; s.class.startsWith(&quot;lyra-body&quot;) || s.class === &quot;lyra-label&quot;).map(({ class: cls, label }) =&gt; (
+        &lt;div key={cls}&gt;
+          &lt;p style={meta}&gt;{label}&lt;/p&gt;
+          &lt;p className={cls} style={{ color: &quot;rgba(0,0,0,0.85)&quot;, marginTop: 4 }}&gt;
+            Sentiment analysis on his last 3 calls shows he&#39;s using filler phrases under pressure and pausing too long during account lookups.
+          &lt;/p&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  ),
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">Specify an @import jsdoc tag on your component or your stories meta such as @import import { Typography } from &#39;my-design-system&#39;;</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">All Styles</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllStyles = () =&gt; (
+  &lt;div style={{ maxWidth: 800, margin: &quot;0 auto&quot;, fontFamily: &quot;Inter, sans-serif&quot; }}&gt;
+    &lt;h1 style={{ fontFamily: &quot;Inter, sans-serif&quot;, fontSize: 11, fontWeight: 600, letterSpacing: &quot;0.08em&quot;, textTransform: &quot;uppercase&quot;, color: &quot;rgba(0,0,0,0.35)&quot;, marginBottom: 32 }}&gt;
+      Lyra Type Scale
+    &lt;/h1&gt;
+
+    {/* Header row */}
+    &lt;div style={{ display: &quot;grid&quot;, gridTemplateColumns: &quot;180px 1fr 56px 56px 80px 96px&quot;, gap: &quot;0 16px&quot;, paddingBottom: 8, borderBottom: &quot;1px solid rgba(0,0,0,0.08)&quot;, marginBottom: 4 }}&gt;
+      {[&quot;Style&quot;, &quot;Specimen&quot;, &quot;Size&quot;, &quot;Weight&quot;, &quot;Line Ht&quot;, &quot;Tracking&quot;].map(h =&gt; (
+        &lt;span key={h} style={meta}&gt;{h}&lt;/span&gt;
+      ))}
+    &lt;/div&gt;
+
+    {SCALE.map(({ class: cls, label, specimen }) =&gt; {
+      const el = document.createElement(&quot;span&quot;);
+      el.className = cls;
+      document.body.appendChild(el);
+      const cs = getComputedStyle(el);
+      const size = cs.fontSize;
+      const weight = cs.fontWeight;
+      const lineH = cs.lineHeight;
+      const tracking = cs.letterSpacing;
+      document.body.removeChild(el);
+
+      return (
+        &lt;div key={cls}&gt;
+          {DIVIDER_BEFORE.has(cls) &amp;&amp; (
+            &lt;div style={{ borderTop: &quot;1px solid rgba(0,0,0,0.08)&quot;, margin: &quot;4px 0&quot; }} /&gt;
+          )}
+          &lt;div style={{
+            display: &quot;grid&quot;,
+            gridTemplateColumns: &quot;180px 1fr 56px 56px 80px 96px&quot;,
+            gap: &quot;0 16px&quot;,
+            alignItems: &quot;baseline&quot;,
+            padding: &quot;10px 0&quot;,
+            borderBottom: &quot;1px solid rgba(0,0,0,0.05)&quot;,
+          }}&gt;
+            &lt;span style={{ ...meta, textTransform: &quot;none&quot;, letterSpacing: 0, fontSize: &quot;0.75rem&quot;, color: &quot;rgba(0,0,0,0.45)&quot; }}&gt;
+              {label}
+              &lt;br /&gt;
+              &lt;code style={{ fontSize: 10, background: &quot;rgba(0,0,0,0.05)&quot;, padding: &quot;1px 4px&quot;, borderRadius: 3, letterSpacing: 0 }}&gt;.{cls}&lt;/code&gt;
+            &lt;/span&gt;
+            &lt;span className={cls} style={{ color: &quot;rgba(0,0,0,0.85)&quot; }}&gt;{specimen}&lt;/span&gt;
+            &lt;span style={meta}&gt;{size}&lt;/span&gt;
+            &lt;span style={meta}&gt;{weight}&lt;/span&gt;
+            &lt;span style={meta}&gt;{lineH}&lt;/span&gt;
+            &lt;span style={meta}&gt;{tracking}&lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      );
+    })}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Headings</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Headings = () =&gt; (
+  &lt;div style={{ maxWidth: 600, margin: &quot;0 auto&quot;, display: &quot;flex&quot;, flexDirection: &quot;column&quot;, gap: 24 }}&gt;
+    {SCALE.filter(s =&gt; s.class.startsWith(&quot;lyra-heading&quot;)).map(({ class: cls, label }) =&gt; (
+      &lt;div key={cls}&gt;
+        &lt;p style={meta}&gt;{label}&lt;/p&gt;
+        &lt;p className={cls} style={{ color: &quot;rgba(0,0,0,0.85)&quot;, marginTop: 4 }}&gt;AI Assistant — How can I help?&lt;/p&gt;
+      &lt;/div&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Body</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Body = () =&gt; (
+  &lt;div style={{ maxWidth: 600, margin: &quot;0 auto&quot;, display: &quot;flex&quot;, flexDirection: &quot;column&quot;, gap: 24 }}&gt;
+    {SCALE.filter(s =&gt; s.class.startsWith(&quot;lyra-body&quot;) || s.class === &quot;lyra-label&quot;).map(({ class: cls, label }) =&gt; (
+      &lt;div key={cls}&gt;
+        &lt;p style={meta}&gt;{label}&lt;/p&gt;
+        &lt;p className={cls} style={{ color: &quot;rgba(0,0,0,0.85)&quot;, marginTop: 4 }}&gt;
+          Sentiment analysis on his last 3 calls shows he&#39;s using filler phrases under pressure and pausing too long during account lookups.
+        &lt;/p&gt;
+      &lt;/div&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article></div>
+        </section>
+      </div>
+    
+    
+  </div>
+</main>
+</body>
+</html>  
