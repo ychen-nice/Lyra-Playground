@@ -1561,29 +1561,39 @@ function SizeVisual({ title, v }) {
   return null;
 }
 
+/* px → rem, trimmed of trailing zeros (e.g. 8 → &quot;0.5rem&quot;, 999 → &quot;∞&quot;) */
+function pxToRem(v) {
+  if (v === 999) return &#39;∞&#39;;
+  return `${parseFloat((v / 16).toFixed(4))}rem`;
+}
+
 /* Semantic Sizes */
 export const SemanticSizes = {
   name: &#39;Semantic Sizes&#39;,
   render: () =&gt; (
-    &lt;div style={{ maxWidth: 720, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+    &lt;div style={{ maxWidth: 780, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
       &lt;h1 style={PAGE_TITLE}&gt;Semantic Sizes&lt;/h1&gt;
 
       {SIZE_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
         &lt;div key={title}&gt;
           &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
-          &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+          &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px 64px&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
             &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
             &lt;span style={COL_HDR}&gt;Visual&lt;/span&gt;
             &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
+            &lt;span style={COL_HDR}&gt;Rem&lt;/span&gt;
           &lt;/div&gt;
           {tokens.map(({ n, v }) =&gt; (
-            &lt;div key={n} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;10px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
+            &lt;div key={n} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px 64px&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;10px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
               &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39; }}&gt;
                 {prefix}{n}
               &lt;/code&gt;
               &lt;SizeVisual title={title} v={v} /&gt;
               &lt;span style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;right&#39; }}&gt;
                 {v === 999 ? &#39;∞&#39; : `${v}px`}
+              &lt;/span&gt;
+              &lt;span style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;right&#39; }}&gt;
+                {pxToRem(v)}
               &lt;/span&gt;
             &lt;/div&gt;
           ))}
@@ -1729,25 +1739,29 @@ export const SemanticSizes = {
               
               
               <pre><code>const SemanticSizes = () =&gt; (
-  &lt;div style={{ maxWidth: 720, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+  &lt;div style={{ maxWidth: 780, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
     &lt;h1 style={PAGE_TITLE}&gt;Semantic Sizes&lt;/h1&gt;
 
     {SIZE_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
       &lt;div key={title}&gt;
         &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
-        &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+        &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px 64px&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
           &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
           &lt;span style={COL_HDR}&gt;Visual&lt;/span&gt;
           &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
+          &lt;span style={COL_HDR}&gt;Rem&lt;/span&gt;
         &lt;/div&gt;
         {tokens.map(({ n, v }) =&gt; (
-          &lt;div key={n} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;10px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
+          &lt;div key={n} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px 64px&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;10px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
             &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39; }}&gt;
               {prefix}{n}
             &lt;/code&gt;
             &lt;SizeVisual title={title} v={v} /&gt;
             &lt;span style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;right&#39; }}&gt;
               {v === 999 ? &#39;∞&#39; : `${v}px`}
+            &lt;/span&gt;
+            &lt;span style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;right&#39; }}&gt;
+              {pxToRem(v)}
             &lt;/span&gt;
           &lt;/div&gt;
         ))}
@@ -2635,6 +2649,14 @@ const SCALE = [
 
 const DIVIDER_BEFORE = new Set([&quot;lyra-body-lg&quot;, &quot;lyra-label&quot;]);
 
+/* getComputedStyle always normalizes font-size/line-height/letter-spacing to px,
+   even though the source CSS is authored in rem — convert back for display. */
+function pxToRem(pxStr) {
+  const n = parseFloat(pxStr);
+  if (Number.isNaN(n)) return pxStr;
+  return `${parseFloat((n / 16).toFixed(4))}rem`;
+}
+
 const meta = {
   fontSize: &quot;0.6875rem&quot;,
   fontFamily: &quot;Inter, sans-serif&quot;,
@@ -2664,10 +2686,10 @@ export const AllStyles = {
         el.className = cls;
         document.body.appendChild(el);
         const cs = getComputedStyle(el);
-        const size = cs.fontSize;
+        const size = pxToRem(cs.fontSize);
         const weight = cs.fontWeight;
-        const lineH = cs.lineHeight;
-        const tracking = cs.letterSpacing;
+        const lineH = pxToRem(cs.lineHeight);
+        const tracking = cs.letterSpacing === &quot;normal&quot; ? &quot;normal&quot; : pxToRem(cs.letterSpacing);
         document.body.removeChild(el);
 
         return (
@@ -2779,10 +2801,10 @@ export const Body = {
       el.className = cls;
       document.body.appendChild(el);
       const cs = getComputedStyle(el);
-      const size = cs.fontSize;
+      const size = pxToRem(cs.fontSize);
       const weight = cs.fontWeight;
-      const lineH = cs.lineHeight;
-      const tracking = cs.letterSpacing;
+      const lineH = pxToRem(cs.lineHeight);
+      const tracking = cs.letterSpacing === &quot;normal&quot; ? &quot;normal&quot; : pxToRem(cs.letterSpacing);
       document.body.removeChild(el);
 
       return (
@@ -3153,29 +3175,39 @@ function SizeVisual({ title, v }) {
   return null;
 }
 
+/* px → rem, trimmed of trailing zeros (e.g. 8 → &quot;0.5rem&quot;, 999 → &quot;∞&quot;) */
+function pxToRem(v) {
+  if (v === 999) return &#39;∞&#39;;
+  return `${parseFloat((v / 16).toFixed(4))}rem`;
+}
+
 /* Semantic Sizes */
 export const SemanticSizes = {
   name: &#39;Semantic Sizes&#39;,
   render: () =&gt; (
-    &lt;div style={{ maxWidth: 720, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+    &lt;div style={{ maxWidth: 780, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
       &lt;h1 style={PAGE_TITLE}&gt;Semantic Sizes&lt;/h1&gt;
 
       {SIZE_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
         &lt;div key={title}&gt;
           &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
-          &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+          &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px 64px&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
             &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
             &lt;span style={COL_HDR}&gt;Visual&lt;/span&gt;
             &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
+            &lt;span style={COL_HDR}&gt;Rem&lt;/span&gt;
           &lt;/div&gt;
           {tokens.map(({ n, v }) =&gt; (
-            &lt;div key={n} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;10px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
+            &lt;div key={n} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px 64px&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;10px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
               &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39; }}&gt;
                 {prefix}{n}
               &lt;/code&gt;
               &lt;SizeVisual title={title} v={v} /&gt;
               &lt;span style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;right&#39; }}&gt;
                 {v === 999 ? &#39;∞&#39; : `${v}px`}
+              &lt;/span&gt;
+              &lt;span style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;right&#39; }}&gt;
+                {pxToRem(v)}
               &lt;/span&gt;
             &lt;/div&gt;
           ))}
@@ -3321,25 +3353,29 @@ export const SemanticSizes = {
               
               
               <pre><code>const SemanticSizes = () =&gt; (
-  &lt;div style={{ maxWidth: 720, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
+  &lt;div style={{ maxWidth: 780, margin: &#39;0 auto&#39;, fontFamily: FF }}&gt;
     &lt;h1 style={PAGE_TITLE}&gt;Semantic Sizes&lt;/h1&gt;
 
     {SIZE_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
       &lt;div key={title}&gt;
         &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
-        &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+        &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px 64px&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
           &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
           &lt;span style={COL_HDR}&gt;Visual&lt;/span&gt;
           &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
+          &lt;span style={COL_HDR}&gt;Rem&lt;/span&gt;
         &lt;/div&gt;
         {tokens.map(({ n, v }) =&gt; (
-          &lt;div key={n} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;10px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
+          &lt;div key={n} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;220px 1fr 56px 64px&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;10px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
             &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39; }}&gt;
               {prefix}{n}
             &lt;/code&gt;
             &lt;SizeVisual title={title} v={v} /&gt;
             &lt;span style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;right&#39; }}&gt;
               {v === 999 ? &#39;∞&#39; : `${v}px`}
+            &lt;/span&gt;
+            &lt;span style={{ fontSize: &#39;0.75rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, textAlign: &#39;right&#39; }}&gt;
+              {pxToRem(v)}
             &lt;/span&gt;
           &lt;/div&gt;
         ))}
@@ -3654,6 +3690,14 @@ const SCALE = [
 
 const DIVIDER_BEFORE = new Set([&quot;lyra-body-lg&quot;, &quot;lyra-label&quot;]);
 
+/* getComputedStyle always normalizes font-size/line-height/letter-spacing to px,
+   even though the source CSS is authored in rem — convert back for display. */
+function pxToRem(pxStr) {
+  const n = parseFloat(pxStr);
+  if (Number.isNaN(n)) return pxStr;
+  return `${parseFloat((n / 16).toFixed(4))}rem`;
+}
+
 const meta = {
   fontSize: &quot;0.6875rem&quot;,
   fontFamily: &quot;Inter, sans-serif&quot;,
@@ -3683,10 +3727,10 @@ export const AllStyles = {
         el.className = cls;
         document.body.appendChild(el);
         const cs = getComputedStyle(el);
-        const size = cs.fontSize;
+        const size = pxToRem(cs.fontSize);
         const weight = cs.fontWeight;
-        const lineH = cs.lineHeight;
-        const tracking = cs.letterSpacing;
+        const lineH = pxToRem(cs.lineHeight);
+        const tracking = cs.letterSpacing === &quot;normal&quot; ? &quot;normal&quot; : pxToRem(cs.letterSpacing);
         document.body.removeChild(el);
 
         return (
@@ -3798,10 +3842,10 @@ export const Body = {
       el.className = cls;
       document.body.appendChild(el);
       const cs = getComputedStyle(el);
-      const size = cs.fontSize;
+      const size = pxToRem(cs.fontSize);
       const weight = cs.fontWeight;
-      const lineH = cs.lineHeight;
-      const tracking = cs.letterSpacing;
+      const lineH = pxToRem(cs.lineHeight);
+      const tracking = cs.letterSpacing === &quot;normal&quot; ? &quot;normal&quot; : pxToRem(cs.letterSpacing);
       document.body.removeChild(el);
 
       return (
