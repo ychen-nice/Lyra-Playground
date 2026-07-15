@@ -1,26 +1,12 @@
 import { useState, useRef, useReducer, useEffect, useLayoutEffect } from 'react';
-import { Ellipsis, ChevronRight } from 'lucide-react';
+import { Ellipsis } from 'lucide-react';
 import '../styles/breadcrumb.css';
 import Button from './Button';
 
 // Renders a single level label or link (without the trailing separator)
 function BreadcrumbItem({ label, item, className = 'lyra-body-lg' }) {
-  const isLink    = item?.type === 'link' && item?.href;
-  const isTrigger = item?.type === 'sidebar-trigger';
+  const isLink = item?.type === 'link' && item?.href;
 
-  if (isTrigger) {
-    return (
-      <button
-        onClick={item.onClick}
-        className="lyra-sidebar-trigger"
-      >
-        <ChevronRight size={16} />
-        <span className={`${className} lyra-breadcrumb-link`} style={{ color: 'inherit' }}>
-          {label}
-        </span>
-      </button>
-    );
-  }
   if (isLink) {
     return (
       <a href={item.href} className={`${className} lyra-breadcrumb-link`} style={{ whiteSpace: 'nowrap' }}>

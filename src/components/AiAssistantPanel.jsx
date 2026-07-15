@@ -59,9 +59,9 @@ function SuggestionButton({ label, onClick }) {
         width: "100%",
         padding: "var(--lyra-spacing-2) var(--lyra-spacing-3)",
         background: pressed
-          ? "var(--lyra-color-bg-disabled)"
+          ? "var(--lyra-color-state-bg-pressed-opacity)"
           : hovered
-            ? "var(--lyra-color-bg-control)"
+            ? "var(--lyra-color-state-bg-hover-opacity)"
             : "var(--lyra-color-bg-control-subtle)",
         border: "var(--lyra-border-default) solid var(--lyra-color-border-subtle)",
         borderRadius: "var(--lyra-radius-md)",
@@ -197,9 +197,9 @@ function PopoverSuggestionItem({ label, onClick, autoFocus }) {
         width: "100%",
         padding: "var(--lyra-spacing-2) var(--lyra-spacing-3)",
         background: pressed
-          ? "var(--lyra-color-bg-disabled)"
+          ? "var(--lyra-color-state-bg-pressed-opacity)"
           : hovered
-            ? "var(--lyra-color-bg-control)"
+            ? "var(--lyra-color-state-bg-hover-opacity)"
             : "var(--lyra-color-bg-control-subtle)",
         border: "var(--lyra-border-default) solid var(--lyra-color-border-subtle)",
         borderRadius: "var(--lyra-radius-md)",

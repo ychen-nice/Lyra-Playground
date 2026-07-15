@@ -1,9 +1,10 @@
 // Figma node: 17643:45205  "Page Header"
 import { useState, useLayoutEffect, useEffect, useRef } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Menu } from 'lucide-react';
 import '../styles/typography.css';
 import '../styles/breadcrumb.css';
 import Button from './Button';
+import Tooltip from './Tooltip';
 import TitleBreadcrumb from './TitleBreadcrumb';
 
 // spacing-8=32 (h-padding each side), col-gap=40, spacing-3=12, spacing-2=8
@@ -12,6 +13,14 @@ const COL_GAP = 40;
 const GAP3   = 12; // sidenav → TitleBreadcrumb
 const GAP2   = 8;
 const MENU_W = 32; // ··· button — minimum breadcrumb width
+const DIVIDER_W = 1; // vertical rule between the sidenav trigger and the title/breadcrumb
+const GAP4   = 16; // divider → title/breadcrumb
+// Extra width required (beyond the bare minimum) before the header actions un-wrap back
+// onto the breadcrumb row. Without this, un-wrapping happens the instant avail1Row clears
+// minTbW, which is only enough for an ellipsis-only breadcrumb — the actions steal the row
+// back and the breadcrumb collapses hard right as the window grows. The buffer holds the
+// wrapped (own-row) layout a bit longer so growth feels continuous instead of regressing.
+const UNWRAP_BUFFER = 140;
 
 export default function PageHeader({
   title                  = 'Page Title',
@@ -38,15 +47,23 @@ export default function PageHeader({
   const tbWrapperRef    = useRef(null);   // direct DOM ref — width set imperatively to avoid async React lag
 
   const [tbBcAvailWidth, setTbBcAvailWidth] = useState(null); // passed to TitleBreadcrumb to skip its own ResizeObserver
+  const [sidenavHovered, setSidenavHovered] = useState(false);
   const [wrapButtons, setWrapButtons] = useState(false);
   const wrapButtonsRef          = useRef(false); // mirrors wrapButtons, always current (avoids stale closure)
   const computeRef              = useRef(null);  // called after wrap commits to update tbWidth imperatively
   const sidebarTransitioningRef = useRef(false); // mirrors _sidebarTransitioning, always current
   sidebarTransitioningRef.current = _sidebarTransitioning;
 
-  const displayedLevels = showBreadcrumb
-    ? (showSideNavTrigger && _sidebarOpen ? levels.slice(1) : levels)
-    : [];
+  // The breadcrumb always shows the page's full ancestor trail — the sidenav-open trigger
+  // is a separate control, not a stand-in for level 0, so its visibility no longer changes
+  // which levels are displayed. This keeps the breadcrumb's behavior identical across every
+  // page regardless of whether that page happens to have a sidebar.
+  const displayedLevels = showBreadcrumb ? levels : [];
+  const showSidenavTrigger = showSideNavTrigger && !_sidebarOpen;
+  // Width the trigger button, its divider, and their gaps to neighbors claim from
+  // header-left, so the breadcrumb/title sizing math below accounts for it instead of
+  // overflowing by that amount.
+  const sidenavTriggerW = showSidenavTrigger ? MENU_W + GAP3 + DIVIDER_W + GAP4 : 0;
 
   useLayoutEffect(() => {
     const header = headerRef.current;
@@ -71,13 +88,17 @@ export default function PageHeader({
         : titleW + (n > 0 ? GAP2 + MENU_W : 0);
 
       // Space available for TitleBreadcrumb when right stays on the same row
-      const avail1Row = headerW - H_PAD - rightW - COL_GAP;
+      const avail1Row = headerW - H_PAD - rightW - COL_GAP - sidenavTriggerW;
 
-      const shouldWrap = avail1Row < minTbW;
+      // Hysteresis: wrap as soon as it's tight, but require extra headroom before
+      // un-wrapping so the breadcrumb doesn't collapse to bare minimum right at the crossover.
+      const shouldWrap = wrapButtonsRef.current
+        ? avail1Row < minTbW + UNWRAP_BUFFER
+        : avail1Row < minTbW;
 
       const isWrapped = wrapButtonsRef.current && shouldWrap;
       const tbAvail = isWrapped
-        ? headerW - H_PAD
+        ? headerW - H_PAD - sidenavTriggerW
         : avail1Row;
 
       // Set wrapper width directly on the DOM element — synchronous, fires before paint.
@@ -115,7 +136,7 @@ export default function PageHeader({
     ro.observe(header);
     compute();
     return () => ro.disconnect();
-  }, [levels, showBreadcrumb, title, showStatusBadge, statusBadgeLabel, headerLayout, displayedLevels]);
+  }, [levels, showBreadcrumb, title, showStatusBadge, statusBadgeLabel, headerLayout, displayedLevels, sidenavTriggerW]);
 
   // When the sidebar transition ends, re-run compute so any pending wrap commits immediately
   useEffect(() => {
@@ -153,8 +174,24 @@ export default function PageHeader({
       </div>
 
       {/* ── Left: sidenav trigger + TitleBreadcrumb at imperatively set width ── */}
-      <div className="header-left" style={{ display: 'flex', gap: 'var(--lyra-spacing-3)', alignItems: 'center', ...(headerLayout !== 'v3' && { height: 'var(--lyra-control-height-lg)' }), flexShrink: 0 }}>
-        <div ref={tbWrapperRef} className="header-title" style={{ minWidth: 0 }}>
+      <div className="header-left" style={{ display: 'flex', alignItems: 'center', ...(headerLayout !== 'v3' && { height: 'var(--lyra-control-height-lg)' }), flexShrink: 0 }}>
+        {showSidenavTrigger && (
+          <>
+            <span
+              ref={sidenavRef}
+              style={{ display: 'inline-flex', flexShrink: 0, marginRight: 'var(--lyra-spacing-3)' }}
+              onMouseEnter={() => setSidenavHovered(true)}
+              onMouseLeave={() => setSidenavHovered(false)}
+            >
+              <Button variant="ghost" size="md" iconOnly onClick={onSidenavTriggerClick} aria-label="Open dashboards sidebar">
+                <Menu size={16} />
+              </Button>
+              {sidenavHovered && <Tooltip label="Open dashboards sidebar" anchorRef={sidenavRef} side="bottom" />}
+            </span>
+            <div style={{ width: DIVIDER_W, height: '100%', marginRight: 'var(--lyra-spacing-4)', background: 'var(--lyra-color-border-subtle)', flexShrink: 0 }} />
+          </>
+        )}
+        <div ref={tbWrapperRef} className="header-title" style={{ minWidth: 0, overflow: 'hidden' }}>
           <TitleBreadcrumb
             levels={displayedLevels}
             title={title}
@@ -163,8 +200,6 @@ export default function PageHeader({
             layout={headerLayout === 'v3' ? 'stacked' : 'inline'}
             breadcrumbSlot={breadcrumbSlot}
             bcAvailWidth={tbBcAvailWidth}
-            sidebarBreadcrumb={showSideNavTrigger && !_sidebarOpen}
-            onSidenavTriggerClick={onSidenavTriggerClick}
           />
         </div>
       </div>

@@ -1,4 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronLeft, ChevronRight, PanelLeftClose, PanelLeftOpen, ListCheck, UserRoundCheck, LayoutDashboard, DatabaseSearch, Settings } from 'lucide-react';
+import '../styles/typography.css';
+import Tooltip from './Tooltip';
+import TruncatedLabel from './TruncatedLabel';
+import Button from './Button';
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
@@ -14,12 +19,6 @@ const ChevronDown = () => (
   </svg>
 );
 
-const CollapseIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="1.2" opacity="0.3"/>
-    <path d="M11.5 7L8.5 10L11.5 13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
@@ -29,7 +28,7 @@ function NavBadge({ label = 'New' }) {
       background: 'var(--lyra-color-accent-blue-strong, #2d5bb9)',
       color: 'var(--lyra-color-accent-blue-soft, #d6e4ff)',
       fontSize: 12, fontWeight: 500, lineHeight: '16px', letterSpacing: '0.2px',
-      padding: '0 8px', height: 20, borderRadius: 6,
+      padding: '0 var(--lyra-spacing-2)', height: 'var(--lyra-control-height-xs)', borderRadius: 'var(--lyra-radius-sm)',
       display: 'flex', alignItems: 'center', flexShrink: 0,
     }}>
       {label}
@@ -37,34 +36,46 @@ function NavBadge({ label = 'New' }) {
   );
 }
 
-function NavPageItem({ label, active, badge, minimized, onClick }) {
+function NavPageItem({ label, active, badge, minimized, onClick, icon: Icon = PlaceholderIcon }) {
   const [hovered, setHovered] = useState(false);
+  const [pressed, setPressed] = useState(false);
+  const btnRef = useRef(null);
 
   if (minimized) {
     return (
       <button
+        ref={btnRef}
         onClick={onClick}
         onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        title={label}
+        onMouseLeave={() => { setHovered(false); setPressed(false); }}
+        onMouseDown={() => setPressed(true)}
+        onMouseUp={() => setPressed(false)}
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          width: 36, height: 36, borderRadius: 8, flexShrink: 0,
+          width: 36, height: 'var(--lyra-row-height-md)', borderRadius: 'var(--lyra-radius-md)', flexShrink: 0,
           background: active
             ? 'var(--lyra-color-bg-active-moderate, #d3e6fd)'
-            : hovered ? 'rgba(0,0,0,0.04)' : 'transparent',
+            : pressed ? 'var(--lyra-color-state-bg-pressed-opacity)'
+            : hovered ? 'var(--lyra-color-state-bg-hover-opacity)' : 'transparent',
           border: 'none', cursor: 'pointer', position: 'relative',
         }}>
-        {active && (
+        {active ? (
           <span style={{
             position: 'absolute', left: 0, top: '28%', bottom: '28%',
-            width: 2, background: 'var(--lyra-color-fg-active-strong, #185ba4)',
-            borderRadius: 2,
+            width: 'var(--lyra-spacing-05)', background: 'var(--lyra-color-fg-active-strong, #185ba4)',
+            borderRadius: 'var(--lyra-radius-xs)',
+          }} />
+        ) : (hovered || pressed) && (
+          <span style={{
+            position: 'absolute', left: 0, top: '28%', bottom: '28%',
+            width: 'var(--lyra-spacing-05)', background: 'var(--lyra-color-fg-secondary)',
+            borderRadius: 'var(--lyra-radius-xs)',
           }} />
         )}
         <span style={{ display: 'flex', color: active ? 'var(--lyra-color-fg-active-strong, #185ba4)' : 'var(--lyra-color-fg-default, rgba(0,0,0,0.8))' }}>
-          <PlaceholderIcon />
+          <Icon size={16} />
         </span>
+        {hovered && <Tooltip label={label} anchorRef={btnRef} />}
       </button>
     );
   }
@@ -73,34 +84,41 @@ function NavPageItem({ label, active, badge, minimized, onClick }) {
     <button
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={() => { setHovered(false); setPressed(false); }}
+      onMouseDown={() => setPressed(true)}
+      onMouseUp={() => setPressed(false)}
       style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        height: 36, padding: '0 10px', width: '100%', flexShrink: 0,
+        display: 'flex', alignItems: 'center', gap: 'var(--lyra-spacing-2)',
+        height: 'var(--lyra-row-height-md)', padding: '0 10px', width: '100%', flexShrink: 0,
         background: active
           ? 'var(--lyra-color-bg-active-moderate, #d3e6fd)'
-          : hovered ? 'rgba(0,0,0,0.04)' : 'transparent',
-        border: 'none', borderRadius: 8, cursor: 'pointer',
+          : pressed ? 'var(--lyra-color-state-bg-pressed-opacity)'
+          : hovered ? 'var(--lyra-color-state-bg-hover-opacity)' : 'transparent',
+        border: 'none', borderRadius: 'var(--lyra-radius-md)', cursor: 'pointer',
         textAlign: 'left', position: 'relative',
       }}>
-      {active && (
+      {active ? (
         <span style={{
           position: 'absolute', left: 0, top: '28%', bottom: '28%',
-          width: 2, background: 'var(--lyra-color-fg-active-strong, #185ba4)',
-          borderRadius: 2,
+          width: 'var(--lyra-spacing-05)', background: 'var(--lyra-color-fg-active-strong, #185ba4)',
+          borderRadius: 'var(--lyra-radius-xs)',
+        }} />
+      ) : (hovered || pressed) && (
+        <span style={{
+          position: 'absolute', left: 0, top: '28%', bottom: '28%',
+          width: 'var(--lyra-spacing-05)', background: 'var(--lyra-color-fg-secondary)',
+          borderRadius: 'var(--lyra-radius-xs)',
         }} />
       )}
       <span style={{ display: 'flex', flexShrink: 0, color: active ? 'var(--lyra-color-fg-active-strong, #185ba4)' : 'var(--lyra-color-fg-default, rgba(0,0,0,0.8))' }}>
-        <PlaceholderIcon />
+        <Icon size={16} />
       </span>
-      <span style={{
-        fontSize: 14, lineHeight: '20px', flex: '1 0 0', minWidth: 0,
-        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+      <TruncatedLabel className={active ? 'lyra-body-md-em' : 'lyra-body-md'} style={{
+        flex: '1 0 0', minWidth: 0,
         color: active ? 'var(--lyra-color-fg-active-strong, #185ba4)' : 'var(--lyra-color-fg-default, rgba(0,0,0,0.8))',
-        fontWeight: active ? 500 : 400,
       }}>
         {label}
-      </span>
+      </TruncatedLabel>
       {badge && <NavBadge label={badge} />}
     </button>
   );
@@ -109,22 +127,28 @@ function NavPageItem({ label, active, badge, minimized, onClick }) {
 function NavGroupItem({ label, children: navChildren, minimized }) {
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [pressed, setPressed] = useState(false);
+  const btnRef = useRef(null);
 
   if (minimized) {
     return (
       <button
-        title={label}
+        ref={btnRef}
         onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        onMouseLeave={() => { setHovered(false); setPressed(false); }}
+        onMouseDown={() => setPressed(true)}
+        onMouseUp={() => setPressed(false)}
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          width: 36, height: 36, borderRadius: 8, flexShrink: 0,
-          background: hovered ? 'rgba(0,0,0,0.04)' : 'transparent',
-          border: 'none', cursor: 'pointer',
+          width: 36, height: 'var(--lyra-row-height-md)', borderRadius: 'var(--lyra-radius-md)', flexShrink: 0,
+          background: pressed ? 'var(--lyra-color-state-bg-pressed-opacity)'
+            : hovered ? 'var(--lyra-color-state-bg-hover-opacity)' : 'transparent',
+          border: 'none', cursor: 'pointer', position: 'relative',
         }}>
         <span style={{ display: 'flex', color: 'var(--lyra-color-fg-default, rgba(0,0,0,0.8))' }}>
           <PlaceholderIcon />
         </span>
+        {hovered && <Tooltip label={label} anchorRef={btnRef} />}
       </button>
     );
   }
@@ -134,23 +158,25 @@ function NavGroupItem({ label, children: navChildren, minimized }) {
       <button
         onClick={() => setOpen(o => !o)}
         onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        onMouseLeave={() => { setHovered(false); setPressed(false); }}
+        onMouseDown={() => setPressed(true)}
+        onMouseUp={() => setPressed(false)}
         style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          height: 36, padding: '0 10px', width: '100%',
-          background: hovered ? 'rgba(0,0,0,0.04)' : 'transparent',
-          border: 'none', borderRadius: 8, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', gap: 'var(--lyra-spacing-2)',
+          height: 'var(--lyra-row-height-md)', padding: '0 10px', width: '100%',
+          background: pressed ? 'var(--lyra-color-state-bg-pressed-opacity)'
+            : hovered ? 'var(--lyra-color-state-bg-hover-opacity)' : 'transparent',
+          border: 'none', borderRadius: 'var(--lyra-radius-md)', cursor: 'pointer',
         }}>
         <span style={{ display: 'flex', color: 'var(--lyra-color-fg-default, rgba(0,0,0,0.8))', flexShrink: 0 }}>
           <PlaceholderIcon />
         </span>
-        <span style={{
-          fontSize: 14, lineHeight: '20px', flex: '1 0 0', minWidth: 0,
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left',
-          color: 'var(--lyra-color-fg-default, rgba(0,0,0,0.8))', fontWeight: 400,
+        <TruncatedLabel className="lyra-body-md" style={{
+          flex: '1 0 0', minWidth: 0, textAlign: 'left',
+          color: 'var(--lyra-color-fg-default, rgba(0,0,0,0.8))',
         }}>
           {label}
-        </span>
+        </TruncatedLabel>
         <span style={{
           display: 'flex',
           color: 'var(--lyra-color-fg-default, rgba(0,0,0,0.8))',
@@ -166,21 +192,19 @@ function NavGroupItem({ label, children: navChildren, minimized }) {
           {navChildren.map((child, i) => (
             <div key={i} style={{
               display: 'flex', alignItems: 'center',
-              height: 36, paddingLeft: 20, paddingRight: 8,
-              borderRadius: 8, position: 'relative',
+              height: 'var(--lyra-row-height-md)', paddingLeft: 'var(--lyra-spacing-5)', paddingRight: 'var(--lyra-spacing-2)',
+              borderRadius: 'var(--lyra-radius-md)', position: 'relative',
             }}>
               <span style={{
                 position: 'absolute', left: 10, top: 0, bottom: 0,
-                width: 1, background: 'rgba(0,0,0,0.12)',
+                width: 'var(--lyra-border-default)', background: 'var(--lyra-color-border-soft)',
               }} />
-              <span style={{
-                fontSize: 14, lineHeight: '20px',
+              <TruncatedLabel className="lyra-body-md" style={{
                 color: 'var(--lyra-color-fg-default, rgba(0,0,0,0.8))',
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 flex: '1 0 0', minWidth: 0,
               }}>
                 {child}
-              </span>
+              </TruncatedLabel>
             </div>
           ))}
         </div>
@@ -189,19 +213,73 @@ function NavGroupItem({ label, children: navChildren, minimized }) {
   );
 }
 
+// Expanded/collapsed nav item row width (must match the "Nav items" wrapper below) — the
+// trigger row stays fixed at the expanded width always so it isn't clipped mid-transition;
+// the outer clipping container (overflow: hidden) trims whatever spills past the collapsed
+// width.
+const NAV_ROW_W = 232;
+
+function NavV2Trigger({ minimized, onToggle, triggerVisibility, hovered }) {
+  const [btnHovered, setBtnHovered] = useState(false);
+  const visible = triggerVisibility !== 'hover' || hovered;
+  const btnRef = useRef(null);
+  const label = minimized ? 'Expand navigation' : 'Collapse navigation';
+
+  return (
+    <div style={{
+      display: 'flex', width: NAV_ROW_W, flexShrink: 0,
+      // The row stays a fixed (wide) width regardless of minimized state — without pinning
+      // it to the start, the parent's centered alignItems (used while minimized) would
+      // center this oversized row and push the button entirely outside the collapsed
+      // nav's clipped viewport.
+      alignSelf: 'flex-start',
+      opacity: visible ? 1 : 0,
+      transition: 'opacity 150ms ease',
+      pointerEvents: visible ? 'auto' : 'none',
+    }}>
+      {/* Button doesn't forward refs, so the tooltip anchors to this wrapper span instead */}
+      <span
+        ref={btnRef}
+        style={{ display: 'inline-flex' }}
+        onMouseEnter={() => setBtnHovered(true)}
+        onMouseLeave={() => setBtnHovered(false)}
+      >
+        <Button variant="ghost" size="lg" iconOnly onClick={onToggle} aria-label={label}>
+          {minimized ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+        </Button>
+        {btnHovered && <Tooltip label={label} anchorRef={btnRef} />}
+      </span>
+    </div>
+  );
+}
+
+function NavDivider({ minimized }) {
+  return (
+    <div style={{
+      width: minimized ? 36 : '100%',
+      height: 'var(--lyra-border-default)',
+      background: 'var(--lyra-color-border-subtle)',
+      flexShrink: 0,
+      margin: 'var(--lyra-spacing-1) 0',
+    }} />
+  );
+}
+
 // ── SideNavigation ────────────────────────────────────────────────────────────
 
-const DEFAULT_NAV_ITEMS = [
-  { type: 'page', label: 'Page Name' },
-  { type: 'page', label: 'Page Name', active: true },
-  { type: 'group', label: 'Category Name' },
-  { type: 'group', label: 'Category Name' },
-  { type: 'group', label: 'Category Name', children: ['Page Name', 'Page Name', 'Page Name'] },
+export const DEFAULT_NAV_ITEMS = [
+  { id: 'evaluation', type: 'page', label: 'Evaluation Tasks', icon: ListCheck },
+  { id: 'quality', type: 'page', label: 'Quality Performance', icon: UserRoundCheck, active: true },
+  { id: 'dashboards', type: 'page', label: 'Dashboards', icon: LayoutDashboard },
+  { id: 'search', type: 'page', label: 'Interaction Search', icon: DatabaseSearch },
+  { id: 'settings', type: 'page', label: 'Settings', icon: Settings },
 ];
 
 export default function SideNavigation({
   navItems = DEFAULT_NAV_ITEMS,
   minimized = false,
+  triggerVisibility = 'always', // 'always' | 'hover'
+  version = 'v1', // 'v1' | 'v2'
   onToggle,
 }) {
   // displayMinimized drives what's rendered inside the panel.
@@ -209,6 +287,9 @@ export default function SideNavigation({
   // On collapse: keep full content while the container shrinks (text clips out),
   //              then switch to icon-only once the width transition ends.
   const [displayMinimized, setDisplayMinimized] = useState(minimized);
+  const [hovered, setHovered] = useState(false);
+  const [toggleHovered, setToggleHovered] = useState(false);
+  const toggleBtnRef = useRef(null);
 
   useEffect(() => {
     if (!minimized) setDisplayMinimized(false);
@@ -220,20 +301,24 @@ export default function SideNavigation({
 
   return (
     // Outer wrapper: overflow visible so the toggle button can hang outside the clipping boundary
-    <div style={{ position: 'relative', flexShrink: 0, zIndex: 2 }}>
+    <div
+      style={{ position: 'relative', flexShrink: 0, zIndex: 2 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
       {/* Clipping container: width transitions, hides overflowing text during animation */}
       <div
         onTransitionEnd={handleTransitionEnd}
         style={{
           width: minimized ? 60 : 256,
-          paddingTop: 8,
-          paddingBottom: 20,
-          paddingLeft: 12,
-          paddingRight: 12,
+          paddingTop: version === 'v2' ? 'var(--lyra-spacing-0)' : 'var(--lyra-spacing-2)',
+          paddingBottom: 'var(--lyra-spacing-5)',
+          paddingLeft: 'var(--lyra-spacing-3)',
+          paddingRight: 'var(--lyra-spacing-3)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: displayMinimized ? 'center' : 'flex-start',
-          gap: displayMinimized ? 4 : 0,
+          gap: displayMinimized ? 'var(--lyra-spacing-1)' : 'var(--lyra-spacing-0)',
           boxSizing: 'border-box',
           overflow: 'hidden',
           transition: 'width 300ms ease',
@@ -242,37 +327,70 @@ export default function SideNavigation({
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          width: displayMinimized ? 36 : 232,
+          width: displayMinimized ? 36 : NAV_ROW_W,
           alignItems: displayMinimized ? 'center' : 'flex-start',
         }}>
+          {version === 'v2' && (
+            <>
+              <NavV2Trigger
+                minimized={minimized}
+                onToggle={onToggle}
+                triggerVisibility={triggerVisibility}
+                hovered={hovered}
+              />
+              <NavDivider minimized={displayMinimized} />
+            </>
+          )}
           {navItems.map((item, i) =>
             item.type === 'group'
               ? <NavGroupItem key={i} label={item.label} minimized={displayMinimized}>{item.children}</NavGroupItem>
-              : <NavPageItem key={i} label={item.label} active={item.active} badge={item.badge} minimized={displayMinimized} />
+              : <NavPageItem key={i} label={item.label} icon={item.icon} active={item.active} badge={item.badge} minimized={displayMinimized} onClick={item.onClick} />
           )}
         </div>
       </div>
 
-      {/* Toggle button — positioned on the outer wrapper so it isn't clipped */}
-      <button
+      {/* Toggle button — V1 only, positioned on the outer wrapper so it isn't clipped */}
+      {version === 'v1' && <button
+        ref={toggleBtnRef}
         onClick={onToggle}
-        title={minimized ? 'Expand navigation' : 'Collapse navigation'}
+        onMouseEnter={() => setToggleHovered(true)}
+        onMouseLeave={() => setToggleHovered(false)}
         style={{
           position: 'absolute',
           right: -12,
           top: 24,
-          width: 24, height: 24, borderRadius: 12,
+          width: '1.5rem', height: '1.5rem',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'none', border: 'none',
+          cursor: 'pointer',
+          zIndex: 1,
+          padding: 0,
+          opacity: triggerVisibility === 'hover' && !hovered ? 0 : 1,
+          transition: 'opacity 150ms ease',
+          pointerEvents: triggerVisibility === 'hover' && !hovered ? 'none' : 'auto',
+        }}>
+        <div style={{
+          width: '1.25rem', height: '1.25rem', borderRadius: '50%',
           background: 'var(--lyra-color-bg-surface-base, #ffffff)',
           border: '1px solid var(--lyra-color-border-soft, rgba(0,0,0,0.16))',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer',
-          color: 'var(--lyra-color-fg-secondary, rgba(0,0,0,0.6))',
-          transform: minimized ? 'rotate(180deg)' : 'none',
-          transition: 'transform 300ms ease',
-          zIndex: 1,
+          flexShrink: 0,
+          color: 'var(--lyra-color-fg-action)',
         }}>
-        <CollapseIcon />
-      </button>
+          {minimized ? <ChevronRight size="0.75rem" /> : <ChevronLeft size="0.75rem" />}
+        </div>
+        {toggleHovered && (
+          <Tooltip label={minimized ? 'Expand navigation' : 'Collapse navigation'} anchorRef={toggleBtnRef} />
+        )}
+      </button>}
+
+      {/* Hover extension — keeps hover active when cursor moves toward the trigger button */}
+      {version === 'v1' && <div aria-hidden style={{
+        position: 'absolute',
+        top: 0, bottom: 0,
+        right: '-0.75rem',
+        width: '0.75rem',
+      }} />}
     </div>
   );
 }

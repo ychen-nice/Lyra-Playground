@@ -37,10 +37,6 @@ export default function Breadcrumb({
   // Eliminates the second render cycle caused by the container ResizeObserver firing after the
   // parent sets an explicit width on the wrapper.
   bcAvailWidth: externalBcAvailWidth,
-  // Sidebar breadcrumb mode: renders the first level as a link-styled sidebar trigger
-  // (ChevronRight icon + label, fg-link color, underline on hover).
-  sidebarBreadcrumb = false,
-  onSidenavTriggerClick,
 }) {
   const containerRef = useRef(null);
   const titleRef     = useRef(null);
@@ -71,8 +67,6 @@ export default function Breadcrumb({
     return () => ro.disconnect();
   }, [isExternal]);
 
-  const showSidebarTrigger = sidebarBreadcrumb && levels.length > 0;
-
   const hasLevels    = levels.length > 0;
   const bcAvailWidth = isExternal
     ? externalBcAvailWidth
@@ -83,11 +77,7 @@ export default function Breadcrumb({
       : null);
 
   const bcLevels = levels.map(l => l.label);
-  const bcItems  = levels.map((l, i) =>
-    showSidebarTrigger && i === 0
-      ? { type: 'sidebar-trigger', onClick: onSidenavTriggerClick }
-      : { type: l.type, href: l.href }
-  );
+  const bcItems  = levels.map(l => ({ type: l.type, href: l.href }));
 
   const titleBlock = (
     <div

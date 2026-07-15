@@ -2,6 +2,7 @@ import { useArgs } from 'storybook/preview-api';
 import { useEffect } from 'react';
 import PageContent from "./PageContent";
 import PageHeader from "./PageHeader";
+import DashboardList from "./DashboardList";
 
 const MAX_LEVELS = 8;
 const BREAKPOINT_MIN = 400;
@@ -111,6 +112,7 @@ export const HeaderAndSidebarOpened = {
   render: (args) => (
     <PageContent
       header={<PageHeader levels={buildLevels(args.levelCount)} />}
+      sidebar={<DashboardList />}
       sidebarState="opened"
     />
   ),
@@ -121,6 +123,7 @@ export const HeaderAndSidebarOverlay = {
   render: (args) => (
     <PageContent
       header={<PageHeader levels={buildLevels(args.levelCount)} />}
+      sidebar={<DashboardList />}
       sidebarState="overlay"
     />
   ),
@@ -128,18 +131,18 @@ export const HeaderAndSidebarOverlay = {
 
 export const SidebarHidden = {
   name: "Sidebar — Hidden",
-  render: () => <PageContent sidebarState="hidden" />,
+  render: () => <PageContent sidebar={<DashboardList />} sidebarState="hidden" />,
   argTypes: { levelCount: { table: { disable: true } } },
 };
 
 export const SidebarOpened = {
   name: "Sidebar — Opened",
-  render: () => <PageContent sidebarState="opened" />,
+  render: () => <PageContent sidebar={<DashboardList />} sidebarState="opened" />,
   argTypes: { levelCount: { table: { disable: true } } },
 };
 
 export const SidebarOverlay = {
   name: "Sidebar — Overlay",
-  render: () => <PageContent sidebarState="overlay" />,
+  render: () => <PageContent sidebar={<DashboardList />} sidebarState="overlay" />,
   argTypes: { levelCount: { table: { disable: true } } },
 };

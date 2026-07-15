@@ -3,9 +3,10 @@
 //   2338:2734  Left panel slot — "overlay" (shadow-xl, floating)
 //   Panel header: padding 1.25rem top/bottom, 1.5rem sides
 
-import { useState } from 'react';
-import { ChevronLeft } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { PanelLeftClose } from 'lucide-react';
 import Button from './Button';
+import Tooltip from './Tooltip';
 
 export default function InternalSidebar({ state = 'hidden', width = 256, isDragging = false, isTransitioning = false, onResizeStart, title = 'Dashboards', onPinClick, pinDisabled = false, onMouseEnter, onMouseLeave, children }) {
   const isHidden  = state === 'hidden';
@@ -13,6 +14,8 @@ export default function InternalSidebar({ state = 'hidden', width = 256, isDragg
   const isOpened  = state === 'opened';
 
   const [handleHovered, setHandleHovered] = useState(false);
+  const [closeHovered, setCloseHovered] = useState(false);
+  const closeBtnRef = useRef(null);
 
   return (
     <div className="sidebar" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} style={{
@@ -32,29 +35,39 @@ export default function InternalSidebar({ state = 'hidden', width = 256, isDragg
       flexDirection: 'column',
     }}>
 
-      {/* Panel header — 1.25rem top/bottom padding, 1.5rem side padding */}
+      {/* Panel header — 1.25rem top/bottom padding, 1.5rem left / spacing-5 right padding */}
       <div className="sidebar-header" style={{
         display:        'flex',
         alignItems:     'center',
         justifyContent: 'space-between',
         minHeight:      '4.5rem',
-        padding:        '0 1.5rem',
+        paddingTop:     0,
+        paddingBottom:  0,
+        paddingLeft:    '1.5rem',
+        paddingRight:   'var(--lyra-spacing-5)',
         flexShrink:     0,
       }}>
-        <span className="lyra-heading-lg" style={{ color: 'var(--lyra-color-fg-default)' }}>
+        <span className="lyra-heading-md" style={{ color: 'var(--lyra-color-fg-default)' }}>
           {title}
         </span>
 
         {(isOpened || isTransitioning) && onPinClick && (
-          <Button
-            variant="ghost"
-            size="md"
-            onClick={onPinClick}
-            title="Close panel"
-            style={{ visibility: isOpened ? 'visible' : 'hidden' }}
+          <span
+            ref={closeBtnRef}
+            style={{ display: 'inline-flex', visibility: isOpened ? 'visible' : 'hidden' }}
+            onMouseEnter={() => setCloseHovered(true)}
+            onMouseLeave={() => setCloseHovered(false)}
           >
-            <ChevronLeft size={16} />
-          </Button>
+            <Button
+              variant="ghost"
+              size="md"
+              onClick={onPinClick}
+              aria-label="Close dashboards sidebar"
+            >
+              <PanelLeftClose size={16} />
+            </Button>
+            {closeHovered && isOpened && <Tooltip label="Close dashboards sidebar" anchorRef={closeBtnRef} side="bottom" />}
+          </span>
         )}
       </div>
 

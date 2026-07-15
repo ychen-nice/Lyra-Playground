@@ -12,7 +12,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import InternalSidebar from './InternalSidebar';
 
-const DEFAULT_SIDEBAR_W = 256; // 16rem
+export const DEFAULT_SIDEBAR_W = 256; // 16rem
 const MIN_SIDEBAR_W     = 192; // 12rem
 const MAX_SIDEBAR_W     = 400; // 25rem
 
@@ -20,19 +20,25 @@ export default function PageContent({
   header,
   sidebar,
   sidebarState: controlledState,
+  // One-time mount default — unlike sidebarState, this is never force-synced back, so the
+  // sidebar can still be freely opened/closed by the user afterward (e.g. a page that should
+  // *start* open but remain toggleable). Pair with a `key` change to reset it on navigation.
+  initialSidebarState,
   contentBreakpoint = 720, // min content-area width at which sidebar auto-closes
   onAiTriggerClick,
   onNarrow, // (isNarrow: boolean) => void — notifies Shell for nav/AI-panel cascade
   closeSidebarRef, // ref populated by PageContent so Shell can imperatively close sidebar
+  sidebarInfoRef, // ref populated by PageContent so Shell can read sidebar open state + width
   children,
 }) {
-  const [state, setState] = useState(controlledState ?? 'hidden');
+  const [state, setState] = useState(controlledState ?? initialSidebarState ?? 'hidden');
   const [isSidebarTransitioning, setIsSidebarTransitioning] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_SIDEBAR_W);
   const [isDragging, setIsDragging] = useState(false);
 
   // Imperative close handle — Shell calls this in cascade step 2
   if (closeSidebarRef) closeSidebarRef.current = () => setState('hidden');
+  if (sidebarInfoRef) sidebarInfoRef.current = { isOpen: state === 'opened', isOverlay: state === 'overlay', width: sidebarWidth };
 
   const closeTimerRef     = useRef(null);
   const sidebarTransitionTimerRef = useRef(null);
@@ -82,28 +88,71 @@ export default function PageContent({
   useEffect(() => {
     const el = contentAreaRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(entries => {
-      const w = entries[0].contentRect.width;
-      const cb = onNarrowRef.current;
 
+    const measure = (w) => {
+      const cb = onNarrowRef.current;
       const narrow = w < contentBreakpoint + (stateRef.current === 'opened' ? 0 : sidebarWidthRef.current);
-      const pinDis = narrow;
-      const prev = prevNarrowRef.current;
       prevNarrowRef.current = narrow;
 
       if (!isDraggingRef.current) {
         setIsNarrow(w < contentBreakpoint);
-        setIsPinDisabled(pinDis);
+        setIsPinDisabled(narrow);
 
         // Notify Shell for nav/AI-panel cascade (passes raw width as 2nd arg)
         if (cb) cb(w < contentBreakpoint, w);
       }
-    });
+    };
+
+    const ro = new ResizeObserver(entries => measure(entries[0].contentRect.width));
     ro.observe(el);
-    return () => ro.disconnect();
+
+    // Browser zoom changes the effective CSS-pixel layout the same way narrowing the
+    // window does, but ResizeObserver and plain window 'resize' both have known gaps at
+    // zoom: the reported box size can round to a value it already had (so the callback
+    // never fires), and even when 'resize' does fire, layout for descendant elements can
+    // still be mid-recalculation at that instant, so reading the rect synchronously can
+    // return the pre-zoom size. Two supplements close this: the visualViewport 'resize'
+    // event (built specifically to track pinch/page zoom reliably) and a rAF-deferred
+    // re-measure so we read after the browser has actually finished laying out.
+    const remeasureNextFrame = () => requestAnimationFrame(() => {
+      // getBoundingClientRect() returns the border-box size, which — unlike ResizeObserver's
+      // contentRect — still includes the sidebar's paddingLeft. Subtract padding so this
+      // fallback agrees with the ResizeObserver measurement instead of under-reporting
+      // narrowness and spuriously canceling the nav/sidebar collapse cascade in Shell.
+      const cs = getComputedStyle(el);
+      const paddingX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      measure(el.getBoundingClientRect().width - paddingX);
+    });
+    window.addEventListener('resize', remeasureNextFrame);
+    window.visualViewport?.addEventListener('resize', remeasureNextFrame);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', remeasureNextFrame);
+      window.visualViewport?.removeEventListener('resize', remeasureNextFrame);
+    };
   }, [contentBreakpoint]);
 
   const isOverlay = state === 'overlay';
+
+  // While floating as an overlay, ANY focus leaving the sidebar closes it — not just a click
+  // inside this component's own content area (the local backdrop below only covers that), but
+  // a click or keyboard-driven focus change anywhere else on screen too: the shell nav, the
+  // top bar, the AI assistant panel, etc. An overlay is a temporary, in-context reveal, so
+  // moving attention anywhere else means the user is done with it.
+  useEffect(() => {
+    if (state !== 'overlay') return;
+    const closeIfOutside = (e) => {
+      const sidebarEl = containerRef.current?.querySelector('.sidebar');
+      if (sidebarEl && !sidebarEl.contains(e.target)) setState('hidden');
+    };
+    document.addEventListener('mousedown', closeIfOutside);
+    document.addEventListener('focusin', closeIfOutside);
+    return () => {
+      document.removeEventListener('mousedown', closeIfOutside);
+      document.removeEventListener('focusin', closeIfOutside);
+    };
+  }, [state]);
 
   const sidenavProps = {
     onSidenavTriggerClick: () => {
@@ -112,7 +161,7 @@ export default function PageContent({
   };
 
   const enhancedHeader = header
-    ? React.cloneElement(header, { ...sidenavProps, _sidebarOpen: state !== 'hidden', _sidebarTransitioning: isSidebarTransitioning, onAiTriggerClick })
+    ? React.cloneElement(header, { ...sidenavProps, _sidebarOpen: state === 'opened', _sidebarTransitioning: isSidebarTransitioning, onAiTriggerClick })
     : null;
 
   // ── Resize drag logic ──────────────────────────────────────────────────────
