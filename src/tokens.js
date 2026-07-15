@@ -82,8 +82,8 @@ export const SEMANTIC_SECTIONS = [
     { name: 'warning-subtle',  light: '#FFFAE0',              dark: 'rgba(142,104,0,0.2)',   desc: 'Warning backgrounds.' },
   ]},
   { title: 'Accent', prefix: 'accent/', tokens: [
-    { name: 'slate-soft',    light: '#ECEFF3', dark: '#49515A',  desc: 'Adaptive background slightly darker than the parent background.' },
-    { name: 'slate-strong',  light: '#5D6A79', dark: '#D0D6DC',  desc: 'Adaptive foreground slightly darker than the parent background.' },
+    { name: 'slate-soft',    light: '#ECEFF3', dark: '#49515A',  desc: '' },
+    { name: 'slate-strong',  light: '#5D6A79', dark: '#D0D6DC',  desc: '' },
     { name: 'red-soft',      light: '#FFE0E0', dark: '#A32424',  desc: '' },
     { name: 'red-strong',    light: '#BD2A2A', dark: '#FFB8B8',  desc: '' },
     { name: 'orange-soft',   light: '#FFE5CC', dark: '#7D420C',  desc: '' },
@@ -104,8 +104,8 @@ export const SEMANTIC_SECTIONS = [
     { name: 'pink-strong',   light: '#B03887', dark: '#FCCAEB',  desc: '' },
   ]},
   { title: 'Interactive States', prefix: 'state/', tokens: [
-    { name: 'bg/hover-opacity',           light: 'rgba(0,0,0,0.04)',    dark: 'rgba(255,255,255,0.06)',  desc: 'Perceptible darkening without altering the base color identity.' },
-    { name: 'bg/pressed-opacity',         light: 'rgba(0,0,0,0.08)',    dark: 'rgba(255,255,255,0.12)',  desc: 'Perceptible darkening without altering the base color identity.' },
+    { name: 'bg/hover-opacity',           light: 'rgba(0,0,0,0.04)',    dark: 'rgba(255,255,255,0.06)',  desc: '' },
+    { name: 'bg/pressed-opacity',         light: 'rgba(0,0,0,0.08)',    dark: 'rgba(255,255,255,0.12)',  desc: '' },
     { name: 'bg/hover-secondary',         light: '#FBFCFE',             dark: 'rgba(255,255,255,0.1)',   desc: '' },
     { name: 'bg/pressed-secondary',       light: '#F5F7F9',             dark: 'rgba(255,255,255,0.16)',  desc: '' },
     { name: 'bg/hover-active-subtle',     light: '#E8F1FC',             dark: 'rgba(72,150,236,0.18)',   desc: '' },
