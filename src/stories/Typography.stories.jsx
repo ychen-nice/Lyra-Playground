@@ -27,6 +27,14 @@ const SCALE = [
 
 const DIVIDER_BEFORE = new Set(["lyra-body-lg", "lyra-label"]);
 
+/* getComputedStyle always normalizes font-size/line-height/letter-spacing to px,
+   even though the source CSS is authored in rem — convert back for display. */
+function pxToRem(pxStr) {
+  const n = parseFloat(pxStr);
+  if (Number.isNaN(n)) return pxStr;
+  return `${parseFloat((n / 16).toFixed(4))}rem`;
+}
+
 const meta = {
   fontSize: "0.6875rem",
   fontFamily: "Inter, sans-serif",
@@ -56,10 +64,10 @@ export const AllStyles = {
         el.className = cls;
         document.body.appendChild(el);
         const cs = getComputedStyle(el);
-        const size = cs.fontSize;
+        const size = pxToRem(cs.fontSize);
         const weight = cs.fontWeight;
-        const lineH = cs.lineHeight;
-        const tracking = cs.letterSpacing;
+        const lineH = pxToRem(cs.lineHeight);
+        const tracking = cs.letterSpacing === "normal" ? "normal" : pxToRem(cs.letterSpacing);
         document.body.removeChild(el);
 
         return (

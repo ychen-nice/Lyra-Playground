@@ -234,29 +234,39 @@ function SizeVisual({ title, v }) {
   return null;
 }
 
+/* px → rem, trimmed of trailing zeros (e.g. 8 → "0.5rem", 999 → "∞") */
+function pxToRem(v) {
+  if (v === 999) return '∞';
+  return `${parseFloat((v / 16).toFixed(4))}rem`;
+}
+
 /* Semantic Sizes */
 export const SemanticSizes = {
   name: 'Semantic Sizes',
   render: () => (
-    <div style={{ maxWidth: 720, margin: '0 auto', fontFamily: FF }}>
+    <div style={{ maxWidth: 780, margin: '0 auto', fontFamily: FF }}>
       <h1 style={PAGE_TITLE}>Semantic Sizes</h1>
 
       {SIZE_SECTIONS.map(({ title, prefix, tokens }) => (
         <div key={title}>
           <h2 style={SECTION_HDR}>{title}</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr 56px', gap: '0 16px', padding: '4px 0 6px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr 56px 64px', gap: '0 16px', padding: '4px 0 6px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
             <span style={COL_HDR}>Token</span>
             <span style={COL_HDR}>Visual</span>
             <span style={COL_HDR}>Value</span>
+            <span style={COL_HDR}>Rem</span>
           </div>
           {tokens.map(({ n, v }) => (
-            <div key={n} style={{ display: 'grid', gridTemplateColumns: '220px 1fr 56px', gap: '0 16px', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+            <div key={n} style={{ display: 'grid', gridTemplateColumns: '220px 1fr 56px 64px', gap: '0 16px', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
               <code style={{ fontSize: '0.6875rem', fontFamily: MONO, color: 'var(--lyra-color-fg-default)' }}>
                 {prefix}{n}
               </code>
               <SizeVisual title={title} v={v} />
               <span style={{ fontSize: '0.75rem', fontFamily: MONO, color: 'var(--lyra-color-fg-secondary)', textAlign: 'right' }}>
                 {v === 999 ? '∞' : `${v}px`}
+              </span>
+              <span style={{ fontSize: '0.75rem', fontFamily: MONO, color: 'var(--lyra-color-fg-secondary)', textAlign: 'right' }}>
+                {pxToRem(v)}
               </span>
             </div>
           ))}
