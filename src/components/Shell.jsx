@@ -442,7 +442,19 @@ export default function Shell({
             <PageContent
               key={activePageId}
               header={header ? React.cloneElement(header, { title: derivedTitle, levels: derivedLevels, showSideNavTrigger: isDashboards, showBreadcrumb: derivedLevels.length > 0 }) : header}
-              sidebar={isDashboards ? <DashboardList onSelect={setSelectedDashboardName} /> : null}
+              sidebar={isDashboards ? (
+                <DashboardList
+                  onSelect={(name) => {
+                    setSelectedDashboardName(name);
+                    // A floating overlay only exists to let the user pick a destination —
+                    // once they have, it should get out of the way rather than keep
+                    // obscuring the content area it was just used to navigate into. A
+                    // pinned ('opened') sidebar stays, since it isn't competing with
+                    // content for space the way an overlay visually is.
+                    if (sidebarInfoRef.current.isOverlay) closeSidebarRef.current?.();
+                  }}
+                />
+              ) : null}
               initialSidebarState={isDashboards
                 // Pinning the sidebar adds DEFAULT_SIDEBAR_W of padding to the content area —
                 // if that would push it below the breakpoint, open as a floating overlay instead.
