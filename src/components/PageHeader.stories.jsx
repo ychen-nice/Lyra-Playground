@@ -35,7 +35,7 @@ export default {
     showSideNavTrigger: { control: "boolean", description: "Show/hide the sidebar toggle icon" },
     sidenavTriggerIcon: {
       control: "radio",
-      options: ["menu", "panel-left-open"],
+      options: ["menu", "panel-left-open", "panel-left-close"],
       description: "Icon for the sidebar toggle button",
     },
     showBreadcrumb:     { control: "boolean", description: "Show/hide the breadcrumb hierarchy" },
@@ -53,7 +53,7 @@ export default {
     levelCount:         1,
     linksStartAt:       1,
     showSideNavTrigger: true,
-    sidenavTriggerIcon: "menu",
+    sidenavTriggerIcon: "panel-left-close",
     showBreadcrumb:     true,
     showStatusBadge:    false,
     statusBadgeLabel:   "Active",

@@ -1,6 +1,6 @@
 // Figma node: 17643:45205  "Page Header"
 import { useState, useLayoutEffect, useEffect, useRef } from 'react';
-import { Sparkles, Menu, PanelLeftOpen } from 'lucide-react';
+import { Sparkles, Menu, PanelLeftOpen, PanelLeftClose } from 'lucide-react';
 import '../styles/typography.css';
 import '../styles/breadcrumb.css';
 import Button from './Button';
@@ -26,7 +26,7 @@ export default function PageHeader({
   title                  = 'Page Title',
   levels                 = [],
   showSideNavTrigger     = true,
-  sidenavTriggerIcon     = 'menu', // 'menu' | 'panel-left-open'
+  sidenavTriggerIcon     = 'panel-left-close', // 'menu' | 'panel-left-open' | 'panel-left-close'
   showBreadcrumb         = true,
   showStatusBadge        = false,
   statusBadgeLabel       = 'Active',
@@ -185,7 +185,9 @@ export default function PageHeader({
               onMouseLeave={() => setSidenavHovered(false)}
             >
               <Button variant="ghost" size="md" iconOnly onClick={onSidenavTriggerClick} aria-label="Open dashboards sidebar">
-                {sidenavTriggerIcon === 'panel-left-open' ? <PanelLeftOpen size={16} /> : <Menu size={16} />}
+                {sidenavTriggerIcon === 'panel-left-open' ? <PanelLeftOpen size={16} />
+                  : sidenavTriggerIcon === 'panel-left-close' ? <PanelLeftClose size={16} />
+                  : <Menu size={16} />}
               </Button>
               {sidenavHovered && <Tooltip label="Open dashboards sidebar" anchorRef={sidenavRef} side="bottom" />}
             </span>
