@@ -45,6 +45,12 @@ export default {
       description: 'Show the sidebar toggle button in the header',
       table: { category: 'Header' },
     },
+    sidenavTriggerIcon: {
+      control: 'radio',
+      options: ['menu', 'panel-left-open'],
+      description: 'Icon for the sidebar toggle button in the header',
+      table: { category: 'Header' },
+    },
     aiUserName: {
       control: 'text',
       description: 'User name shown in the AI panel greeting',
@@ -62,6 +68,7 @@ export default {
     contentBreakpoint: 720,
     levelCount: 1,
     showSideNavTrigger: true,
+    sidenavTriggerIcon: 'menu',
     aiUserName: 'John',
     navTrigger: 'floating',
   },
@@ -79,6 +86,7 @@ export const Default = {
         <PageHeader
           levels={buildLevels(args.levelCount)}
           showSideNavTrigger={args.showSideNavTrigger}
+          sidenavTriggerIcon={args.sidenavTriggerIcon}
           showAiTrigger
         />
       }
@@ -98,6 +106,7 @@ export const NoAiPanel = {
         <PageHeader
           levels={buildLevels(args.levelCount)}
           showSideNavTrigger={args.showSideNavTrigger}
+          sidenavTriggerIcon={args.sidenavTriggerIcon}
           showAiTrigger={false}
         />
       }
