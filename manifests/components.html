@@ -2162,7 +2162,7 @@ export const Shadows = {
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PageHeader</h2>
       <div class="badges">
-        <label for="c-7-content-panel-page-header-props" class="badge ok as-toggle">10 prop types</label>
+        <label for="c-7-content-panel-page-header-props" class="badge ok as-toggle">11 prop types</label>
         <label for="c-7-content-panel-page-header-info" class="badge info as-toggle">1 info</label>
         <label for="c-7-content-panel-page-header-stories" class="badge ok as-toggle">6 stories</label>
         
@@ -2198,7 +2198,7 @@ export const Shadows = {
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">10 prop types</span>
+              <span class="badge ok">11 prop types</span>
             </div>
             <pre><code>Component: src/components/PageHeader.jsx::default</code></pre>
             <pre><code>Props:</code></pre>
@@ -2217,6 +2217,8 @@ showBreadcrumb?: any = true
 showSideNavTrigger?: any = true
 
 showStatusBadge?: any = false
+
+sidenavTriggerIcon?: any = &#39;menu&#39;
 
 statusBadgeLabel?: any = &#39;Active&#39;
 
@@ -2248,6 +2250,7 @@ title?: any = &#39;Page Title&#39;</code></pre>
     levelCount={1}
     linksStartAt={1}
     showSideNavTrigger
+    sidenavTriggerIcon=&quot;menu&quot;
     showBreadcrumb
     showStatusBadge={false}
     statusBadgeLabel=&quot;Active&quot;
@@ -2265,6 +2268,7 @@ title?: any = &#39;Page Title&#39;</code></pre>
     levelCount={1}
     linksStartAt={1}
     showSideNavTrigger
+    sidenavTriggerIcon=&quot;menu&quot;
     showBreadcrumb
     showStatusBadge
     statusBadgeLabel=&quot;Active&quot;
@@ -2282,6 +2286,7 @@ title?: any = &#39;Page Title&#39;</code></pre>
     levelCount={1}
     linksStartAt={1}
     showSideNavTrigger={false}
+    sidenavTriggerIcon=&quot;menu&quot;
     showBreadcrumb={false}
     showStatusBadge={false}
     statusBadgeLabel=&quot;Active&quot;
@@ -2299,6 +2304,7 @@ title?: any = &#39;Page Title&#39;</code></pre>
     levelCount={1}
     linksStartAt={1}
     showSideNavTrigger
+    sidenavTriggerIcon=&quot;menu&quot;
     showBreadcrumb
     showStatusBadge={false}
     statusBadgeLabel=&quot;Active&quot;
@@ -2316,6 +2322,7 @@ title?: any = &#39;Page Title&#39;</code></pre>
     levelCount={5}
     linksStartAt={1}
     showSideNavTrigger
+    sidenavTriggerIcon=&quot;menu&quot;
     showBreadcrumb
     showStatusBadge={false}
     statusBadgeLabel=&quot;Active&quot;
@@ -2333,6 +2340,7 @@ title?: any = &#39;Page Title&#39;</code></pre>
     levelCount={1}
     linksStartAt={1}
     showSideNavTrigger
+    sidenavTriggerIcon=&quot;menu&quot;
     showBreadcrumb
     showStatusBadge
     statusBadgeLabel=&quot;Active&quot;
@@ -2431,6 +2439,7 @@ showAiPanel?: any = true</code></pre>
       &lt;PageHeader
         levels={buildLevels(args.levelCount)}
         showSideNavTrigger={args.showSideNavTrigger}
+        sidenavTriggerIcon={args.sidenavTriggerIcon}
         showAiTrigger
       /&gt;
     } /&gt;;</code></pre>
@@ -2450,6 +2459,7 @@ showAiPanel?: any = true</code></pre>
       &lt;PageHeader
         levels={buildLevels(args.levelCount)}
         showSideNavTrigger={args.showSideNavTrigger}
+        sidenavTriggerIcon={args.sidenavTriggerIcon}
         showAiTrigger={false}
       /&gt;
     } /&gt;;</code></pre>
