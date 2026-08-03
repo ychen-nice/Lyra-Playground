@@ -68,7 +68,7 @@ export default {
     contentBreakpoint: 720,
     levelCount: 1,
     showSideNavTrigger: true,
-    sidenavTriggerIcon: 'panel-left-close',
+    sidenavTriggerIcon: 'panel-left-open',
     aiUserName: 'John',
     navTrigger: 'floating',
   },

@@ -53,7 +53,7 @@ export default {
     levelCount:         1,
     linksStartAt:       1,
     showSideNavTrigger: true,
-    sidenavTriggerIcon: "panel-left-close",
+    sidenavTriggerIcon: "panel-left-open",
     showBreadcrumb:     true,
     showStatusBadge:    false,
     statusBadgeLabel:   "Active",

@@ -26,7 +26,7 @@ export default function PageHeader({
   title                  = 'Page Title',
   levels                 = [],
   showSideNavTrigger     = true,
-  sidenavTriggerIcon     = 'panel-left-close', // 'menu' | 'panel-left-open' | 'panel-left-close'
+  sidenavTriggerIcon     = 'panel-left-open', // 'menu' | 'panel-left-open' | 'panel-left-close'
   showBreadcrumb         = true,
   showStatusBadge        = false,
   statusBadgeLabel       = 'Active',
