@@ -47,7 +47,7 @@ export default {
     },
     sidenavTriggerIcon: {
       control: 'radio',
-      options: ['menu', 'panel-left-open', 'panel-left-close'],
+      options: ['menu', 'panel-left-open'],
       description: 'Icon for the sidebar toggle button in the header',
       table: { category: 'Header' },
     },

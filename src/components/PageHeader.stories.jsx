@@ -35,7 +35,7 @@ export default {
     showSideNavTrigger: { control: "boolean", description: "Show/hide the sidebar toggle icon" },
     sidenavTriggerIcon: {
       control: "radio",
-      options: ["menu", "panel-left-open", "panel-left-close"],
+      options: ["menu", "panel-left-open"],
       description: "Icon for the sidebar toggle button",
     },
     showBreadcrumb:     { control: "boolean", description: "Show/hide the breadcrumb hierarchy" },
