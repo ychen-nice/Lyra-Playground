@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">3/11 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">10/11 infos</a><span class="filter-pill ok" aria-disabled="true">44 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">3/12 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">11/12 infos</a><span class="filter-pill ok" aria-disabled="true">54 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>0.4s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>0.5s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -2583,6 +2583,301 @@ version?: any = &#39;v1&#39;</code></pre>
 </article>
 <article
   class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="TreeGrid">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> TreeGrid</h2>
+      <div class="badges">
+        <label for="c-10-content-panel-tree-grid-props" class="badge ok as-toggle">12 prop types</label>
+        <label for="c-10-content-panel-tree-grid-info" class="badge info as-toggle">1 info</label>
+        <label for="c-10-content-panel-tree-grid-stories" class="badge ok as-toggle">10 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/TreeGrid.stories.jsx">content-panel-tree-grid · ./src/components/TreeGrid.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-10-content-panel-tree-grid-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-10-content-panel-tree-grid-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-10-content-panel-tree-grid-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">12 prop types</span>
+            </div>
+            <pre><code>Component: src/components/TreeGrid.jsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>data?: any = []
+
+defaultExpandAll?: any = true
+
+height?: any = 360
+
+hierarchyHeader?: any = &#39;Name&#39;
+
+infoHeader?: any = &#39;Info&#39;
+
+searchPlaceholder?: any = &#39;Search&#39;
+
+selectableParent?: any = true
+
+selectionMode?: any = &#39;none&#39;
+
+showIcons?: any = true
+
+showInfoColumn?: any = true
+
+showMenuColumn?: any = false
+
+showSearch?: any = false</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Database, FileText, Folder, Settings, Users } from "lucide-react";
+import { TreeGrid } from "ai-assistant-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;TreeGrid
+    selectionMode=&quot;multiple&quot;
+    showIcons
+    showInfoColumn
+    hierarchyHeader=&quot;Name&quot;
+    infoHeader=&quot;Info&quot;
+    defaultExpandAll
+    height={360}
+    selectableParent
+    showMenuColumn={false}
+    showSearch={false}
+    searchPlaceholder=&quot;Search&quot;
+    data={SAMPLE_DATA} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Single Select</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SingleSelect = () =&gt; &lt;TreeGrid
+    selectionMode=&quot;single&quot;
+    showIcons
+    showInfoColumn
+    hierarchyHeader=&quot;Name&quot;
+    infoHeader=&quot;Info&quot;
+    defaultExpandAll
+    height={360}
+    selectableParent
+    showMenuColumn={false}
+    showSearch={false}
+    searchPlaceholder=&quot;Search&quot;
+    data={SAMPLE_DATA} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Single Select — Leaves Only</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SingleSelectLeavesOnly = () =&gt; &lt;TreeGrid
+    selectionMode=&quot;single&quot;
+    showIcons
+    showInfoColumn
+    hierarchyHeader=&quot;Name&quot;
+    infoHeader=&quot;Info&quot;
+    defaultExpandAll
+    height={360}
+    selectableParent={false}
+    showMenuColumn={false}
+    showSearch={false}
+    searchPlaceholder=&quot;Search&quot;
+    data={SAMPLE_DATA} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Multi Select — Leaves Only</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const MultiSelectLeavesOnly = () =&gt; &lt;TreeGrid
+    selectionMode=&quot;multiple&quot;
+    showIcons
+    showInfoColumn
+    hierarchyHeader=&quot;Name&quot;
+    infoHeader=&quot;Info&quot;
+    defaultExpandAll
+    height={360}
+    selectableParent={false}
+    showMenuColumn={false}
+    showSearch={false}
+    searchPlaceholder=&quot;Search&quot;
+    data={SAMPLE_DATA} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">No Selection</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NoSelection = () =&gt; &lt;TreeGrid
+    selectionMode=&quot;none&quot;
+    showIcons
+    showInfoColumn
+    hierarchyHeader=&quot;Name&quot;
+    infoHeader=&quot;Info&quot;
+    defaultExpandAll
+    height={360}
+    selectableParent
+    showMenuColumn={false}
+    showSearch={false}
+    searchPlaceholder=&quot;Search&quot;
+    data={SAMPLE_DATA} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">No Icons</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NoIcons = () =&gt; &lt;TreeGrid
+    selectionMode=&quot;multiple&quot;
+    showIcons={false}
+    showInfoColumn
+    hierarchyHeader=&quot;Name&quot;
+    infoHeader=&quot;Info&quot;
+    defaultExpandAll
+    height={360}
+    selectableParent
+    showMenuColumn={false}
+    showSearch={false}
+    searchPlaceholder=&quot;Search&quot;
+    data={SAMPLE_DATA} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Hierarchy Column Only</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const HierarchyOnly = () =&gt; &lt;TreeGrid
+    selectionMode=&quot;multiple&quot;
+    showIcons
+    showInfoColumn={false}
+    hierarchyHeader=&quot;Name&quot;
+    infoHeader=&quot;Info&quot;
+    defaultExpandAll
+    height={360}
+    selectableParent
+    showMenuColumn={false}
+    showSearch={false}
+    searchPlaceholder=&quot;Search&quot;
+    data={SAMPLE_DATA} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Search</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSearch = () =&gt; &lt;TreeGrid
+    selectionMode=&quot;multiple&quot;
+    showIcons
+    showInfoColumn
+    hierarchyHeader=&quot;Name&quot;
+    infoHeader=&quot;Info&quot;
+    defaultExpandAll
+    height={360}
+    selectableParent
+    showMenuColumn={false}
+    showSearch
+    searchPlaceholder=&quot;Search&quot;
+    data={SAMPLE_DATA} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Menu Column</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMenuColumn = () =&gt; &lt;TreeGrid
+    selectionMode=&quot;multiple&quot;
+    showIcons
+    showInfoColumn
+    hierarchyHeader=&quot;Name&quot;
+    infoHeader=&quot;Info&quot;
+    defaultExpandAll
+    height={360}
+    selectableParent
+    showMenuColumn
+    showSearch={false}
+    searchPlaceholder=&quot;Search&quot;
+    data={SAMPLE_DATA}
+    onMenuClick={(row) =&gt; alert(`More actions: ${row.label}`)} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Interactive Demo</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const InteractiveDemo = () =&gt; &lt;TreeGridDemo /&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
   has-error 
   has-info 
   no-story-error
@@ -2593,9 +2888,9 @@ version?: any = &#39;v1&#39;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-err"></span> Typography</h2>
       <div class="badges">
-        <label for="c-10-foundation-typography-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-10-foundation-typography-info" class="badge info as-toggle">2 infos</label>
-        <label for="c-10-foundation-typography-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-11-foundation-typography-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-11-foundation-typography-info" class="badge info as-toggle">2 infos</label>
+        <label for="c-11-foundation-typography-stories" class="badge ok as-toggle">3 stories</label>
         
         
       </div>
@@ -2607,9 +2902,9 @@ version?: any = &#39;v1&#39;</code></pre>
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-10-foundation-typography-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-10-foundation-typography-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-10-foundation-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-11-foundation-typography-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-11-foundation-typography-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-11-foundation-typography-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
   
