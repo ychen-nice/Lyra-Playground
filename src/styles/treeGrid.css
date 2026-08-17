@@ -1,0 +1,75 @@
+/* Structural-only overrides for TreeGrid — visual tokens live in TreeGrid.jsx's
+   ag-grid Theming API params. ag-grid doesn't expose a distinct "pressed" row
+   param, so that one state is layered on here via the stable .ag-row class. */
+.lyra-tree-grid .ag-row:active {
+  background: var(--lyra-color-state-bg-pressed-opacity);
+}
+
+/* Selected rows (single-select) are static — no hover or pressed treatment,
+   since they can no longer be unselected by clicking. */
+.lyra-tree-grid .ag-row.lyra-row-selected:active {
+  background: var(--lyra-color-bg-active-subtle);
+}
+
+.lyra-tree-grid .ag-row.lyra-row-selected.ag-row-hover {
+  --ag-internal-row-overlay-color: transparent;
+}
+
+/* Menu button is hidden until the row is hovered or the button itself is focused. */
+.lyra-tree-grid__menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lyra-tree-grid .ag-row-hover .lyra-tree-grid__menu-btn,
+.lyra-tree-grid__menu-btn:focus-within,
+.lyra-tree-grid .ag-row:has(.lyra-tree-row:focus) .lyra-tree-grid__menu-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Roving-tabindex focus ring — matches the border/focus token used elsewhere
+   in this design system, applied only for keyboard focus (not mouse clicks).
+   The actual focusable element is the hierarchy cell's row div, but the ring
+   is drawn on the full-width .ag-row that contains it, so it wraps the whole
+   row (info/menu columns included) rather than just the tree cell. */
+.lyra-tree-grid .ag-row:has(.lyra-tree-row:focus-visible) {
+  outline: 2px solid var(--lyra-color-border-focus-default);
+  outline-offset: -2px;
+  border-radius: var(--lyra-radius-md);
+}
+
+/* The row div itself would otherwise also show the browser's own default
+   focus ring (in addition to the one drawn on .ag-row above), reading as
+   two overlapping rings — this is the only rule needed to suppress it,
+   since .lyra-btn's own :focus-visible rule (button.css) already gives the
+   menu button its ring. */
+.lyra-tree-grid .lyra-tree-row:focus-visible {
+  outline: none;
+}
+
+/* The menu column's cell is only 2rem wide — barely wider than the button
+   itself — so the button's own outward-facing focus ring (button.css,
+   outline-offset: 2px) gets clipped by the cell/row's overflow unless
+   explicitly allowed to paint outside their bounds. */
+.lyra-tree-grid .ag-cell[col-id="menu"],
+.lyra-tree-grid .ag-row:has(.lyra-tree-grid__menu-btn .lyra-btn:focus-visible) {
+  overflow: visible;
+}
+
+/* Border/outline for the search field's focused states are handled inline
+   in TreeGrid.jsx (mouse vs. keyboard focus tracked in JS, since browsers
+   grant :focus-visible to a clicked text input just as readily as a
+   Tab-focused one, unlike buttons/divs — CSS alone can't tell them apart). */
+
+/* ag-grid paints hover/selected row backgrounds via a ::before overlay on an
+   inner wrapper — border-radius isn't inherited, so it needs restating here
+   to keep the overlay's corners matching the row's own radius-md. */
+.lyra-tree-grid .ag-grid-scrolling-cells::before,
+.lyra-tree-grid .ag-grid-pinned-left-cells::before,
+.lyra-tree-grid .ag-grid-pinned-right-cells::before {
+  border-radius: var(--lyra-radius-md);
+}
