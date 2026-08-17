@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef, cloneElement } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronRight, ChevronDown, Check, Minus, EllipsisVertical, Search, X } from 'lucide-react';
 import { ModuleRegistry, AllCommunityModule, themeQuartz } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
@@ -144,6 +145,142 @@ function collectParentIds(nodes, out = []) {
   return out;
 }
 
+const ROW_MENU_ACTIONS = [
+  { key: 'add', label: 'Add' },
+  { key: 'rename', label: 'Rename' },
+  { key: 'duplicate', label: 'Duplicate' },
+  { key: 'delete', label: 'Delete', destructive: true, dividerBefore: true },
+];
+
+/* ─── Row action menu — rendered via portal into document.body, positioned
+   from the trigger button's own bounding rect, so it floats above the grid's
+   scrolling/virtualized viewport instead of getting clipped by it. */
+function RowActionMenu({ top, right, triggerEl, onAction, onClose }) {
+  const menuRef = useRef(null);
+  const itemRefs = useRef([]);
+  const activeIndexRef = useRef(0);
+  // Set right before *this* component deliberately hands focus back to
+  // triggerEl (Tab/Escape exit) so the reclaim listener below knows to let
+  // that one through instead of treating it as an unwanted refocus.
+  const exitingRef = useRef(false);
+
+  // Focuses the first item regardless of how the menu was opened — matches
+  // both the keyboard-Enter case explicitly asked for and the standard ARIA
+  // menu pattern (mouse-opened menus are just as navigable afterward).
+  useEffect(() => {
+    itemRefs.current[0]?.focus();
+  }, []);
+
+  // Opening the menu via keyboard (Tab to the button, then Enter/Space)
+  // leaves the button itself holding real focus at the moment this menu
+  // mounts. ag-grid separately tracks "which cell has keyboard focus" for
+  // its own navigation, and the row-highlight effect in TreeGrid forces a
+  // refresh of this exact row right as the menu opens — ag-grid's redraw
+  // then reasserts focus on the (re)created button as part of restoring
+  // what it believes was focused, yanking focus back out of this
+  // portal-rendered menu a tick after the effect above already set it.
+  // Reclaiming it here, rather than trying to out-wait that redraw with a
+  // fixed delay, survives regardless of how many passes it takes.
+  useEffect(() => {
+    if (!triggerEl) return;
+    const reclaim = () => {
+      if (exitingRef.current) { exitingRef.current = false; return; }
+      itemRefs.current[activeIndexRef.current]?.focus();
+    };
+    triggerEl.addEventListener('focus', reclaim);
+    return () => triggerEl.removeEventListener('focus', reclaim);
+  }, [triggerEl]);
+
+  const exitToTrigger = () => {
+    exitingRef.current = true;
+    onClose();
+    triggerEl?.focus();
+  };
+
+  useEffect(() => {
+    const handlePointerDown = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) onClose();
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') exitToTrigger();
+    };
+    // Capture phase: fires before the click that opened this from being
+    // re-interpreted, and before any other component's own handlers.
+    document.addEventListener('mousedown', handlePointerDown, true);
+    document.addEventListener('keydown', handleKeyDown, true);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown, true);
+      document.removeEventListener('keydown', handleKeyDown, true);
+    };
+  }, [onClose, triggerEl]);
+
+  const handleMenuKeyDown = (e) => {
+    const items = itemRefs.current.filter(Boolean);
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const currentIndex = items.indexOf(document.activeElement);
+      const delta = e.key === 'ArrowDown' ? 1 : -1;
+      const nextIndex = (currentIndex + delta + items.length) % items.length;
+      activeIndexRef.current = nextIndex;
+      items[nextIndex]?.focus();
+    } else if (e.key === 'Tab') {
+      // Either direction exits the menu the same way — back to the button
+      // that opened it — rather than falling through to native DOM order.
+      e.preventDefault();
+      exitToTrigger();
+    }
+  };
+
+  return createPortal(
+    <div
+      ref={menuRef}
+      role="menu"
+      onKeyDown={handleMenuKeyDown}
+      style={{
+        position: 'fixed', top, right, width: 'max-content', minWidth: '7.5rem',
+        background: 'var(--lyra-color-bg-surface-overlay)',
+        border: '1px solid var(--lyra-color-border-subtle)',
+        borderRadius: 'var(--lyra-radius-md)',
+        boxShadow: 'var(--lyra-shadow-md)',
+        padding: 'var(--lyra-spacing-2)',
+        zIndex: 1000,
+      }}
+    >
+      {ROW_MENU_ACTIONS.map((action, i) => (
+        <div key={action.key}>
+          {action.dividerBefore && (
+            <div style={{ height: 1, background: 'var(--lyra-color-border-subtle)', margin: 'var(--lyra-spacing-2) 0' }} />
+          )}
+          <button
+            ref={(el) => { itemRefs.current[i] = el; }}
+            type="button"
+            role="menuitem"
+            className="lyra-body-md lyra-row-menu-item"
+            onClick={() => { onAction(action.key); onClose(); }}
+            style={{
+              display: 'flex', alignItems: 'center', width: '100%', textAlign: 'left', boxSizing: 'border-box',
+              height: 'var(--lyra-row-height-sm)',
+              padding: '0 var(--lyra-spacing-3)',
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              borderRadius: 'var(--lyra-radius-sm)',
+              color: action.destructive ? 'var(--lyra-color-status-critical-strong)' : 'var(--lyra-color-fg-default)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = action.destructive
+                ? 'var(--lyra-color-state-bg-hover-critical-subtle)'
+                : 'var(--lyra-color-state-bg-hover-opacity)';
+            }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            {action.label}
+          </button>
+        </div>
+      ))}
+    </div>,
+    document.body
+  );
+}
+
 /* ─── Checkbox — no shared Checkbox component exists yet in this design
    system, so a minimal tokenized one lives here rather than pulling in a
    dependency for a single glyph. ───────────────────────────────────────── */
@@ -175,8 +312,21 @@ function TreeCheckbox({ checked, indeterminate, onChange, ariaLabel }) {
 function HierarchyCell({
   data, selectionMode, showIcons, selectableParent,
   onToggleExpand, onToggleSelect, onRowFocus, onRowKeyDown, rowRef, initialTabIndex,
+  isRenaming, onCommitRename, onCancelRename,
 }) {
   const { level, hasChildren, expanded, icon, label, id, selected, checkState, searchQuery } = data;
+  const renameInputRef = useRef(null);
+  // Escaping unmounts the input, which fires a real DOM blur event — without
+  // this guard that blur would immediately re-commit the value Escape just
+  // discarded.
+  const skipBlurCommitRef = useRef(false);
+  useEffect(() => {
+    if (isRenaming) {
+      skipBlurCommitRef.current = false;
+      renameInputRef.current?.focus();
+      renameInputRef.current?.select();
+    }
+  }, [isRenaming]);
   // Selection can be restricted to leaves only (e.g. "pick a file, not a
   // folder") in either mode — when a parent isn't selectable, clicking it
   // just expands/collapses instead, same as clicking its chevron would.
@@ -202,7 +352,10 @@ function HierarchyCell({
       // setFocused) rather than through this prop, so an already-mounted
       // row's tabindex updates without needing to re-render at all.
       tabIndex={initialTabIndex}
-      onFocus={() => onRowFocus(id)}
+      // Bubbles up from the rename `<input>` too (it's a descendant) — while
+      // renaming, the roving-tabindex system must not fight the input for
+      // focus by refocusing this row div out from under it.
+      onFocus={() => { if (!isRenaming) onRowFocus(id); }}
       onKeyDown={(e) => onRowKeyDown(e, data)}
       className="lyra-tree-row"
       // No inline `outline` here — an inline style would beat the CSS
@@ -255,15 +408,59 @@ function HierarchyCell({
             {cloneElement(icon, { size: '100%' })}
           </span>
         )}
-        <span
-          className={selected && selectionMode !== 'multiple' ? 'lyra-body-md-em' : 'lyra-body-md'}
-          style={{
-            color: selected ? selectedColor : 'var(--lyra-color-fg-default)',
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          }}
-        >
-          {highlightLabel(label, searchQuery)}
-        </span>
+        {isRenaming ? (
+          <input
+            ref={renameInputRef}
+            type="text"
+            defaultValue={label}
+            className="lyra-body-md"
+            aria-label={`Rename ${label}`}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') { e.stopPropagation(); e.preventDefault(); onCommitRename(id, e.currentTarget.value); return; }
+              if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); skipBlurCommitRef.current = true; onCancelRename(); return; }
+              // Tab is deliberately NOT stopped here — it's left to bubble up
+              // to the row's own onKeyDown, which already knows how to move
+              // focus on to "the next focusable element" (the row's menu
+              // button, else the search field). ag-grid's own Tab handling
+              // calls preventDefault before any React handler ever runs
+              // (a native, capture-phase listener), so the browser's native
+              // Tab-driven focus movement is never actually available inside
+              // this grid to begin with — every other Tab stop in this tree
+              // is already reached this same explicit way.
+              if (e.key !== 'Tab') e.stopPropagation();
+            }}
+            onBlur={(e) => {
+              if (skipBlurCommitRef.current) return;
+              onCommitRename(id, e.currentTarget.value);
+            }}
+            style={{
+              flex: 1, minWidth: 0, boxSizing: 'border-box',
+              height: 'var(--lyra-control-height-sm)',
+              padding: '0 var(--lyra-spacing-2)',
+              border: '1px solid var(--lyra-color-border-focus-default)',
+              borderRadius: 'var(--lyra-radius-sm)',
+              background: 'var(--lyra-color-bg-field)',
+              color: 'var(--lyra-color-fg-default)',
+              // Always shown, not just on :focus-visible — this input only
+              // ever exists while actively being edited (it mounts already
+              // focused), so there's no non-editing state for a ring to be
+              // distinguished from.
+              outline: '2px solid var(--lyra-color-border-focus-default)',
+              outlineOffset: '-1px',
+            }}
+          />
+        ) : (
+          <span
+            className={selected && selectionMode !== 'multiple' ? 'lyra-body-md-em' : 'lyra-body-md'}
+            style={{
+              color: selected ? selectedColor : 'var(--lyra-color-fg-default)',
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}
+          >
+            {highlightLabel(label, searchQuery)}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -284,10 +481,10 @@ export default function TreeGrid({
   selectableParent    = true,
   selectedIds:  controlledSelectedIds,
   onSelectionChange,
-  // Optional third column — a per-row overflow menu trigger. Omit onMenuClick
+  // Optional third column — a per-row overflow menu trigger. Omit onMenuAction
   // (or leave showMenuColumn false) to skip the column entirely.
   showMenuColumn      = false,
-  onMenuClick,
+  onMenuAction,
   // Adds a "contains" search field above the tree — matches highlight in the
   // label, and a match's ancestors stay visible (expanded) for context even
   // when they don't themselves match.
@@ -296,6 +493,32 @@ export default function TreeGrid({
 }) {
   const [searchInput, setSearchInput] = useState('');
   const searchQuery = searchInput.trim().toLowerCase();
+
+  const [openMenu, setOpenMenu] = useState(null); // { rowId, top, right }
+  const closeMenu = useCallback(() => setOpenMenu(null), []);
+  const handleMenuButtonClick = useCallback((e, rowId) => {
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    setOpenMenu({ rowId, top: rect.bottom + 4, right: window.innerWidth - rect.right, triggerEl: e.currentTarget });
+  }, []);
+  const [renamingId, setRenamingId] = useState(null);
+  const [labelOverrides, setLabelOverrides] = useState({});
+  const commitRename = useCallback((id, newLabel) => {
+    const trimmed = newLabel.trim();
+    if (trimmed) setLabelOverrides((prev) => ({ ...prev, [id]: trimmed }));
+    setRenamingId(null);
+  }, []);
+  const cancelRename = useCallback(() => setRenamingId(null), []);
+
+  const handleMenuAction = useCallback((action) => {
+    const row = rowDataRef.current.find((r) => r.id === openMenu?.rowId);
+    if (!row) return;
+    if (action === 'rename') {
+      setRenamingId(row.id);
+    } else {
+      onMenuAction?.(action, row);
+    }
+  }, [openMenu, onMenuAction]);
 
   const [expandedIds, setExpandedIds] = useState(() =>
     new Set(defaultExpandAll ? collectParentIds(data) : [])
@@ -363,6 +586,15 @@ export default function TreeGrid({
   const gridApiRef = useRef(null);
   const rowNodeRefs = useRef(new Map());
   const menuButtonRefs = useRef(new Map());
+  // Tabbing out of the rename `<input>` into its row's menu button commits
+  // the rename (blur) in the very same tick — which changes renamingId,
+  // which changes columnDefs, which makes ag-grid recreate every cell in the
+  // row (all columns, not just the label one) to match. That recreation
+  // replaces the menu button DOM node with a fresh one *after* we already
+  // called .focus() on the old one, dropping focus back to nowhere. This
+  // records which row's button should hold focus so it can be reclaimed from
+  // the new node once that redraw has actually happened.
+  const pendingMenuFocusIdRef = useRef(null);
   const searchInputRef = useRef(null);
   // Browsers grant :focus-visible to a clicked text input just as readily as
   // a Tab-focused one (unlike buttons/divs), so telling mouse and keyboard
@@ -385,10 +617,12 @@ export default function TreeGrid({
     [searchQuery, searchedData, expandedIds]
   );
 
-  const rowData = useMemo(
-    () => flatten(searchedData, effectiveExpandedIds, selectedIds, selectionMode, searchQuery),
-    [searchedData, effectiveExpandedIds, selectedIds, selectionMode, searchQuery]
-  );
+  const rowData = useMemo(() => {
+    const flat = flatten(searchedData, effectiveExpandedIds, selectedIds, selectionMode, searchQuery);
+    return Object.keys(labelOverrides).length
+      ? flat.map((row) => (labelOverrides[row.id] !== undefined ? { ...row, label: labelOverrides[row.id] } : row))
+      : flat;
+  }, [searchedData, effectiveExpandedIds, selectedIds, selectionMode, searchQuery, labelOverrides]);
   const rowDataRef = useRef(rowData);
   rowDataRef.current = rowData;
 
@@ -411,6 +645,40 @@ export default function TreeGrid({
       requestAnimationFrame(() => rowNodeRefs.current.get(focused)?.focus());
     }
   }, [rowData]);
+
+  // The open-menu row's highlight (getRowStyle/rowClassRules) changes via
+  // plain state, not rowData, so ag-grid needs to be told explicitly to
+  // redraw it (same reasoning as the rowData effect above) — but scoped to
+  // just the previous/next menu row, and explicitly skipping whichever row is
+  // currently in rename mode. A force refresh destroys and recreates a cell's
+  // DOM, and Rename closes the menu in the very same tick it starts editing
+  // that row — a blanket, all-rows refresh here would tear down the rename
+  // `<input>` right after it mounts and focuses, and its commit-on-blur
+  // handler would read that as the user clicking away and cancel the rename.
+  const prevMenuRowIdRef = useRef(null);
+  useEffect(() => {
+    const prevId = prevMenuRowIdRef.current;
+    const nextId = openMenu?.rowId ?? null;
+    prevMenuRowIdRef.current = nextId;
+    const idsToRefresh = [prevId, nextId].filter((id) => id && id !== renamingId);
+    if (!idsToRefresh.length) return;
+    const rowNodes = idsToRefresh.map((id) => gridApiRef.current?.getRowNode(id)).filter(Boolean);
+    if (rowNodes.length) gridApiRef.current?.refreshCells({ force: true, rowNodes });
+  }, [openMenu, renamingId]);
+
+  // Clears the pending-focus flag a moment after a Tab-out-of-rename commit
+  // (see pendingMenuFocusIdRef above and the menu button's own ref callback,
+  // which does the actual focusing). ag-grid tears down and recreates that
+  // button's cell across several redraw passes reacting to the very same
+  // renamingId change, each one blurring whatever the previous pass focused
+  // — the button's ref callback re-claims focus on every one of its own
+  // (re)mounts while this flag is still set, which is more reliable than
+  // guessing how many passes/frames those redraws take.
+  useEffect(() => {
+    if (pendingMenuFocusIdRef.current == null) return;
+    const timer = setTimeout(() => { pendingMenuFocusIdRef.current = null; }, 300);
+    return () => clearTimeout(timer);
+  }, [renamingId]);
 
   // Flips tabindex="-1"/"0" directly on the DOM nodes — synchronous, and
   // independent of whether React/ag-grid ever re-renders that cell again.
@@ -594,7 +862,14 @@ export default function TreeGrid({
         // or, with no menu column to go to, loop straight back to search.
         if (showMenuColumn) {
           const btn = menuButtonRefs.current.get(row.id);
-          if (btn) { e.preventDefault(); btn.focus(); }
+          if (btn) {
+            e.preventDefault();
+            // Leaving the rename `<input>` (if any) commits it via blur,
+            // which can force ag-grid to recreate this row's cells — see
+            // pendingMenuFocusIdRef above for why focus needs reclaiming.
+            pendingMenuFocusIdRef.current = row.id;
+            btn.focus();
+          }
         } else if (showSearch && searchInputRef.current) {
           e.preventDefault();
           searchInputRef.current.focus();
@@ -632,6 +907,9 @@ export default function TreeGrid({
           onRowKeyDown={handleRowKeyDown}
           rowRef={makeRowRef(params.data.id)}
           initialTabIndex={focusedIdRef.current === params.data.id ? 0 : -1}
+          isRenaming={renamingId === params.data.id}
+          onCommitRename={commitRename}
+          onCancelRename={cancelRename}
         />
       ),
     }];
@@ -661,8 +939,20 @@ export default function TreeGrid({
             className="lyra-tree-grid__menu-btn"
             ref={(el) => {
               const id = params.data.id;
-              if (el) menuButtonRefs.current.set(id, el.querySelector('button'));
-              else menuButtonRefs.current.delete(id);
+              if (el) {
+                const btn = el.querySelector('button');
+                menuButtonRefs.current.set(id, btn);
+                // ag-grid tears down and recreates this cell's DOM across
+                // several passes after a Tab-out-of-rename commit (its own
+                // redraw reacting to the same renamingId change that
+                // triggered this), each one blurring whatever the previous
+                // pass focused — so the button re-claims focus on every one
+                // of its own (re)mounts while a reclaim is pending, rather
+                // than guessing how many passes/frames to wait out.
+                if (pendingMenuFocusIdRef.current === id) btn?.focus();
+              } else {
+                menuButtonRefs.current.delete(id);
+              }
             }}
           >
             <Button
@@ -670,7 +960,7 @@ export default function TreeGrid({
               size="sm"
               iconOnly
               aria-label={`More actions for ${params.data.label}`}
-              onClick={(e) => { e.stopPropagation(); onMenuClick?.(params.data); }}
+              onClick={(e) => { handleMenuButtonClick(e, params.data.id); }}
               onKeyDown={(e) => handleMenuButtonKeyDown(e, params.data.id)}
             >
               <EllipsisVertical />
@@ -680,7 +970,7 @@ export default function TreeGrid({
       });
     }
     return cols;
-  }, [hierarchyHeader, infoHeader, selectionMode, showIcons, showInfoColumn, selectableParent, showMenuColumn, onMenuClick, toggleExpand, toggleSelect, moveFocusTo, handleRowKeyDown, handleMenuButtonKeyDown, makeRowRef]);
+  }, [hierarchyHeader, infoHeader, selectionMode, showIcons, showInfoColumn, selectableParent, showMenuColumn, handleMenuButtonClick, toggleExpand, toggleSelect, moveFocusTo, handleRowKeyDown, handleMenuButtonKeyDown, makeRowRef, renamingId, commitRename, cancelRename]);
 
   // Multi-select's checkbox + active text already convey selection, so the row
   // highlight is reserved for single-select (where nothing else marks the pick).
@@ -688,10 +978,10 @@ export default function TreeGrid({
   // so hover/selected backgrounds inherit the same corner radius automatically.
   const getRowStyle = useCallback((params) => ({
     borderRadius: 'var(--lyra-radius-md)',
-    ...(params.data.selected && selectionMode !== 'multiple'
+    ...((params.data.selected && selectionMode !== 'multiple') || params.data.id === openMenu?.rowId
       ? { background: 'var(--lyra-color-bg-active-subtle)' }
       : null),
-  }), [selectionMode]);
+  }), [selectionMode, openMenu]);
 
   // ag-grid's hover overlay is a single global color (rowHoverColor in the
   // theme) — marking selected rows with their own class lets treeGrid.css
@@ -702,8 +992,9 @@ export default function TreeGrid({
   // evaluated once at row creation, so a class it applied would never clear
   // again on deselection (rowClassRules re-checks its predicate on refresh).
   const rowClassRules = useMemo(() => ({
-    'lyra-row-selected': (params) => params.data.selected && selectionMode !== 'multiple',
-  }), [selectionMode]);
+    'lyra-row-selected': (params) =>
+      (params.data.selected && selectionMode !== 'multiple') || params.data.id === openMenu?.rowId,
+  }), [selectionMode, openMenu]);
 
   // The info column has no flex — it's sized to its longest visible value instead
   // of sharing space with the hierarchy column, so it's re-measured after every
@@ -817,6 +1108,15 @@ export default function TreeGrid({
           onRowDataUpdated={autoSizeInfoColumn}
         />
       </div>
+      {openMenu && (
+        <RowActionMenu
+          top={openMenu.top}
+          right={openMenu.right}
+          triggerEl={openMenu.triggerEl}
+          onAction={handleMenuAction}
+          onClose={closeMenu}
+        />
+      )}
     </div>
   );
 }

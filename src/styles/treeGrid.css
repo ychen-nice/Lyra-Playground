@@ -73,3 +73,12 @@
 .lyra-tree-grid .ag-grid-pinned-right-cells::before {
   border-radius: var(--lyra-radius-md);
 }
+
+/* Row-action menu items are rendered via a portal into document.body (to
+   escape the grid's own clipping), outside the .lyra-tree-grid scope — this
+   rule lives unscoped for that reason. Overrides the browser's own default
+   ring color with the design system's focus token. */
+.lyra-row-menu-item:focus-visible {
+  outline: 2px solid var(--lyra-color-border-focus-default);
+  outline-offset: -2px;
+}

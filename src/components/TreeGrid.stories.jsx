@@ -58,7 +58,7 @@ export default {
     data:            { control: false, table: { disable: true } },
     selectedIds:     { control: false, table: { disable: true } },
     onSelectionChange: { control: false, table: { disable: true } },
-    onMenuClick:     { control: false, table: { disable: true } },
+    onMenuAction:    { control: false, table: { disable: true } },
   },
   args: {
     selectionMode:    'multiple',
@@ -125,7 +125,7 @@ export const WithSearch = {
 export const WithMenuColumn = {
   name: 'With Menu Column',
   render: (args) => (
-    <TreeGrid {...args} data={SAMPLE_DATA} onMenuClick={(row) => alert(`More actions: ${row.label}`)} />
+    <TreeGrid {...args} data={SAMPLE_DATA} onMenuAction={(action, row) => alert(`${action}: ${row.label}`)} />
   ),
   args: { showMenuColumn: true },
 };
@@ -200,7 +200,7 @@ function TreeGridDemo() {
         showMenuColumn={showMenuColumn}
         selectableParent={selectableParent}
         showSearch={showSearch}
-        onMenuClick={(row) => alert(`More actions: ${row.label}`)}
+        onMenuAction={(action, row) => alert(`${action}: ${row.label}`)}
       />
     </div>
   );
