@@ -1082,7 +1082,7 @@ export default function TreeGrid({
       )}
       <div
         ref={gridWrapperRef}
-        className="lyra-tree-grid"
+        className={`lyra-tree-grid${selectionMode === 'none' ? ' lyra-tree-grid--no-selection' : ''}`}
         role="tree"
         aria-multiselectable={selectionMode === 'multiple' || undefined}
         style={{ height, width: '100%' }}

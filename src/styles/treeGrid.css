@@ -1,7 +1,9 @@
 /* Structural-only overrides for TreeGrid — visual tokens live in TreeGrid.jsx's
    ag-grid Theming API params. ag-grid doesn't expose a distinct "pressed" row
-   param, so that one state is layered on here via the stable .ag-row class. */
-.lyra-tree-grid .ag-row:active {
+   param, so that one state is layered on here via the stable .ag-row class.
+   In selectionMode "none" no row can ever be picked, so clicking one has no
+   effect — it shouldn't look pressable either. */
+.lyra-tree-grid:not(.lyra-tree-grid--no-selection) .ag-row:active {
   background: var(--lyra-color-state-bg-pressed-opacity);
 }
 
