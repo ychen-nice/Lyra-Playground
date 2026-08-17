@@ -9,6 +9,7 @@ import '../styles/treeGrid.css';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const INDENT = 24; // px per level — 1.5rem
+const BASE_PADDING = 8; // 0.5rem — left padding for every row regardless of level
 const ROW_HEIGHT_PX = 32; // matches lyra/row-height/sm, used for the grid's rowHeight param
 
 // ag-grid's Theming API takes CSS values directly, so every param below points
@@ -120,7 +121,7 @@ function highlightLabel(label, query) {
     if (idx > start) parts.push(label.slice(start, idx));
     parts.push(
       <mark key={idx} style={{
-        background: 'yellow',
+        background: 'var(--lyra-color-accent-yellow-soft)',
         color: 'inherit', fontWeight: 700, borderRadius: 'var(--lyra-radius-xs)',
       }}>
         {label.slice(idx, idx + query.length)}
@@ -207,7 +208,7 @@ function HierarchyCell({
       // No inline `outline` here — an inline style would beat the CSS
       // `:focus-visible` rule (lyra-tree-row) regardless of specificity,
       // permanently hiding the ring it's meant to draw.
-      style={{ display: 'flex', alignItems: 'center', height: '100%', gap: 'var(--lyra-spacing-2)', paddingLeft: level * INDENT, position: 'relative' }}
+      style={{ display: 'flex', alignItems: 'center', height: '100%', gap: 'var(--lyra-spacing-2)', paddingLeft: BASE_PADDING + level * INDENT, position: 'relative' }}
     >
       {/* Multi-select already reads as selected via its checkbox + text styling —
          the row highlight and accent bar are reserved for single-select. */}
