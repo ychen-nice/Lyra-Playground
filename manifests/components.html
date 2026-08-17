@@ -594,7 +594,7 @@
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>0.7s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>0.4s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -2860,7 +2860,7 @@ import { TreeGrid } from "ai-assistant-storybook";</code></pre>
     showSearch={false}
     searchPlaceholder=&quot;Search&quot;
     data={SAMPLE_DATA}
-    onMenuClick={(row) =&gt; alert(`More actions: ${row.label}`)} /&gt;;</code></pre>
+    onMenuAction={(action, row) =&gt; alert(`${action}: ${row.label}`)} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
