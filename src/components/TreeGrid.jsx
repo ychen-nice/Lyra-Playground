@@ -204,13 +204,19 @@ function RowActionMenu({ top, right, triggerEl, onAction, onClose }) {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') exitToTrigger();
     };
-    // Capture phase: fires before the click that opened this from being
-    // re-interpreted, and before any other component's own handlers.
+    // The menu's position is computed once, from the trigger button's
+    // bounding rect, at the moment it opens — it doesn't track the button
+    // across a resize, so it would otherwise drift away from (or on top of)
+    // whatever it was originally anchored to. Simplest fix is the one every
+    // native menu/select uses: closing rather than trying to re-anchor.
+    const handleResize = () => onClose();
     document.addEventListener('mousedown', handlePointerDown, true);
     document.addEventListener('keydown', handleKeyDown, true);
+    window.addEventListener('resize', handleResize);
     return () => {
       document.removeEventListener('mousedown', handlePointerDown, true);
       document.removeEventListener('keydown', handleKeyDown, true);
+      window.removeEventListener('resize', handleResize);
     };
   }, [onClose, triggerEl]);
 
