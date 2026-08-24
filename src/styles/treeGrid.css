@@ -28,7 +28,8 @@
 
 .lyra-tree-grid .ag-row-hover .lyra-tree-grid__menu-btn,
 .lyra-tree-grid__menu-btn:focus-within,
-.lyra-tree-grid .ag-row:has(.lyra-tree-row:focus) .lyra-tree-grid__menu-btn {
+.lyra-tree-grid .ag-row:has(.lyra-tree-row:focus) .lyra-tree-grid__menu-btn,
+.lyra-tree-grid__menu-btn--open {
   opacity: 1;
   pointer-events: auto;
 }

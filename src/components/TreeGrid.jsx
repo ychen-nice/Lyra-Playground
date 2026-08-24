@@ -495,6 +495,13 @@ export default function TreeGrid({
   const searchQuery = searchInput.trim().toLowerCase();
 
   const [openMenu, setOpenMenu] = useState(null); // { rowId, top, right }
+  // Read from the menu-button cellRenderer instead of `openMenu` directly, so
+  // that closure doesn't need to change (and force ag-grid to recreate every
+  // cell in the grid via columnDefs) just to show which row's button is
+  // pressed — the existing scoped refresh below already re-invokes it for
+  // exactly the affected row(s) whenever openMenu changes.
+  const openMenuRef = useRef(openMenu);
+  openMenuRef.current = openMenu;
   const closeMenu = useCallback(() => setOpenMenu(null), []);
   const handleMenuButtonClick = useCallback((e, rowId) => {
     e.stopPropagation();
@@ -934,9 +941,11 @@ export default function TreeGrid({
         resizable: false,
         sortable: false,
         cellStyle: { display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 },
-        cellRenderer: (params) => (
+        cellRenderer: (params) => {
+          const isMenuOpen = openMenuRef.current?.rowId === params.data.id;
+          return (
           <span
-            className="lyra-tree-grid__menu-btn"
+            className={`lyra-tree-grid__menu-btn${isMenuOpen ? ' lyra-tree-grid__menu-btn--open' : ''}`}
             ref={(el) => {
               const id = params.data.id;
               if (el) {
@@ -959,6 +968,7 @@ export default function TreeGrid({
               variant="ghost"
               size="sm"
               iconOnly
+              forcePressed={isMenuOpen}
               aria-label={`More actions for ${params.data.label}`}
               onClick={(e) => { handleMenuButtonClick(e, params.data.id); }}
               onKeyDown={(e) => handleMenuButtonKeyDown(e, params.data.id)}
@@ -966,7 +976,8 @@ export default function TreeGrid({
               <EllipsisVertical />
             </Button>
           </span>
-        ),
+          );
+        },
       });
     }
     return cols;
