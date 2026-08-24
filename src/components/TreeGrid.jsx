@@ -299,7 +299,7 @@ function TreeCheckbox({ checked, indeterminate, onChange, ariaLabel }) {
       // Not its own tab stop — the row is the single roving-tabindex target,
       // and Space on the row triggers this same toggle.
       tabIndex={-1}
-      onClick={(e) => { e.stopPropagation(); onChange(); }}
+      onClick={(e) => { e.stopPropagation(); onChange(e.shiftKey); }}
       style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         boxSizing: 'border-box', // keeps the unchecked border inset within 1rem instead of adding to it
@@ -401,7 +401,7 @@ function HierarchyCell({
           <TreeCheckbox
             checked={checkState === 'checked'}
             indeterminate={checkState === 'indeterminate'}
-            onChange={() => onToggleSelect(data)}
+            onChange={(shiftKey) => onToggleSelect(data, shiftKey)}
             ariaLabel={`Select ${label}`}
           />
         )}
@@ -570,7 +570,13 @@ export default function TreeGrid({
   const selectedIdsRef = useRef(selectedIds);
   selectedIdsRef.current = selectedIds;
 
-  const toggleSelect = useCallback((row) => {
+  // The last checkbox clicked without Shift — a subsequent Shift+click
+  // extends the range from here, same as file-explorer bulk-select. Left
+  // alone across Shift+clicks so the same anchor can keep extending or
+  // shrinking the range; a plain click always resets it to that row.
+  const selectionAnchorIdRef = useRef(null);
+
+  const toggleSelect = useCallback((row, shiftKey) => {
     const currentSelectedIds = selectedIdsRef.current;
     if (selectionMode === 'single') {
       // No unselect — single mode always keeps exactly one row picked once
@@ -578,6 +584,27 @@ export default function TreeGrid({
       if (!currentSelectedIds.has(row.id)) setSelection(new Set([row.id]));
       return;
     }
+    const anchorId = selectionAnchorIdRef.current;
+    if (shiftKey && anchorId != null && anchorId !== row.id) {
+      const rd = rowDataRef.current;
+      const anchorIndex = rd.findIndex(r => r.id === anchorId);
+      const targetIndex = rd.findIndex(r => r.id === row.id);
+      if (anchorIndex !== -1 && targetIndex !== -1) {
+        const [start, end] = anchorIndex < targetIndex ? [anchorIndex, targetIndex] : [targetIndex, anchorIndex];
+        const next = new Set(currentSelectedIds);
+        // Checks every selectable row in the range — adding to whatever's
+        // already checked outside it, rather than replacing the selection —
+        // since these are independent checkboxes, not exclusive list items.
+        for (let i = start; i <= end; i++) {
+          const r = rd[i];
+          if (!isRowSelectable(r, selectionMode, selectableParent)) continue;
+          (r.hasChildren ? r.leafIds : [r.id]).forEach(leafId => next.add(leafId));
+        }
+        setSelection(next);
+        return;
+      }
+    }
+    selectionAnchorIdRef.current = row.id;
     const next = new Set(currentSelectedIds);
     if (row.hasChildren) {
       // A folder's checkbox always acts on its leaves, not itself — toggling
@@ -588,7 +615,7 @@ export default function TreeGrid({
       next.has(row.id) ? next.delete(row.id) : next.add(row.id);
     }
     setSelection(next);
-  }, [selectionMode, setSelection]);
+  }, [selectionMode, selectableParent, setSelection]);
 
   // Roving tabindex: exactly one row is ever a real Tab stop. The tabindex
   // attribute itself is written directly to the DOM (see setFocused below)
