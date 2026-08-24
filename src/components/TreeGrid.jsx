@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef, cloneElement } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronRight, ChevronDown, Check, Minus, EllipsisVertical, Search, X } from 'lucide-react';
+import { ChevronRight, ChevronLeft, ChevronDown, Check, Minus, EllipsisVertical, Search, X } from 'lucide-react';
 import { ModuleRegistry, AllCommunityModule, themeQuartz } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import Button from './Button';
@@ -155,7 +155,7 @@ const ROW_MENU_ACTIONS = [
 /* ─── Row action menu — rendered via portal into document.body, positioned
    from the trigger button's own bounding rect, so it floats above the grid's
    scrolling/virtualized viewport instead of getting clipped by it. */
-function RowActionMenu({ top, right, triggerEl, onAction, onClose }) {
+function RowActionMenu({ top, insetInlineEnd, triggerEl, onAction, onClose, rtl }) {
   const menuRef = useRef(null);
   const itemRefs = useRef([]);
   const activeIndexRef = useRef(0);
@@ -241,9 +241,10 @@ function RowActionMenu({ top, right, triggerEl, onAction, onClose }) {
     <div
       ref={menuRef}
       role="menu"
+      dir={rtl ? 'rtl' : 'ltr'}
       onKeyDown={handleMenuKeyDown}
       style={{
-        position: 'fixed', top, right, width: 'max-content', minWidth: '7.5rem',
+        position: 'fixed', top, insetInlineEnd, width: 'max-content', minWidth: '7.5rem',
         background: 'var(--lyra-color-bg-surface-overlay)',
         border: '1px solid var(--lyra-color-border-subtle)',
         borderRadius: 'var(--lyra-radius-md)',
@@ -264,7 +265,7 @@ function RowActionMenu({ top, right, triggerEl, onAction, onClose }) {
             className="lyra-body-md lyra-row-menu-item"
             onClick={() => { onAction(action.key); onClose(); }}
             style={{
-              display: 'flex', alignItems: 'center', width: '100%', textAlign: 'left', boxSizing: 'border-box',
+              display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '100%', textAlign: 'start', boxSizing: 'border-box',
               height: 'var(--lyra-row-height-sm)',
               padding: '0 var(--lyra-spacing-3)',
               border: 'none', background: 'transparent', cursor: 'pointer',
@@ -318,7 +319,7 @@ function TreeCheckbox({ checked, indeterminate, onChange, ariaLabel }) {
 function HierarchyCell({
   data, selectionMode, showIcons, selectableParent,
   onToggleExpand, onToggleSelect, onRowFocus, onRowKeyDown, rowRef, initialTabIndex,
-  isRenaming, onCommitRename, onCancelRename,
+  isRenaming, onCommitRename, onCancelRename, rtl,
 }) {
   const { level, hasChildren, expanded, icon, label, id, selected, checkState, searchQuery } = data;
   const renameInputRef = useRef(null);
@@ -367,13 +368,23 @@ function HierarchyCell({
       // No inline `outline` here — an inline style would beat the CSS
       // `:focus-visible` rule (lyra-tree-row) regardless of specificity,
       // permanently hiding the ring it's meant to draw.
-      style={{ display: 'flex', alignItems: 'center', height: '100%', gap: 'var(--lyra-spacing-2)', paddingLeft: BASE_PADDING + level * INDENT, position: 'relative' }}
+      style={{
+        // `direction` is a real, inherited CSS property — setting it once
+        // here (rather than flipping flexDirection/left/right by hand) means
+        // every logical property below (paddingInlineStart, insetInlineStart,
+        // flex-start/flex-end) automatically resolves to the correct physical
+        // side, for this row and everything nested inside it.
+        direction: rtl ? 'rtl' : 'ltr',
+        display: 'flex', alignItems: 'center', height: '100%',
+        gap: 'var(--lyra-spacing-2)', position: 'relative',
+        paddingInlineStart: BASE_PADDING + level * INDENT,
+      }}
     >
       {/* Multi-select already reads as selected via its checkbox + text styling —
          the row highlight and accent bar are reserved for single-select. */}
       {selected && selectionMode !== 'multiple' && (
         <span style={{
-          position: 'absolute', left: 0, top: '28%', bottom: '28%',
+          position: 'absolute', insetInlineStart: 0, top: '28%', bottom: '28%',
           width: 'var(--lyra-spacing-05)', background: 'var(--lyra-color-fg-active-strong)',
           borderRadius: 'var(--lyra-radius-xs)',
         }} />
@@ -387,7 +398,9 @@ function HierarchyCell({
           color: 'var(--lyra-color-fg-default)',
         }}
       >
-        {hasChildren && (expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />)}
+        {hasChildren && (
+          expanded ? <ChevronDown size={14} /> : rtl ? <ChevronLeft size={14} /> : <ChevronRight size={14} />
+        )}
       </span>
       <div
         onClick={rowClickSelect}
@@ -496,6 +509,10 @@ export default function TreeGrid({
   // when they don't themselves match.
   showSearch          = false,
   searchPlaceholder   = 'Search',
+  // Mirrors the tree's own layout (indent, chevrons, accent bar, search
+  // field icons, menu alignment) and enables ag-grid's own RTL engine
+  // (column order, native scroll direction) for right-to-left locales.
+  rtl                 = false,
 }) {
   const [searchInput, setSearchInput] = useState('');
   const searchQuery = searchInput.trim().toLowerCase();
@@ -512,8 +529,13 @@ export default function TreeGrid({
   const handleMenuButtonClick = useCallback((e, rowId) => {
     e.stopPropagation();
     const rect = e.currentTarget.getBoundingClientRect();
-    setOpenMenu({ rowId, top: rect.bottom + 4, right: window.innerWidth - rect.right, triggerEl: e.currentTarget });
-  }, []);
+    // Both directions hang the menu from the button's own inline-end edge —
+    // physically right in LTR, physically left in RTL — expressed as a
+    // single logical `insetInlineEnd` the menu applies under its own `dir`,
+    // rather than a left/right pair chosen at render time.
+    const insetInlineEnd = rtl ? rect.left : window.innerWidth - rect.right;
+    setOpenMenu({ rowId, top: rect.bottom + 4, insetInlineEnd, triggerEl: e.currentTarget });
+  }, [rtl]);
   const [renamingId, setRenamingId] = useState(null);
   const [labelOverrides, setLabelOverrides] = useState({});
   const commitRename = useCallback((id, newLabel) => {
@@ -932,9 +954,12 @@ export default function TreeGrid({
       field: 'label',
       flex: 1,
       minWidth: 200,
-      // Zeroed so the cell renderer's own left accent bar sits flush against the
-      // row's true left edge, matching DashboardList's active-item indicator.
-      cellStyle: { paddingLeft: 0 },
+      // Zeroed so the cell renderer's own accent bar sits flush against the
+      // row's true edge, matching DashboardList's active-item indicator.
+      // `direction` here is what makes the logical `paddingInlineStart` (and
+      // everything logical inside HierarchyCell's own `direction: rtl`) work
+      // out to the correct physical side.
+      cellStyle: { direction: rtl ? 'rtl' : 'ltr', paddingInlineStart: 0 },
       cellRenderer: (params) => (
         <HierarchyCell
           data={params.data}
@@ -950,6 +975,7 @@ export default function TreeGrid({
           isRenaming={renamingId === params.data.id}
           onCommitRename={commitRename}
           onCancelRename={cancelRename}
+          rtl={rtl}
         />
       ),
     }];
@@ -960,8 +986,15 @@ export default function TreeGrid({
         field: 'info',
         cellClass: 'lyra-body-md',
         // ag-grid's default cell padding reserves space on both sides, but the
-        // text is right-aligned — the left side is always empty, so it's zeroed.
-        cellStyle: { color: 'var(--lyra-color-fg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingLeft: 0 },
+        // text hugs the far edge from the hierarchy column — the near side is
+        // always empty, so it's zeroed. `justifyContent: flex-end` and
+        // `paddingInlineStart` are both logical — setting `direction` here is
+        // the only thing that needs to change between LTR and RTL.
+        cellStyle: {
+          direction: rtl ? 'rtl' : 'ltr',
+          color: 'var(--lyra-color-fg-secondary)', display: 'flex', alignItems: 'center',
+          justifyContent: 'flex-end', paddingInlineStart: 0,
+        },
       });
     }
     if (showMenuColumn) {
@@ -1014,7 +1047,7 @@ export default function TreeGrid({
       });
     }
     return cols;
-  }, [hierarchyHeader, infoHeader, selectionMode, showIcons, showInfoColumn, selectableParent, showMenuColumn, handleMenuButtonClick, toggleExpand, toggleSelect, moveFocusTo, handleRowKeyDown, handleMenuButtonKeyDown, makeRowRef, renamingId, commitRename, cancelRename]);
+  }, [hierarchyHeader, infoHeader, selectionMode, showIcons, showInfoColumn, selectableParent, showMenuColumn, handleMenuButtonClick, toggleExpand, toggleSelect, moveFocusTo, handleRowKeyDown, handleMenuButtonKeyDown, makeRowRef, renamingId, commitRename, cancelRename, rtl]);
 
   // Multi-select's checkbox + active text already convey selection, so the row
   // highlight is reserved for single-select (where nothing else marks the pick).
@@ -1071,11 +1104,14 @@ export default function TreeGrid({
   }, [columnDefs, disableHeaderTabbing]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lyra-spacing-2)', width: '100%', maxWidth: '720px' }}>
+    <div dir={rtl ? 'rtl' : 'ltr'} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lyra-spacing-2)', width: '100%', maxWidth: '720px' }}>
       {showSearch && (
+        // `dir` on the outer wrapper already set `direction` for everything
+        // in this subtree — insetInlineStart/End and paddingInline* below
+        // resolve to the correct physical side from that alone.
         <div style={{ position: 'relative', flexShrink: 0 }}>
           <Search size={16} style={{
-            position: 'absolute', left: 'var(--lyra-spacing-3)', top: '50%', transform: 'translateY(-50%)',
+            position: 'absolute', insetInlineStart: 'var(--lyra-spacing-3)', top: '50%', transform: 'translateY(-50%)',
             color: 'var(--lyra-color-fg-secondary)', pointerEvents: 'none',
           }} />
           <input
@@ -1095,7 +1131,8 @@ export default function TreeGrid({
             className="lyra-tree-grid__search lyra-body-md"
             style={{
               width: '100%', boxSizing: 'border-box', height: 'var(--lyra-control-height-md)',
-              padding: '0 var(--lyra-spacing-8) 0 calc(var(--lyra-spacing-3) + 20px)',
+              paddingInlineStart: 'calc(var(--lyra-spacing-3) + 20px)',
+              paddingInlineEnd: 'var(--lyra-spacing-8)',
               borderRadius: 'var(--lyra-radius-md)',
               border: `1px solid ${
                 searchFocusVariant === 'mouse' ? 'var(--lyra-color-border-active)'
@@ -1113,7 +1150,7 @@ export default function TreeGrid({
               onClick={() => setSearchInput('')}
               aria-label="Clear search"
               style={{
-                position: 'absolute', right: 'var(--lyra-spacing-2)', top: '50%', transform: 'translateY(-50%)',
+                position: 'absolute', insetInlineEnd: 'var(--lyra-spacing-2)', top: '50%', transform: 'translateY(-50%)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20,
                 border: 'none', borderRadius: 'var(--lyra-radius-xs)', background: 'transparent',
                 color: 'var(--lyra-color-fg-secondary)', cursor: 'pointer',
@@ -1132,7 +1169,13 @@ export default function TreeGrid({
         style={{ height, width: '100%' }}
       >
         <AgGridReact
+          // enableRtl is only read once, at grid creation — ag-grid never
+          // applies a later change to an already-mounted grid, so the key
+          // forces a full remount (and re-init with the new value) whenever
+          // it flips, rather than silently no-opping.
+          key={rtl ? 'rtl' : 'ltr'}
           theme={treeGridTheme}
+          enableRtl={rtl}
           rowData={rowData}
           columnDefs={columnDefs}
           getRowId={(p) => String(p.data.id)}
@@ -1155,8 +1198,9 @@ export default function TreeGrid({
       {openMenu && (
         <RowActionMenu
           top={openMenu.top}
-          right={openMenu.right}
+          insetInlineEnd={openMenu.insetInlineEnd}
           triggerEl={openMenu.triggerEl}
+          rtl={rtl}
           onAction={handleMenuAction}
           onClose={closeMenu}
         />

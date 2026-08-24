@@ -59,6 +59,9 @@ export default {
     selectedIds:     { control: false, table: { disable: true } },
     onSelectionChange: { control: false, table: { disable: true } },
     onMenuAction:    { control: false, table: { disable: true } },
+    // Driven by the toolbar's global "Direction" toggle (see decorators
+    // below) rather than a per-story control.
+    rtl:             { control: false, table: { disable: true } },
   },
   args: {
     selectionMode:    'multiple',
@@ -73,6 +76,12 @@ export default {
     showSearch:       false,
     searchPlaceholder: 'Search',
   },
+  decorators: [
+    (Story, context) => {
+      context.args.rtl = context.globals.direction === 'rtl';
+      return <Story />;
+    },
+  ],
 };
 
 export const Default = {
@@ -166,6 +175,7 @@ function TreeGridDemo() {
   const [showMenuColumn, setShowMenuColumn] = useState(false);
   const [selectableParent, setSelectableParent] = useState(true);
   const [showSearch, setShowSearch] = useState(false);
+  const [rtl, setRtl] = useState(false);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lyra-spacing-4)' }}>
@@ -186,13 +196,14 @@ function TreeGridDemo() {
         <CheckboxField label="Show Menu Column" checked={showMenuColumn} onChange={setShowMenuColumn} />
         <CheckboxField label="Selectable Parent" checked={selectableParent} onChange={setSelectableParent} />
         <CheckboxField label="Show Search" checked={showSearch} onChange={setShowSearch} />
+        <CheckboxField label="Right to Left" checked={rtl} onChange={setRtl} />
       </div>
       <TreeGrid
         // Remounts (fresh expand/selection/search state) whenever selection
         // mode changes, or search is switched off — turning search off
         // should show every row again, not leave a stale filter applied
         // underneath the now-hidden search field.
-        key={`${selectionMode}-${showSearch}`}
+        key={`${selectionMode}-${showSearch}-${rtl}`}
         data={SAMPLE_DATA}
         selectionMode={selectionMode}
         showIcons={showIcons}
@@ -200,6 +211,7 @@ function TreeGridDemo() {
         showMenuColumn={showMenuColumn}
         selectableParent={selectableParent}
         showSearch={showSearch}
+        rtl={rtl}
         onMenuAction={(action, row) => alert(`${action}: ${row.label}`)}
       />
     </div>

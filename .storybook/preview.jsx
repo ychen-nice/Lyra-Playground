@@ -58,6 +58,23 @@ export const globalTypes = {
       dynamicTitle: true,
     },
   },
+  // Most components use hardcoded inline left/right styles rather than CSS
+  // logical properties, so this alone won't mirror them — it's read by
+  // individual components (e.g. TreeGrid's `rtl` prop) that have their own
+  // real RTL support, rather than flipping every component automatically.
+  direction: {
+    name: "Direction",
+    description: "Text direction (components opt in individually)",
+    defaultValue: "ltr",
+    toolbar: {
+      icon: "transfer",
+      items: [
+        { value: "ltr", icon: "arrowright", title: "LTR" },
+        { value: "rtl", icon: "arrowleft",  title: "RTL" },
+      ],
+      dynamicTitle: true,
+    },
+  },
 };
 
 /* ─── Global decorator ─────────────────────────────────────────────────────── */
