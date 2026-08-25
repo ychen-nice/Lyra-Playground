@@ -171,10 +171,10 @@ const SELECT_STYLE = {
 function TreeGridDemo() {
   const [selectionMode, setSelectionMode] = useState('multiple');
   const [showIcons, setShowIcons] = useState(true);
-  const [showInfoColumn, setShowInfoColumn] = useState(true);
-  const [showMenuColumn, setShowMenuColumn] = useState(false);
+  const [showInfoColumn, setShowInfoColumn] = useState(false);
+  const [showMenuColumn, setShowMenuColumn] = useState(true);
   const [selectableParent, setSelectableParent] = useState(true);
-  const [showSearch, setShowSearch] = useState(false);
+  const [showSearch, setShowSearch] = useState(true);
   const [rtl, setRtl] = useState(false);
 
   return (
