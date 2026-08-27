@@ -1,4 +1,5 @@
-import { Plus, Trash2, Download, ChevronRight, Sparkles, Search, Settings, X } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Trash2, Download, ChevronRight, Sparkles, Search, Settings, X, Bold, Italic, Underline } from 'lucide-react';
 import Button from '../components/Button';
 
 export default {
@@ -6,10 +7,11 @@ export default {
   component: Button,
   parameters: { layout: 'centered' },
   argTypes: {
-    variant:  { control: 'select', options: ['primary', 'secondary', 'ghost', 'destructive'] },
+    variant:  { control: 'select', options: ['primary', 'secondary', 'ghost', 'destructive', 'toggle'] },
     size:     { control: 'select', options: ['sm', 'md', 'lg'] },
     iconOnly: { control: 'boolean' },
     disabled: { control: 'boolean' },
+    active:   { control: 'boolean', description: '`toggle` variant only — the pressed/on look' },
   },
 };
 
@@ -33,8 +35,48 @@ export const Variants = {
       <Button variant="secondary">Secondary</Button>
       <Button variant="ghost">Ghost</Button>
       <Button variant="destructive">Destructive</Button>
+      <Button variant="toggle">Toggle</Button>
     </div>
   ),
+};
+
+// ── Toggle ──────────────────────────────────────────────────────────────────
+// A secondary button that also recognizes a persisted on/off `active` state —
+// border-active, bg-active-subtle, fg-active-strong — for things like a
+// pressed formatting button or a filter chip.
+
+export const Toggle = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      <Button variant="toggle">Off</Button>
+      <Button variant="toggle" active>On</Button>
+      <Button variant="toggle" disabled>Disabled</Button>
+    </div>
+  ),
+};
+
+function ToggleGroupDemo() {
+  const [active, setActive] = useState({ bold: true, italic: false, underline: false });
+  const toggle = (key) => setActive(a => ({ ...a, [key]: !a[key] }));
+  return (
+    <div style={{ display: 'flex', gap: 4 }}>
+      <Button variant="toggle" size="md" iconOnly aria-label="Bold" active={active.bold} onClick={() => toggle('bold')}>
+        <Bold />
+      </Button>
+      <Button variant="toggle" size="md" iconOnly aria-label="Italic" active={active.italic} onClick={() => toggle('italic')}>
+        <Italic />
+      </Button>
+      <Button variant="toggle" size="md" iconOnly aria-label="Underline" active={active.underline} onClick={() => toggle('underline')}>
+        <Underline />
+      </Button>
+    </div>
+  );
+}
+
+export const ToggleGroup = {
+  name: 'Toggle (interactive group)',
+  parameters: { controls: { disable: true } },
+  render: () => <ToggleGroupDemo />,
 };
 
 // ── All sizes ───────────────────────────────────────────────────────────────

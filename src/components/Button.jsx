@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import '../styles/button.css';
 
+// Shared by `secondary` and `toggle` — toggle is a secondary button that also
+// recognizes an `active` state (see VARIANT_STYLES.toggle's usage below).
+const SECONDARY_STYLE = {
+  bg:      'var(--lyra-color-bg-secondary)',
+  bgHover: 'var(--lyra-color-state-bg-hover-secondary)',
+  bgPress: 'var(--lyra-color-state-bg-pressed-secondary)',
+  color:   'var(--lyra-color-fg-action)',
+  border:  '1px solid var(--lyra-color-border-soft)',
+};
+
 const VARIANT_STYLES = {
   primary: {
     bg:      'var(--lyra-color-bg-primary)',
@@ -9,13 +19,8 @@ const VARIANT_STYLES = {
     color:   'var(--lyra-color-fg-on-primary)',
     border:  'none',
   },
-  secondary: {
-    bg:      'var(--lyra-color-bg-secondary)',
-    bgHover: 'var(--lyra-color-state-bg-hover-secondary)',
-    bgPress: 'var(--lyra-color-state-bg-pressed-secondary)',
-    color:   'var(--lyra-color-fg-action)',
-    border:  '1px solid var(--lyra-color-border-soft)',
-  },
+  secondary: SECONDARY_STYLE,
+  toggle: SECONDARY_STYLE,
   ghost: {
     bg:      'transparent',
     bgHover: 'var(--lyra-color-state-bg-hover-opacity)',
@@ -76,6 +81,9 @@ export default function Button({
   rightIcon,
   disabled     = false,
   forcePressed = false,
+  // 'toggle' only — reflects a persisted on/off state (e.g. a pressed filter
+  // chip), as opposed to `forcePressed`'s momentary mouse-down look.
+  active       = false,
   onClick,
   onMouseEnter: externalMouseEnter,
   onMouseLeave: externalMouseLeave,
@@ -87,15 +95,21 @@ export default function Button({
 
   const v = VARIANT_STYLES[variant] ?? VARIANT_STYLES.primary;
   const s = SIZE_STYLES[size]       ?? SIZE_STYLES.md;
+  const isToggleActive = variant === 'toggle' && active;
 
   const bg = disabled
     ? (variant === 'ghost' ? 'transparent' : 'var(--lyra-color-bg-disabled)')
+    : isToggleActive ? 'var(--lyra-color-bg-active-subtle)'
     : (pressed || forcePressed) ? v.bgPress
     : hovered ? v.bgHover
     : v.bg;
 
-  const color  = disabled ? 'var(--lyra-color-fg-disabled)' : v.color;
-  const border = disabled ? 'none' : v.border;
+  const color  = disabled ? 'var(--lyra-color-fg-disabled)'
+    : isToggleActive ? 'var(--lyra-color-fg-active-strong)'
+    : v.color;
+  const border = disabled ? 'none'
+    : isToggleActive ? '1px solid var(--lyra-color-border-active)'
+    : v.border;
 
   const sizedIcon = (icon) =>
     icon && React.isValidElement(icon)
@@ -106,6 +120,7 @@ export default function Button({
     <button
       className="lyra-btn"
       disabled={disabled}
+      aria-pressed={variant === 'toggle' ? active : undefined}
       onClick={onClick}
       {...rest}
       onMouseEnter={e => { if (!disabled) setHovered(true); externalMouseEnter?.(e); }}
