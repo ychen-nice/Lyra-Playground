@@ -469,7 +469,13 @@ export default function Shell({
             // right side, where the extra width lives, free.
             width: 320,
             overflow: 'hidden',
-            pointerEvents: navOverlay ? 'auto' : 'none',
+            // Always none, even while open — this box is wider than the visible panel
+            // (see above), and capturing pointer events across that whole width would
+            // make the empty shadow-only strip to the right of the panel swallow clicks
+            // instead of letting them fall through to content, which the outside-click
+            // handler below would then wrongly treat as "inside" (same element) and not
+            // close on. The inner panel re-enables pointer-events for itself below.
+            pointerEvents: 'none',
             // Same slide-in treatment as the content sidebar's own overlay
             // (InternalSidebar.jsx) rather than a fade.
             transform: navOverlay ? 'translateX(0)' : 'translateX(-100%)',
