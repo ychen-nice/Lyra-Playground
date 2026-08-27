@@ -100,11 +100,11 @@ export default function Breadcrumb({
           height:       24,
           padding:      '0 var(--lyra-spacing-2)',
           borderRadius: 'var(--lyra-radius-md)',
-          background:   'var(--lyra-color-accent-green-soft)',
+          background:   'var(--lyra-color-accent-green-subtle-bg)',
           flexShrink:   0,
         }}>
           <span className="lyra-body-md-em" style={{
-            color:        'var(--lyra-color-accent-green-strong)',
+            color:        'var(--lyra-color-accent-green-subtle-fg)',
             whiteSpace:   'nowrap',
             overflow:     'hidden',
             textOverflow: 'ellipsis',

@@ -555,7 +555,7 @@ export default function Shell({
                 <div style={{
                   width: 2,
                   background: (aiHandleHovered || isResizingAiPanel)
-                    ? 'var(--lyra-color-accent-blue-strong, #3b82f6)'
+                    ? 'var(--lyra-color-accent-blue-strong-bg, #3163c9)'
                     : 'transparent',
                   transition: 'background 120ms',
                   pointerEvents: 'none',

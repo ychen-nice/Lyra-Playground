@@ -122,7 +122,7 @@ function highlightLabel(label, query) {
     if (idx > start) parts.push(label.slice(start, idx));
     parts.push(
       <mark key={idx} style={{
-        background: 'var(--lyra-color-accent-yellow-soft)',
+        background: 'var(--lyra-color-accent-yellow-subtle-bg)',
         color: 'inherit', fontWeight: 700, borderRadius: 'var(--lyra-radius-xs)',
       }}>
         {label.slice(idx, idx + query.length)}

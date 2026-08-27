@@ -108,7 +108,7 @@ export default function InternalSidebar({ state = 'hidden', width = 256, isDragg
         <div style={{
           width:      2,
           background: (handleHovered || isDragging)
-            ? 'var(--lyra-color-accent-blue-strong, #3b82f6)'
+            ? 'var(--lyra-color-accent-blue-strong-bg, #3163c9)'
             : 'transparent',
           transition: 'background 120ms',
           pointerEvents: 'none',

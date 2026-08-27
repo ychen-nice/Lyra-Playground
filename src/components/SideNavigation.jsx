@@ -25,8 +25,8 @@ const ChevronDown = () => (
 function NavBadge({ label = 'New' }) {
   return (
     <div style={{
-      background: 'var(--lyra-color-accent-blue-strong, #2d5bb9)',
-      color: 'var(--lyra-color-accent-blue-soft, #d6e4ff)',
+      background: 'var(--lyra-color-accent-blue-strong-bg, #3163c9)',
+      color: 'var(--lyra-color-accent-blue-strong-fg, #f0f5ff)',
       fontSize: 12, fontWeight: 500, lineHeight: '16px', letterSpacing: '0.2px',
       padding: '0 var(--lyra-spacing-2)', height: 'var(--lyra-control-height-xs)', borderRadius: 'var(--lyra-radius-sm)',
       display: 'flex', alignItems: 'center', flexShrink: 0,
