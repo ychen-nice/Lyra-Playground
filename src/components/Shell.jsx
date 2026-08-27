@@ -86,6 +86,10 @@ export default function Shell({
     ...item,
     active: item.id === activePageId,
     onClick: () => {
+      // Picking a nav option while the nav is floating as an overlay (too narrow to
+      // dock expanded) always minimizes it back — even re-clicking the already-active
+      // page, since the overlay's only job at that point is to have offered a picker.
+      if (navOverlay) setNavOverlay(false);
       if (item.id === activePageId) return;
       setActivePageId(item.id);
       // The content sidebar's dashboard list remounts fresh (key={activePageId}) and
@@ -102,6 +106,10 @@ export default function Shell({
   }));
 
   const [navCollapsed, setNavCollapsed] = useState(false);
+  // true = nav floats expanded above content (docked rail stays collapsed underneath,
+  // so the content row's width is never affected); only reachable when there isn't
+  // room to dock it expanded in the flex row instead.
+  const [navOverlay, setNavOverlay] = useState(false);
   const [aiPanelOpen, setAiPanelOpen] = useState(initialShowAiPanel);
   // true = AI panel renders as full-width overlay; false = side-by-side flex
   const [aiPanelOverlay, setAiPanelOverlay] = useState(false);
@@ -109,6 +117,7 @@ export default function Shell({
   const contentWidthRef = useRef(Infinity); // latest content area width from PageContent
   const contentBreakpointRef = useRef(contentBreakpoint);
   const closeSidebarRef = useRef(null);
+  const bodyRef = useRef(null);
 
   // ── AI panel resize (flex mode only — overlay mode has no handle) ──────────
   const AI_PANEL_MIN_W = 400; // 25rem
@@ -193,6 +202,22 @@ export default function Shell({
   useLayoutEffect(() => { aiPanelOpenRef.current  = aiPanelOpen;  }, [aiPanelOpen]);
   useLayoutEffect(() => { aiPanelOverlayRef.current = aiPanelOverlay; }, [aiPanelOverlay]);
   useLayoutEffect(() => { contentBreakpointRef.current = contentBreakpoint; }, [contentBreakpoint]);
+
+  // Mirrors PageContent's own sidebar-overlay pattern (see PageContent.jsx) — closes on
+  // any click or focus move outside the floating nav, not just an explicit dismiss action.
+  useEffect(() => {
+    if (!navOverlay) return;
+    const closeIfOutside = (e) => {
+      const navEl = bodyRef.current?.querySelector('.lyra-side-nav-overlay');
+      if (navEl && !navEl.contains(e.target)) setNavOverlay(false);
+    };
+    document.addEventListener('mousedown', closeIfOutside);
+    document.addEventListener('focusin', closeIfOutside);
+    return () => {
+      document.removeEventListener('mousedown', closeIfOutside);
+      document.removeEventListener('focusin', closeIfOutside);
+    };
+  }, [navOverlay]);
 
   // Row's own right-padding (matches `padding: '0 12px 12px 0'` below) — subtracted when
   // deriving how much width is actually available to content + AI panel inside the row.
@@ -382,9 +407,10 @@ export default function Shell({
       </div>
 
       {/* ── Body ───────────────────────────────────────────────────────────── */}
-      <div style={{
+      <div ref={bodyRef} style={{
         flex: '1 0 0', minHeight: 0,
         display: 'flex', alignItems: 'stretch',
+        position: 'relative', // containing block for the floating nav overlay below
       }}>
 
         <SideNavigation
@@ -392,22 +418,82 @@ export default function Shell({
           minimized={navCollapsed}
           triggerVisibility={navTrigger === 'floating-hover' ? 'hover' : 'always'}
           version={navTrigger === 'top' ? 'v2' : 'v1'}
-          onToggle={() => setNavCollapsed(o => {
-            // Expanding (o=true means currently collapsed) costs the row NAV_EXPAND_DELTA
-            // of width — refuse it if that would push content below its breakpoint, the
-            // same way the internal sidebar's pin button disables itself when too narrow.
-            if (o) {
-              const NAV_EXPAND_DELTA = 256 - 60; // must match SideNavigation's expanded/collapsed widths
-              const bp = contentBreakpointRef.current;
-              if (getLiveContentAreaWidth() - NAV_EXPAND_DELTA < bp) return o;
-            }
-            const next = !o;
-            // Minimizing the nav while the content sidebar floats as an overlay closes it too —
-            // an overlay only makes sense as a temporary, in-context reveal.
-            if (next && sidebarInfoRef.current.isOverlay) closeSidebarRef.current?.();
-            return next;
-          })}
+          onToggle={() => {
+            // Already floating expanded — any toggle click (chevron / v2 trigger) puts
+            // it back to its docked collapsed rail, same as clicking outside it.
+            if (navOverlay) { setNavOverlay(false); return; }
+            setNavCollapsed(o => {
+              // Expanding (o=true means currently collapsed) costs the row NAV_EXPAND_DELTA
+              // of width — when that would push content below its breakpoint, dock stays
+              // collapsed and the nav instead floats above content as a temporary overlay,
+              // the same way the internal sidebar's own pin button falls back to an overlay
+              // when there isn't room to pin.
+              if (o) {
+                const NAV_EXPAND_DELTA = 256 - 60; // must match SideNavigation's expanded/collapsed widths
+                const bp = contentBreakpointRef.current;
+                // A pinned ('opened') content sidebar consumes row width the same as the
+                // nav would — an 'overlay' sidebar floats above content and consumes none,
+                // so it's excluded, matching how it's excluded everywhere else in this file.
+                const { isOpen: sidebarOpen, isOverlay: sidebarIsOverlay, width: sidebarWidth } = sidebarInfoRef.current;
+                const sidebarRowWidth = (sidebarOpen && !sidebarIsOverlay) ? sidebarWidth : 0;
+                if (getLiveContentAreaWidth() - NAV_EXPAND_DELTA - sidebarRowWidth < bp) {
+                  setNavOverlay(true);
+                  return o; // stays collapsed underneath the overlay
+                }
+              }
+              const next = !o;
+              // Minimizing the nav while the content sidebar floats as an overlay closes it too —
+              // an overlay only makes sense as a temporary, in-context reveal.
+              if (next && sidebarInfoRef.current.isOverlay) closeSidebarRef.current?.();
+              return next;
+            });
+          }}
         />
+
+        {/* Always mounted (like InternalSidebar's own overlay) rather than conditionally
+            rendered — a transform change on an already-mounted element transitions;
+            mounting an element with its final position already applied does not. */}
+        <div
+          className="lyra-side-nav-overlay"
+          style={{
+            // Matches Figma's floating nav card (node 32815:44702) — inset 1px off
+            // the content row's top edge and 1px off the content panel's own
+            // bottom edge (ROW_RIGHT_PADDING below the row's bottom), so the
+            // content panel's own 1px border peeks out from behind this panel
+            // at both the top and the bottom.
+            position: 'absolute', top: 1, left: 0, bottom: 1 + ROW_RIGHT_PADDING, zIndex: 10,
+            // Wider than the panel itself (which is sized by its own content below)
+            // so the shadow can bleed rightward without needing overflow:visible —
+            // that would also un-crop it top/bottom. overflow:hidden here crops the
+            // shadow above/below to exactly this box's own height while leaving the
+            // right side, where the extra width lives, free.
+            width: 320,
+            overflow: 'hidden',
+            pointerEvents: navOverlay ? 'auto' : 'none',
+            // Same slide-in treatment as the content sidebar's own overlay
+            // (InternalSidebar.jsx) rather than a fade.
+            transform: navOverlay ? 'translateX(0)' : 'translateX(-100%)',
+            transition: 'transform 300ms ease',
+          }}
+        >
+          <div style={{
+            height: '100%',
+            width: 'fit-content',
+            pointerEvents: 'auto',
+            borderRight: '1px solid var(--lyra-color-border-subtle, rgba(0,0,0,0.1))',
+            boxShadow: navOverlay ? 'var(--lyra-shadow-xl)' : 'none',
+            background: 'var(--lyra-color-bg-surface-shell, #f3f5f7)',
+            transition: 'box-shadow 300ms ease',
+          }}>
+            <SideNavigation
+              navItems={navItemsWithNav}
+              minimized={false}
+              triggerVisibility={navTrigger === 'floating-hover' ? 'hover' : 'always'}
+              version={navTrigger === 'top' ? 'v2' : 'v1'}
+              showToggle={false}
+            />
+          </div>
+        </div>
 
         {/* Page content + AI panel */}
         <div ref={contentAiRowRef} style={{

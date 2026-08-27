@@ -281,6 +281,10 @@ export default function SideNavigation({
   triggerVisibility = 'always', // 'always' | 'hover'
   version = 'v1', // 'v1' | 'v2'
   onToggle,
+  // A floating overlay instance closes itself (outside click, picking a nav
+  // option) — an explicit collapse trigger inside it would be a redundant
+  // second way to do the same thing.
+  showToggle = true,
 }) {
   // displayMinimized drives what's rendered inside the panel.
   // On expand: switch to full content immediately so text reveals as the container grows.
@@ -330,7 +334,7 @@ export default function SideNavigation({
           width: displayMinimized ? 36 : NAV_ROW_W,
           alignItems: displayMinimized ? 'center' : 'flex-start',
         }}>
-          {version === 'v2' && (
+          {version === 'v2' && showToggle && (
             <>
               <NavV2Trigger
                 minimized={minimized}
@@ -350,7 +354,7 @@ export default function SideNavigation({
       </div>
 
       {/* Toggle button — V1 only, positioned on the outer wrapper so it isn't clipped */}
-      {version === 'v1' && <button
+      {version === 'v1' && showToggle && <button
         ref={toggleBtnRef}
         onClick={onToggle}
         onMouseEnter={() => setToggleHovered(true)}
@@ -385,7 +389,7 @@ export default function SideNavigation({
       </button>}
 
       {/* Hover extension — keeps hover active when cursor moves toward the trigger button */}
-      {version === 'v1' && <div aria-hidden style={{
+      {version === 'v1' && showToggle && <div aria-hidden style={{
         position: 'absolute',
         top: 0, bottom: 0,
         right: '-0.75rem',
