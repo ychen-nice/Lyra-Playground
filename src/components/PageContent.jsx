@@ -26,6 +26,7 @@ export default function PageContent({
   initialSidebarState,
   contentBreakpoint = 720, // min content-area width at which sidebar auto-closes
   onAiTriggerClick,
+  aiPanelOpen, // reflected on the header's AI toggle button
   onNarrow, // (isNarrow: boolean) => void — notifies Shell for nav/AI-panel cascade
   closeSidebarRef, // ref populated by PageContent so Shell can imperatively close sidebar
   sidebarInfoRef, // ref populated by PageContent so Shell can read sidebar open state + width
@@ -161,7 +162,7 @@ export default function PageContent({
   };
 
   const enhancedHeader = header
-    ? React.cloneElement(header, { ...sidenavProps, _sidebarOpen: state === 'opened', _sidebarTransitioning: isSidebarTransitioning, onAiTriggerClick })
+    ? React.cloneElement(header, { ...sidenavProps, _sidebarOpen: state === 'opened', _sidebarTransitioning: isSidebarTransitioning, onAiTriggerClick, aiPanelOpen })
     : null;
 
   // ── Resize drag logic ──────────────────────────────────────────────────────

@@ -528,6 +528,7 @@ export default function Shell({
             <PageContent
               key={activePageId}
               header={header ? React.cloneElement(header, { title: derivedTitle, levels: derivedLevels, showSideNavTrigger: isDashboards, showBreadcrumb: derivedLevels.length > 0 }) : header}
+              aiPanelOpen={aiPanelOpen}
               sidebar={isDashboards ? (
                 <DashboardList
                   onSelect={(name) => {

@@ -32,6 +32,7 @@ export default function PageHeader({
   statusBadgeLabel       = 'Active',
   showAiTrigger          = true,
   onAiTriggerClick,
+  aiPanelOpen            = false,
   headerLayout           = 'default', // 'default' | 'v3' (stacked breadcrumb above title)
   onSidenavTriggerClick,
   onSidenavTriggerMouseEnter,
@@ -225,7 +226,7 @@ export default function PageHeader({
               <div style={{ display: 'flex', alignItems: 'center', padding: '0 var(--lyra-spacing-1)', flexShrink: 0 }}>
                 <div style={{ width: 1, height: 'var(--lyra-control-height-lg)', background: 'var(--lyra-color-border-subtle)' }} />
               </div>
-              <Button variant="secondary" size="lg" leftIcon={<Sparkles size={16} />} onClick={onAiTriggerClick}>
+              <Button variant="toggle" size="lg" active={aiPanelOpen} leftIcon={<Sparkles size={16} />} onClick={onAiTriggerClick}>
                 AI
               </Button>
             </>
