@@ -1,11 +1,70 @@
 // Figma node: 17643:45205  "Page Header"
 import { useState, useLayoutEffect, useEffect, useRef } from 'react';
-import { Sparkles, Menu, PanelLeftOpen } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { Sparkles, Menu, PanelLeftOpen, EllipsisVertical } from 'lucide-react';
 import '../styles/typography.css';
 import '../styles/breadcrumb.css';
 import Button from './Button';
 import Tooltip from './Tooltip';
 import TitleBreadcrumb from './TitleBreadcrumb';
+
+// Dropdown shown in place of the header actions (e.g. Secondary/Primary) once they no
+// longer fit their own row — anchored under the trigger button, closes on an outside
+// click, Escape, or window resize (same pattern as TreeGrid's RowActionMenu).
+function HeaderActionsMenu({ triggerEl, onClose, children }) {
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handlePointerDown = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target) && !triggerEl?.contains(e.target)) onClose();
+    };
+    const handleKeyDown = (e) => { if (e.key === 'Escape') onClose(); };
+    // The menu's position is computed once, from the trigger's rect, at the moment it
+    // opens — it doesn't track the button across a resize, so closing (rather than
+    // re-anchoring) matches how every native menu/select handles this.
+    const handleResize = () => onClose();
+    document.addEventListener('mousedown', handlePointerDown, true);
+    document.addEventListener('keydown', handleKeyDown, true);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown, true);
+      document.removeEventListener('keydown', handleKeyDown, true);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [onClose, triggerEl]);
+
+  if (!triggerEl) return null;
+  const rect = triggerEl.getBoundingClientRect();
+
+  return createPortal(
+    <div
+      ref={menuRef}
+      role="menu"
+      // Closes after any action inside is clicked — bubbling means the action's own
+      // onClick already ran by the time this fires, same as TreeGrid's row menu.
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        top: rect.bottom + 4,
+        // Left-aligned to the trigger, not right-aligned — the trigger sits at the
+        // left edge of its row (header-actions precedes the AI section), so a wider
+        // menu should grow rightward from there instead of backing leftward over it.
+        insetInlineStart: rect.left,
+        display: 'flex', flexDirection: 'column', gap: 'var(--lyra-spacing-2)',
+        width: 'max-content', minWidth: rect.width,
+        background: 'var(--lyra-color-bg-surface-overlay)',
+        border: '1px solid var(--lyra-color-border-subtle)',
+        borderRadius: 'var(--lyra-radius-md)',
+        boxShadow: 'var(--lyra-shadow-md)',
+        padding: 'var(--lyra-spacing-2)',
+        zIndex: 1000,
+      }}
+    >
+      {children}
+    </div>,
+    document.body
+  );
+}
 
 // spacing-8=32 (h-padding each side), col-gap=40, spacing-3=12, spacing-2=8
 const H_PAD  = 64; // 2 × spacing-8
@@ -42,16 +101,22 @@ export default function PageHeader({
   headerActionsSlot,
   breadcrumbSlot,
 }) {
-  const headerRef       = useRef(null);
-  const rightRef        = useRef(null);   // inner right div — natural button width
-  const sidenavRef      = useRef(null);
-  const titleMeasureRef = useRef(null);   // hidden span — measures title text width
-  const tbWrapperRef    = useRef(null);   // direct DOM ref — width set imperatively to avoid async React lag
+  const headerRef        = useRef(null);
+  const rightRef         = useRef(null);   // inner right div — natural button width
+  const sidenavRef       = useRef(null);
+  const titleMeasureRef  = useRef(null);   // hidden span — measures title text width
+  const tbWrapperRef     = useRef(null);   // direct DOM ref — width set imperatively to avoid async React lag
+  const actionsMeasureRef = useRef(null);  // hidden clone of header-actions — natural width even while collapsed
+  const aiSectionRef      = useRef(null);  // divider + AI button — never collapses, but still counts against row width
+  const actionsTriggerRef = useRef(null);  // the "more actions" icon button, once collapsed
 
   const [tbBcAvailWidth, setTbBcAvailWidth] = useState(null); // passed to TitleBreadcrumb to skip its own ResizeObserver
   const [sidenavHovered, setSidenavHovered] = useState(false);
   const [wrapButtons, setWrapButtons] = useState(false);
   const wrapButtonsRef          = useRef(false); // mirrors wrapButtons, always current (avoids stale closure)
+  const [actionsCollapsed, setActionsCollapsed] = useState(false);
+  const actionsCollapsedRef     = useRef(false); // mirrors actionsCollapsed, always current (avoids stale closure)
+  const [actionsMenuOpen, setActionsMenuOpen]   = useState(false);
   const computeRef              = useRef(null);  // called after wrap commits to update tbWidth imperatively
   const sidebarTransitioningRef = useRef(false); // mirrors _sidebarTransitioning, always current
   sidebarTransitioningRef.current = _sidebarTransitioning;
@@ -116,6 +181,32 @@ export default function PageHeader({
         ? Math.max(0, tbAvail)
         : Math.max(0, tbAvail - titleW - (n > 0 ? GAP2 : 0));
       setTbBcAvailWidth(bcAvailW);
+
+      // Actions-collapse: whether header-actions (e.g. Secondary/Primary) still fit
+      // next to the AI section, once header-right has a full row to itself. On a
+      // shared row with the title, avail1Row's own formula above already proved
+      // there was enough space for both minTbW *and* the full natural rightW, so
+      // actions always fit there by construction — this only matters once wrapped.
+      const actionsEl = actionsMeasureRef.current;
+      if (isWrapped && actionsEl) {
+        const actionsW = actionsEl.getBoundingClientRect().width;
+        const aiW = aiSectionRef.current?.getBoundingClientRect().width ?? 0;
+        const gapW = (actionsW > 0 && aiW > 0) ? GAP2 : 0;
+        const availableRightRowW = headerW - H_PAD;
+        const ACTIONS_COLLAPSE_BUFFER = 24; // hysteresis, same spirit as UNWRAP_BUFFER above
+        const shouldCollapseActions = actionsCollapsedRef.current
+          ? (actionsW + gapW + aiW + ACTIONS_COLLAPSE_BUFFER) > availableRightRowW
+          : (actionsW + gapW + aiW) > availableRightRowW;
+        if (shouldCollapseActions !== actionsCollapsedRef.current) {
+          actionsCollapsedRef.current = shouldCollapseActions;
+          setActionsCollapsed(shouldCollapseActions);
+          if (!shouldCollapseActions) setActionsMenuOpen(false); // trigger's about to unmount
+        }
+      } else if (actionsCollapsedRef.current) {
+        actionsCollapsedRef.current = false;
+        setActionsCollapsed(false);
+        setActionsMenuOpen(false);
+      }
 
       if (shouldWrap) {
         // Only commit the wrap when the sidebar is NOT mid-transition.
@@ -207,33 +298,80 @@ export default function PageHeader({
         </div>
       </div>
 
+      {/* Hidden clone — measures header-actions' natural (uncollapsed) width even
+          while actionsCollapsed is showing the single trigger button instead. */}
+      <div
+        ref={actionsMeasureRef}
+        aria-hidden
+        style={{ position: 'absolute', visibility: 'hidden', pointerEvents: 'none', display: 'inline-flex', gap: 'var(--lyra-spacing-2)' }}
+      >
+        {headerActionsSlot || (
+          <>
+            <Button variant="secondary" size="lg">Secondary</Button>
+            <Button variant="primary"   size="lg">Primary</Button>
+          </>
+        )}
+      </div>
+
       {/* ── Right: outer div forces wrap via flexBasis when wrapButtons=true;
                inner div (rightRef) always reports natural button width ── */}
       <div className="header-right" style={{ display: 'flex', alignItems: 'center', flexShrink: 0, ...(wrapButtons ? { flexBasis: '100%' } : {}) }}>
         <div ref={rightRef} style={{ display: 'flex', gap: 'var(--lyra-spacing-2)', alignItems: 'center', flexShrink: 0 }}>
 
           <div className="header-actions" style={{ display: 'flex', gap: 'var(--lyra-spacing-2)', alignItems: 'center', flexShrink: 0 }}>
-            {headerActionsSlot || (
-              <>
-                <Button variant="secondary" size="lg">Secondary</Button>
-                <Button variant="primary"   size="lg">Primary</Button>
-              </>
+            {actionsCollapsed ? (
+              // Button isn't ref-forwarding — wrap it so actionsTriggerRef resolves
+              // to a real DOM node for the menu's anchoring/outside-click logic.
+              <span ref={actionsTriggerRef} style={{ display: 'inline-flex' }}>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  iconOnly
+                  aria-label="More actions"
+                  aria-haspopup="menu"
+                  aria-expanded={actionsMenuOpen}
+                  onClick={() => setActionsMenuOpen(o => !o)}
+                >
+                  <EllipsisVertical size={16} />
+                </Button>
+              </span>
+            ) : (
+              headerActionsSlot || (
+                <>
+                  <Button variant="secondary" size="lg">Secondary</Button>
+                  <Button variant="primary"   size="lg">Primary</Button>
+                </>
+              )
             )}
           </div>
 
           {showAiTrigger && (
-            <>
+            <div ref={aiSectionRef} style={{ display: 'flex', alignItems: 'center', gap: 'var(--lyra-spacing-2)', flexShrink: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', padding: '0 var(--lyra-spacing-1)', flexShrink: 0 }}>
                 <div style={{ width: 1, height: 'var(--lyra-control-height-lg)', background: 'var(--lyra-color-border-subtle)' }} />
               </div>
               <Button variant="toggle" size="lg" active={aiPanelOpen} leftIcon={<Sparkles size={16} />} onClick={onAiTriggerClick}>
                 AI
               </Button>
-            </>
+            </div>
           )}
 
         </div>
       </div>
+
+      {actionsCollapsed && actionsMenuOpen && (
+        <HeaderActionsMenu triggerEl={actionsTriggerRef.current} onClose={() => setActionsMenuOpen(false)}>
+          {headerActionsSlot || (
+            // Primary leads in the menu — the strongest action goes first in a
+            // vertical list, unlike the row order to its left (secondary, then
+            // primary last) where trailing draws the eye instead.
+            <>
+              <Button variant="primary"   size="lg">Primary</Button>
+              <Button variant="secondary" size="lg">Secondary</Button>
+            </>
+          )}
+        </HeaderActionsMenu>
+      )}
     </div>
   );
 }
