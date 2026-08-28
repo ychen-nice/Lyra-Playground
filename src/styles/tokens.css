@@ -36,7 +36,7 @@
   /* Foreground */
   --lyra-color-fg-default: rgba(0,0,0,0.8);
   --lyra-color-fg-secondary: rgba(0,0,0,0.6);
-  --lyra-color-fg-action: #677280;
+  --lyra-color-fg-action: #66717F;
   --lyra-color-fg-disabled: rgba(0,0,0,0.3);
   --lyra-color-fg-link: #185BA4;
   --lyra-color-fg-inverse: #FFFFFF;
@@ -80,8 +80,8 @@
 
   /* Accent */
   --lyra-color-accent-slate-subtle-bg: #F3F5F7;
-  --lyra-color-accent-slate-subtle-fg: #677280;
-  --lyra-color-accent-slate-strong-bg: #677280;
+  --lyra-color-accent-slate-subtle-fg: #66717F;
+  --lyra-color-accent-slate-strong-bg: #66717F;
   --lyra-color-accent-slate-strong-fg: #FBFCFE;
   --lyra-color-accent-red-subtle-bg: #FFEBEB;
   --lyra-color-accent-red-subtle-fg: #C93232;
@@ -96,7 +96,7 @@
   --lyra-color-accent-yellow-strong-bg: #F9CF46;
   --lyra-color-accent-yellow-strong-fg: #674B13;
   --lyra-color-accent-lime-subtle-bg: #EEFBD0;
-  --lyra-color-accent-lime-subtle-fg: #54800C;
+  --lyra-color-accent-lime-subtle-fg: #507C07;
   --lyra-color-accent-lime-strong-bg: #A6D349;
   --lyra-color-accent-lime-strong-fg: #2E430F;
   --lyra-color-accent-green-subtle-bg: #DEF7E1;
@@ -105,7 +105,7 @@
   --lyra-color-accent-green-strong-fg: #EBFAED;
   --lyra-color-accent-teal-subtle-bg: #D8F1F3;
   --lyra-color-accent-teal-subtle-fg: #057680;
-  --lyra-color-accent-teal-strong-bg: #7CCED5;
+  --lyra-color-accent-teal-strong-bg: #65C5CD;
   --lyra-color-accent-teal-strong-fg: #173B3F;
   --lyra-color-accent-blue-subtle-bg: #E5EEFF;
   --lyra-color-accent-blue-subtle-fg: #3163C9;
@@ -116,7 +116,7 @@
   --lyra-color-accent-purple-strong-bg: #6E56CC;
   --lyra-color-accent-purple-strong-fg: #F7F5FF;
   --lyra-color-accent-pink-subtle-bg: #FFEBF8;
-  --lyra-color-accent-pink-subtle-fg: #C5278F;
+  --lyra-color-accent-pink-subtle-fg: #BF2D8D;
   --lyra-color-accent-pink-strong-bg: #EE9DD3;
   --lyra-color-accent-pink-strong-fg: #702055;
 
