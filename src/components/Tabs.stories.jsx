@@ -11,6 +11,19 @@ const BASE_ITEMS = [
   { id: 'settings', label: 'Settings', icon: <Settings {...ICON_PROPS} /> },
 ];
 
+// Shared by every story below so the showIcons/showError controls — defined
+// once, globally, in argTypes — actually do something no matter which story
+// the Controls panel happens to be showing them on.
+function buildItems({ showIcons, showError }) {
+  return BASE_ITEMS.map((item) => {
+    const { icon, ...rest } = item;
+    return {
+      ...(showIcons ? item : rest),
+      ...(item.id === 'files' ? { error: showError } : {}),
+    };
+  });
+}
+
 export default {
   title: 'Components/Tabs',
   component: Tabs,
@@ -26,6 +39,15 @@ export default {
       name: 'Show Error (Files tab)',
       description: 'Toggles the error indicator on the "Files" tab',
     },
+    variant: {
+      control: 'radio',
+      options: ['default', 'flush'],
+      description: '"default" pads each tab horizontally; "flush" removes that padding and uses a larger gap between tabs instead',
+    },
+    showIcons: {
+      control: 'boolean',
+      description: 'Toggles the leading icon on every tab',
+    },
     items: { control: false, table: { disable: true } },
     value: { control: false, table: { disable: true } },
     onChange: { control: false, table: { disable: true } },
@@ -36,6 +58,28 @@ export default {
   },
 };
 
+// ── Demo — every control together ────────────────────────────────────────
+
+export const Demo = {
+  name: 'Demo',
+  args: {
+    variant: 'default',
+    showIcons: true,
+  },
+  render: ({ showError, showIcons, ...args }) => (
+    <Tabs
+      {...args}
+      items={BASE_ITEMS.map((item) => {
+        const { icon, ...rest } = item;
+        return {
+          ...(showIcons ? item : rest),
+          ...(item.id === 'files' ? { error: showError } : {}),
+        };
+      })}
+    />
+  ),
+};
+
 export const Default = {
   name: 'Default',
   render: ({ showError, ...args }) => (
@@ -44,6 +88,11 @@ export const Default = {
       items={BASE_ITEMS.map((item) => (item.id === 'files' ? { ...item, error: showError } : item))}
     />
   ),
+};
+
+export const FlushVariant = {
+  name: 'Variant — Flush',
+  render: (args) => <Tabs {...args} items={BASE_ITEMS} variant="flush" />,
 };
 
 export const FitAlignment = {

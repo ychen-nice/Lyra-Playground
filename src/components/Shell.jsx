@@ -46,6 +46,10 @@ export default function Shell({
   navTrigger = 'floating', // 'floating' | 'floating-hover' | 'top'
   header,
   children,
+  // Optional { [pageId]: node } map — lets a story/consumer show different body
+  // content per nav page (e.g. a frameless grid on Interaction Search vs. the
+  // default children elsewhere) without lifting activePageId out of Shell.
+  pageContent,
   aiUserName,
   aiSuggestions,
 }) {
@@ -92,8 +96,11 @@ export default function Shell({
       if (navOverlay) setNavOverlay(false);
       if (item.id === activePageId) return;
       setActivePageId(item.id);
-      // The content sidebar's dashboard list remounts fresh (key={activePageId}) and
-      // defaults back to its first item, so mirror that reset here — otherwise the header
+      // The content sidebar's dashboard list is only ever rendered while isDashboards is
+      // true, so leaving and returning to Dashboards naturally remounts it fresh (React
+      // unmounts it when the sidebar prop becomes null, mounts a new instance when it
+      // reappears) and it defaults back to its first item — mirror that reset here,
+      // otherwise the header
       // would keep showing whatever was selected the last time this page was visited.
       if (item.id === 'dashboards') setSelectedDashboardName(DEFAULT_DASHBOARD_NAMES[0]);
       // Navigating to a different page closes the AI panel — its context (e.g. sidebar
@@ -532,8 +539,16 @@ export default function Shell({
             flex: '1 0 0', minWidth: aiPanelOpen ? contentBreakpoint : 0, height: '100%',
           }}>
             <PageContent
-              key={activePageId}
-              header={header ? React.cloneElement(header, { title: derivedTitle, levels: derivedLevels, showSideNavTrigger: isDashboards, showBreadcrumb: derivedLevels.length > 0 }) : header}
+              // Identifies the current page so PageContent can reset its own sidebar state
+              // on navigation (see PageContent.jsx) — no longer a `key`, since a key would
+              // force the whole content panel (header, sidebar, everything) to unmount and
+              // remount on every page switch. Only the page's own body content (children)
+              // should swap; the shell chrome around it stays mounted throughout.
+              pageKey={activePageId}
+              // tabsSlot only ever shows on whichever page the caller built it for — the
+              // header element is one static prop, shared across every page, so without
+              // this every other page would inherit the same tabs by default.
+              header={header ? React.cloneElement(header, { title: derivedTitle, levels: derivedLevels, showSideNavTrigger: isDashboards, showBreadcrumb: derivedLevels.length > 0, tabsSlot: activePageId === 'quality' ? header.props.tabsSlot : undefined }) : header}
               aiPanelOpen={aiPanelOpen}
               sidebar={isDashboards ? (
                 <DashboardList
@@ -584,7 +599,7 @@ export default function Shell({
               closeSidebarRef={closeSidebarRef}
               sidebarInfoRef={sidebarInfoRef}
             >
-              {children}
+              {pageContent?.[activePageId] ?? children}
             </PageContent>
           </div>
 

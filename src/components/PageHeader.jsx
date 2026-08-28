@@ -100,6 +100,11 @@ export default function PageHeader({
   _sidebarTransitioning  = false,
   headerActionsSlot,
   breadcrumbSlot,
+  // Renders a row of tabs directly under the header (Figma node 33023:136798)
+  // — pass a <Tabs variant="flush" .../>. Shifts the header's own bottom
+  // padding tighter and moves the separating border down to sit under the
+  // tabs row instead of under the title/actions row.
+  tabsSlot,
 }) {
   const headerRef        = useRef(null);
   const rightRef         = useRef(null);   // inner right div — natural button width
@@ -237,15 +242,23 @@ export default function PageHeader({
   }, [_sidebarTransitioning]);
 
   return (
+    <>
     <div ref={headerRef} className="main-header" style={{
       display:        'flex',
       flexWrap:       'wrap',
       justifyContent: 'space-between',
       gap:            'var(--lyra-spacing-2) var(--lyra-spacing-10)',
       alignItems:     'center',
+      // The header row itself is identical whether or not tabs are shown below —
+      // same min-height, same padding, same center alignment. Only the border's
+      // color differs: with tabs, the border moves down to the tabs row instead
+      // (so the two rows read as one connected unit) — but its 1px width stays
+      // reserved (transparent, not `none`) since this box is border-box sized,
+      // so removing the border outright would give the centered content 1px more
+      // room to center in, shifting it by half a pixel relative to the plain header.
       minHeight:      '4.5rem',
       padding:        'var(--lyra-spacing-4) var(--lyra-spacing-8)',
-      borderBottom:   'var(--lyra-border-default) solid var(--lyra-color-border-subtle)',
+      borderBottom:   `var(--lyra-border-default) solid ${tabsSlot ? 'transparent' : 'var(--lyra-color-border-subtle)'}`,
       width:          '100%',
       boxSizing:      'border-box',
       position:       'relative',
@@ -373,5 +386,25 @@ export default function PageHeader({
         </HeaderActionsMenu>
       )}
     </div>
+    {tabsSlot && (
+      // Full-width border lives here, not on Tabs' own tablist — that div is only
+      // as wide as its tab content (unless alignment="fit"), so its own border
+      // wouldn't reach the row's right edge the way the plain header's does.
+      <div style={{
+        display:      'flex',
+        alignItems:   'flex-end',
+        padding:      '0 var(--lyra-spacing-8)',
+        width:        '100%',
+        boxSizing:    'border-box',
+        borderBottom: 'var(--lyra-border-default) solid var(--lyra-color-border-subtle)',
+        // Nudged down 1px so this border lands on the exact same line the
+        // plain header's own bottom border would occupy.
+        transform:    'translateY(1px)',
+        flexShrink:   0,
+      }}>
+        {tabsSlot}
+      </div>
+    )}
+    </>
   );
 }

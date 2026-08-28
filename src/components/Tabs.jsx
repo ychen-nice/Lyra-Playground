@@ -8,7 +8,7 @@ import '../styles/tabs.css';
 // vertically when the border-bottom appears or disappears.
 const INDICATOR_HEIGHT = 'var(--lyra-border-lg)'; // 4px
 
-function TabItem({ item, selected, onSelect }) {
+function TabItem({ item, selected, onSelect, flush }) {
   const [hovered, setHovered] = useState(false);
   const { label, icon, disabled, error } = item;
 
@@ -34,7 +34,10 @@ function TabItem({ item, selected, onSelect }) {
         flex: 'var(--lyra-tab-flex, none)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--lyra-spacing-2)',
         height: 'var(--lyra-row-height-xl)',
-        padding: '0 var(--lyra-spacing-5)',
+        // flush — the "spaced" variant (node 33023:137165): no horizontal
+        // padding per tab, spacing between tabs comes entirely from the
+        // tablist's own gap instead.
+        padding: flush ? '0' : '0 var(--lyra-spacing-3)',
         border: 'none',
         borderBottom: `${INDICATOR_HEIGHT} solid ${indicatorColor}`,
         cursor: disabled ? 'not-allowed' : 'pointer',
@@ -46,7 +49,7 @@ function TabItem({ item, selected, onSelect }) {
           {cloneElement(icon, { size: '100%' })}
         </span>
       )}
-      <span className={selected ? 'lyra-body-md-em' : 'lyra-body-md'} style={{ color }}>
+      <span className="lyra-body-md" style={{ color }}>
         {label}
       </span>
       {error && (
@@ -66,9 +69,14 @@ export default function Tabs({
   // 'left' — tabs sized to their own content, left-aligned (default).
   // 'fit'  — tabs stretch to divide the full width evenly.
   alignment = 'left',
+  // 'default' — tabs padded horizontally (spacing-5), tight gap between them.
+  // 'flush'   — no horizontal padding per tab (node 33023:137165); spacing
+  //             between tabs comes entirely from the tablist's own larger gap.
+  variant = 'default',
 }) {
   const [internalValue, setInternalValue] = useState(defaultValue ?? items[0]?.id);
   const value = controlledValue ?? internalValue;
+  const flush = variant === 'flush';
 
   const handleSelect = (id) => {
     setInternalValue(id);
@@ -81,7 +89,11 @@ export default function Tabs({
       style={{
         display: 'flex',
         width: alignment === 'fit' ? '100%' : 'auto',
-        borderBottom: '1px solid var(--lyra-color-border-subtle)',
+        gap: flush ? 'var(--lyra-spacing-5)' : 'var(--lyra-spacing-05)',
+        // flush has no border of its own — it's always composed under a
+        // header row that supplies the full-width border itself (a border
+        // only as wide as the tab content wouldn't reach that row's edge).
+        borderBottom: flush ? 'none' : '1px solid var(--lyra-color-border-subtle)',
         // Only the 'fit' tabs stretch — TabItem reads this via the
         // --lyra-tab-flex custom property rather than a prop, so the flex
         // rule lives in one place (here) instead of being threaded through
@@ -90,7 +102,7 @@ export default function Tabs({
       }}
     >
       {items.map((item) => (
-        <TabItem key={item.id} item={item} selected={item.id === value} onSelect={handleSelect} />
+        <TabItem key={item.id} item={item} selected={item.id === value} onSelect={handleSelect} flush={flush} />
       ))}
     </div>
   );

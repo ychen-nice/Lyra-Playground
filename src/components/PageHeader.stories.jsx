@@ -1,4 +1,12 @@
 import PageHeader from "./PageHeader";
+import Tabs from "./Tabs";
+
+const TAB_ITEMS = [
+  { id: 'section1', label: 'Tab Section' },
+  { id: 'section2', label: 'Tab Section' },
+  { id: 'section3', label: 'Tab Section' },
+  { id: 'section4', label: 'Tab Section' },
+];
 
 const MAX_LEVELS = 8;
 const DEFAULT_LABELS = ['Home', 'Products', 'Electronics', 'Computers', 'Laptops', 'Gaming', 'Budget', 'Refurbished'];
@@ -47,6 +55,7 @@ export default {
     headerMiddleSlot:   { control: false, table: { disable: true } },
     headerActionsSlot:  { control: false, table: { disable: true } },
     breadcrumbSlot:     { control: false, table: { disable: true } },
+    tabsSlot:           { control: false, table: { disable: true } },
   },
   args: {
     title:              "Page Title",
@@ -88,6 +97,11 @@ export const ManyLevels = {
   name: "Many Levels (≥ 4)",
   render: (args) => <HeaderStory {...args} />,
   args: { levelCount: 5, linksStartAt: 1, title: "Product Detail" },
+};
+
+export const WithTabs = {
+  name: "With Tabs",
+  render: (args) => <HeaderStory {...args} tabsSlot={<Tabs items={TAB_ITEMS} variant="flush" />} />,
 };
 
 export const FullFeatured = {

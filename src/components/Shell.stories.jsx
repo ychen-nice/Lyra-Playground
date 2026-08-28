@@ -1,5 +1,41 @@
+import { Download } from "lucide-react";
 import Shell from "./Shell";
 import PageHeader from "./PageHeader";
+import Grid from "./Grid";
+import Panel from "./Panel";
+import Button from "./Button";
+import Tabs from "./Tabs";
+import { LinkCellRenderer } from "./BaseGrid";
+
+const qualityTabItems = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'evaluations', label: 'Evaluations' },
+  { id: 'reports', label: 'Reports' },
+];
+
+const qualityColumnDefs = [
+  { field: 'name', headerName: 'Name', cellRenderer: LinkCellRenderer, flex: 1 },
+  { field: 'status', headerName: 'Status', flex: 1 },
+  { field: 'owner', headerName: 'Owner', flex: 1 },
+];
+
+const qualityRowData = Array.from({ length: 240 }, (_, i) => ({
+  name: `Item ${i + 1}`,
+  status: ['Active', 'Pending', 'Closed'][i % 3],
+  owner: ['Alex', 'Jordan', 'Sam'][i % 3],
+}));
+
+const searchColumnDefs = [
+  { field: 'session', headerName: 'Session', cellRenderer: LinkCellRenderer, flex: 1 },
+  { field: 'channel', headerName: 'Channel', flex: 1 },
+  { field: 'agent', headerName: 'Agent', flex: 1 },
+];
+
+const searchRowData = Array.from({ length: 180 }, (_, i) => ({
+  session: `Session ${i + 1}`,
+  channel: ['Chat', 'Voice', 'Email'][i % 3],
+  agent: ['Alex', 'Jordan', 'Sam'][i % 3],
+}));
 
 const DEFAULT_LABELS = ['Dashboards', 'Products', 'Electronics', 'Computers', 'Laptops', 'Gaming', 'Budget', 'Refurbished'];
 
@@ -88,8 +124,12 @@ export const Default = {
           showSideNavTrigger={args.showSideNavTrigger}
           sidenavTriggerIcon={args.sidenavTriggerIcon}
           showAiTrigger
+          tabsSlot={<Tabs items={qualityTabItems} variant="flush" />}
         />
       }
+      // No page content — confirmed no-crash baseline. Nothing renders below the
+      // header on any page. Add content back in deliberately to explore what
+      // triggers the Storybook/React 19 crash from here.
     />
   ),
 };

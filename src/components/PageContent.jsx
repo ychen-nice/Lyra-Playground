@@ -20,10 +20,16 @@ export default function PageContent({
   header,
   sidebar,
   sidebarState: controlledState,
-  // One-time mount default — unlike sidebarState, this is never force-synced back, so the
-  // sidebar can still be freely opened/closed by the user afterward (e.g. a page that should
-  // *start* open but remain toggleable). Pair with a `key` change to reset it on navigation.
+  // Mount default — unlike sidebarState, this is never force-synced back, so the sidebar can
+  // still be freely opened/closed by the user afterward (e.g. a page that should *start* open
+  // but remain toggleable). Re-applied whenever `pageKey` changes (see effect below) rather
+  // than via a `key` remount — PageContent itself (header, sidebar, ResizeObservers) stays
+  // mounted across page navigation; only the page's own body content swaps out.
   initialSidebarState,
+  // Identity of the page currently shown (e.g. Shell's activePageId) — changing this resets
+  // the sidebar to initialSidebarState, mirroring what a `key` remount used to do, without
+  // tearing down the rest of PageContent.
+  pageKey,
   contentBreakpoint = 720, // min content-area width at which sidebar auto-closes
   onAiTriggerClick,
   aiPanelOpen, // reflected on the header's AI toggle button
@@ -36,6 +42,18 @@ export default function PageContent({
   const [isSidebarTransitioning, setIsSidebarTransitioning] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_SIDEBAR_W);
   const [isDragging, setIsDragging] = useState(false);
+
+  // Re-applies initialSidebarState whenever the caller reports a different page (pageKey) —
+  // the useState initializer above only runs once at mount, so without this a page navigated
+  // away from and back to would keep whatever sidebar state the user last left it in instead
+  // of resetting to that page's own default. Skips the very first render (already handled by
+  // the initializer) so this only fires on an actual page-to-page change.
+  const prevPageKeyRef = useRef(pageKey);
+  useEffect(() => {
+    if (prevPageKeyRef.current === pageKey) return;
+    prevPageKeyRef.current = pageKey;
+    setState(controlledState ?? initialSidebarState ?? 'hidden');
+  }, [pageKey]);
 
   // Imperative close handle — Shell calls this in cascade step 2
   if (closeSidebarRef) closeSidebarRef.current = () => setState('hidden');
