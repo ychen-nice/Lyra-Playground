@@ -97,11 +97,17 @@ export default function Button({
   const s = SIZE_STYLES[size]       ?? SIZE_STYLES.md;
   const isToggleActive = variant === 'toggle' && active;
 
+  // Hover/press still take over the background even while active — only the
+  // resting look is the flat active-subtle fill — so an active toggle stays as
+  // responsive to the mouse as every other variant instead of going static.
+  // The active hover/press shades are their own tokens, not the plain
+  // secondary ones, since they need to read as "still on" rather than as a
+  // neutral hover.
   const bg = disabled
     ? (variant === 'ghost' ? 'transparent' : 'var(--lyra-color-bg-disabled)')
+    : (pressed || forcePressed) ? (isToggleActive ? 'var(--lyra-color-state-bg-pressed-active-subtle)' : v.bgPress)
+    : hovered ? (isToggleActive ? 'var(--lyra-color-state-bg-hover-active-subtle)' : v.bgHover)
     : isToggleActive ? 'var(--lyra-color-bg-active-subtle)'
-    : (pressed || forcePressed) ? v.bgPress
-    : hovered ? v.bgHover
     : v.bg;
 
   const color  = disabled ? 'var(--lyra-color-fg-disabled)'

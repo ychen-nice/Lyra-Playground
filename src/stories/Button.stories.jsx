@@ -28,16 +28,24 @@ export const Playground = {
 
 // ── All variants ────────────────────────────────────────────────────────────
 
-export const Variants = {
-  render: () => (
+function VariantsDemo() {
+  // A real click-to-toggle instance, not a fixed on/off snapshot — clicking it
+  // here behaves the same as in the Toggle (interactive group) story, rather
+  // than sitting frozen the way a hardcoded `active` would.
+  const [toggleActive, setToggleActive] = useState(true);
+  return (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
       <Button variant="primary">Primary</Button>
       <Button variant="secondary">Secondary</Button>
       <Button variant="ghost">Ghost</Button>
       <Button variant="destructive">Destructive</Button>
-      <Button variant="toggle">Toggle</Button>
+      <Button variant="toggle" active={toggleActive} onClick={() => setToggleActive(a => !a)}>Toggle</Button>
     </div>
-  ),
+  );
+}
+
+export const Variants = {
+  render: () => <VariantsDemo />,
 };
 
 // ── Toggle ──────────────────────────────────────────────────────────────────
