@@ -67,16 +67,24 @@ export default function Tabs({
   defaultValue,
   onChange,
   // 'left' — tabs sized to their own content, left-aligned (default).
-  // 'fit'  — tabs stretch to divide the full width evenly.
+  // 'fit'  — tabs stretch to divide the full width evenly. Only valid with the
+  //          'default' variant — ignored (forced back to 'left') when flush.
   alignment = 'left',
   // 'default' — tabs padded horizontally (spacing-5), tight gap between them.
   // 'flush'   — no horizontal padding per tab (node 33023:137165); spacing
   //             between tabs comes entirely from the tablist's own larger gap.
   variant = 'default',
+  // false when composed inside PageHeader's tabsSlot — that row supplies its
+  // own full-width border, so Tabs' own (only as wide as its content, unless
+  // alignment="fit") would draw a redundant, narrower second line otherwise.
+  showBorder = true,
 }) {
   const [internalValue, setInternalValue] = useState(defaultValue ?? items[0]?.id);
   const value = controlledValue ?? internalValue;
   const flush = variant === 'flush';
+  // 'fit' only makes sense for the default variant — flush tabs are always
+  // left-aligned to their own content, regardless of what's passed in.
+  const effectiveAlignment = flush ? 'left' : alignment;
 
   const handleSelect = (id) => {
     setInternalValue(id);
@@ -88,17 +96,14 @@ export default function Tabs({
       role="tablist"
       style={{
         display: 'flex',
-        width: alignment === 'fit' ? '100%' : 'auto',
+        width: effectiveAlignment === 'fit' ? '100%' : 'auto',
         gap: flush ? 'var(--lyra-spacing-5)' : 'var(--lyra-spacing-05)',
-        // flush has no border of its own — it's always composed under a
-        // header row that supplies the full-width border itself (a border
-        // only as wide as the tab content wouldn't reach that row's edge).
-        borderBottom: flush ? 'none' : '1px solid var(--lyra-color-border-subtle)',
+        borderBottom: showBorder ? '1px solid var(--lyra-color-border-subtle)' : 'none',
         // Only the 'fit' tabs stretch — TabItem reads this via the
         // --lyra-tab-flex custom property rather than a prop, so the flex
         // rule lives in one place (here) instead of being threaded through
         // every item.
-        '--lyra-tab-flex': alignment === 'fit' ? '1 0 0' : 'none',
+        '--lyra-tab-flex': effectiveAlignment === 'fit' ? '1 0 0' : 'none',
       }}
     >
       {items.map((item) => (

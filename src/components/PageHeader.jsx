@@ -1,5 +1,5 @@
 // Figma node: 17643:45205  "Page Header"
-import { useState, useLayoutEffect, useEffect, useRef } from 'react';
+import { useState, useLayoutEffect, useEffect, useRef, cloneElement } from 'react';
 import { createPortal } from 'react-dom';
 import { Sparkles, Menu, PanelLeftOpen, EllipsisVertical } from 'lucide-react';
 import '../styles/typography.css';
@@ -390,6 +390,8 @@ export default function PageHeader({
       // Full-width border lives here, not on Tabs' own tablist — that div is only
       // as wide as its tab content (unless alignment="fit"), so its own border
       // wouldn't reach the row's right edge the way the plain header's does.
+      // Tabs' own border is suppressed (showBorder={false}) to avoid a second,
+      // narrower line directly beneath this one.
       <div style={{
         display:      'flex',
         alignItems:   'flex-end',
@@ -402,7 +404,7 @@ export default function PageHeader({
         transform:    'translateY(1px)',
         flexShrink:   0,
       }}>
-        {tabsSlot}
+        {cloneElement(tabsSlot, { showBorder: false })}
       </div>
     )}
     </>

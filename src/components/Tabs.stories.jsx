@@ -32,7 +32,11 @@ export default {
     alignment: {
       control: 'radio',
       options: ['left', 'fit'],
-      description: '"left" sizes tabs to their content and left-aligns them; "fit" stretches tabs to divide the full width evenly',
+      description: '"left" sizes tabs to their content and left-aligns them; "fit" stretches tabs to divide the full width evenly. Only valid with the "default" variant — the control is hidden for "flush".',
+      // 'fit' doesn't make sense for the flush variant (see Tabs.jsx) — hide the
+      // control entirely rather than let it demonstrate a combination that isn't
+      // actually reachable in the component.
+      if: { arg: 'variant', eq: 'default' },
     },
     showError: {
       control: 'boolean',
@@ -54,6 +58,7 @@ export default {
   },
   args: {
     alignment: 'left',
+    variant: 'default',
     showError: false,
   },
 };
@@ -92,12 +97,14 @@ export const Default = {
 
 export const FlushVariant = {
   name: 'Variant — Flush',
-  render: (args) => <Tabs {...args} items={BASE_ITEMS} variant="flush" />,
+  args: { variant: 'flush' },
+  render: (args) => <Tabs {...args} items={BASE_ITEMS} />,
 };
 
 export const FitAlignment = {
   name: 'Alignment — Fit',
-  render: (args) => <Tabs {...args} items={BASE_ITEMS} alignment="fit" />,
+  args: { alignment: 'fit' },
+  render: (args) => <Tabs {...args} items={BASE_ITEMS} />,
 };
 
 export const NoIcons = {
