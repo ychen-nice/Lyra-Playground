@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">3/13 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">12/13 infos</a><span class="filter-pill ok" aria-disabled="true">62 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">3/15 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">14/15 infos</a><span class="filter-pill ok" aria-disabled="true">73 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>0.6s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>0.4s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -742,14 +742,113 @@ width?: any = 400</code></pre>
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="BaseGrid">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> BaseGrid</h2>
+      <div class="badges">
+        <label for="c-1-components-basegrid-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-1-components-basegrid-info" class="badge info as-toggle">1 info</label>
+        <label for="c-1-components-basegrid-stories" class="badge ok as-toggle">2 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/BaseGrid.stories.jsx">components-basegrid · ./src/components/BaseGrid.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-1-components-basegrid-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-1-components-basegrid-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-1-components-basegrid-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">3 prop types</span>
+            </div>
+            <pre><code>Component: src/components/BaseGrid.jsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>height?: any = 400
+
+pageSize?: any = 100
+
+showPagination?: any = true</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { BaseGrid } from "ai-assistant-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; (
+  &lt;BaseGrid columnDefs={columnDefs} rowData={rowData} pageSize={20} height={500} /&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">No Pagination</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NoPagination = () =&gt; (
+  &lt;BaseGrid columnDefs={columnDefs} rowData={rowData.slice(0, 8)} showPagination={false} height={400} /&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="Breadcrumb">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Breadcrumb</h2>
       <div class="badges">
-        <label for="c-1-navigation-title-breadcrumb-props" class="badge ok as-toggle">6 prop types</label>
-        <label for="c-1-navigation-title-breadcrumb-info" class="badge info as-toggle">1 info</label>
-        <label for="c-1-navigation-title-breadcrumb-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-2-navigation-title-breadcrumb-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-2-navigation-title-breadcrumb-info" class="badge info as-toggle">1 info</label>
+        <label for="c-2-navigation-title-breadcrumb-stories" class="badge ok as-toggle">5 stories</label>
         
         
       </div>
@@ -762,11 +861,11 @@ width?: any = 400</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-1-navigation-title-breadcrumb-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-1-navigation-title-breadcrumb-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-2-navigation-title-breadcrumb-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-2-navigation-title-breadcrumb-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-1-navigation-title-breadcrumb-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-2-navigation-title-breadcrumb-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -926,9 +1025,9 @@ title?: any = &#39;Page Title&#39;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Button</h2>
       <div class="badges">
-        <label for="c-2-components-button-props" class="badge ok as-toggle">6 prop types</label>
-        <label for="c-2-components-button-info" class="badge info as-toggle">1 info</label>
-        <label for="c-2-components-button-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-3-components-button-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-3-components-button-info" class="badge info as-toggle">1 info</label>
+        <label for="c-3-components-button-stories" class="badge ok as-toggle">12 stories</label>
         
         
       </div>
@@ -941,11 +1040,11 @@ title?: any = &#39;Page Title&#39;</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-2-components-button-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-2-components-button-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-3-components-button-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-3-components-button-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-2-components-button-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-3-components-button-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -1021,15 +1120,7 @@ import { Button } from "ai-assistant-storybook";</code></pre>
               </div>
               
               
-              <pre><code>const Variants = () =&gt; (
-  &lt;div style={{ display: &#39;flex&#39;, gap: 12, alignItems: &#39;center&#39; }}&gt;
-    &lt;Button variant=&quot;primary&quot;&gt;Primary&lt;/Button&gt;
-    &lt;Button variant=&quot;secondary&quot;&gt;Secondary&lt;/Button&gt;
-    &lt;Button variant=&quot;ghost&quot;&gt;Ghost&lt;/Button&gt;
-    &lt;Button variant=&quot;destructive&quot;&gt;Destructive&lt;/Button&gt;
-    &lt;Button variant=&quot;toggle&quot;&gt;Toggle&lt;/Button&gt;
-  &lt;/div&gt;
-);</code></pre>
+              <pre><code>const Variants = () =&gt; &lt;VariantsDemo /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -1220,9 +1311,9 @@ import { Button } from "ai-assistant-storybook";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ChatBubble</h2>
       <div class="badges">
-        <label for="c-3-components-chat-bubble-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-4-components-chat-bubble-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-3-components-chat-bubble-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-4-components-chat-bubble-stories" class="badge ok as-toggle">2 stories</label>
         
         
       </div>
@@ -1236,10 +1327,10 @@ import { Button } from "ai-assistant-storybook";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-3-components-chat-bubble-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-4-components-chat-bubble-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-3-components-chat-bubble-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-4-components-chat-bubble-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -1327,9 +1418,9 @@ variant?: any = &quot;user&quot;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-err"></span> Colors</h2>
       <div class="badges">
-        <label for="c-4-foundation-colors-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-4-foundation-colors-info" class="badge info as-toggle">2 infos</label>
-        <label for="c-4-foundation-colors-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-5-foundation-colors-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-5-foundation-colors-info" class="badge info as-toggle">2 infos</label>
+        <label for="c-5-foundation-colors-stories" class="badge ok as-toggle">3 stories</label>
         
         
       </div>
@@ -1341,9 +1432,9 @@ variant?: any = &quot;user&quot;</code></pre>
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-4-foundation-colors-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-4-foundation-colors-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-4-foundation-colors-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-5-foundation-colors-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-5-foundation-colors-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-5-foundation-colors-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
   
@@ -1373,17 +1464,17 @@ const MONO = &quot;&#39;SF Mono&#39;,&#39;Fira Code&#39;,&#39;Consolas&#39;,mono
 /* ─── Base palette ─────────────────────────────────────────────────────────── */
 const PALETTE = {
   Gray:   [[&#39;25&#39;,&#39;#FAFAFA&#39;],[&#39;50&#39;,&#39;#F5F5F5&#39;],[&#39;100&#39;,&#39;#EDEDED&#39;],[&#39;200&#39;,&#39;#D1D1D1&#39;],[&#39;300&#39;,&#39;#B5B5B5&#39;],[&#39;400&#39;,&#39;#828282&#39;],[&#39;500&#39;,&#39;#5C5C5C&#39;],[&#39;600&#39;,&#39;#454545&#39;],[&#39;700&#39;,&#39;#2E2E2E&#39;],[&#39;800&#39;,&#39;#262626&#39;],[&#39;900&#39;,&#39;#1F1F1E&#39;],[&#39;950&#39;,&#39;#141414&#39;]],
-  Slate:  [[&#39;25&#39;,&#39;#FBFCFE&#39;],[&#39;50&#39;,&#39;#F3F5F7&#39;],[&#39;100&#39;,&#39;#E9EDF1&#39;],[&#39;200&#39;,&#39;#D0D6DC&#39;],[&#39;300&#39;,&#39;#ACB7C3&#39;],[&#39;400&#39;,&#39;#7F8B9A&#39;],[&#39;500&#39;,&#39;#677280&#39;],[&#39;600&#39;,&#39;#585F68&#39;],[&#39;700&#39;,&#39;#414950&#39;],[&#39;800&#39;,&#39;#323740&#39;],[&#39;900&#39;,&#39;#24282C&#39;],[&#39;950&#39;,&#39;#171A1C&#39;]],
+  Slate:  [[&#39;25&#39;,&#39;#FBFCFE&#39;],[&#39;50&#39;,&#39;#F3F5F7&#39;],[&#39;100&#39;,&#39;#E9EDF1&#39;],[&#39;200&#39;,&#39;#D0D6DC&#39;],[&#39;300&#39;,&#39;#ACB7C3&#39;],[&#39;400&#39;,&#39;#7F8B9A&#39;],[&#39;500&#39;,&#39;#66717F&#39;],[&#39;600&#39;,&#39;#585F68&#39;],[&#39;700&#39;,&#39;#414950&#39;],[&#39;800&#39;,&#39;#323740&#39;],[&#39;900&#39;,&#39;#24282C&#39;],[&#39;950&#39;,&#39;#171A1C&#39;]],
   Brand:  [[&#39;25&#39;,&#39;#F6FAFE&#39;],[&#39;50&#39;,&#39;#ECF4FE&#39;],[&#39;100&#39;,&#39;#E3EEFC&#39;],[&#39;200&#39;,&#39;#D3E6FD&#39;],[&#39;300&#39;,&#39;#A7D0FE&#39;],[&#39;400&#39;,&#39;#4896EC&#39;],[&#39;500&#39;,&#39;#166CCA&#39;],[&#39;600&#39;,&#39;#185BA4&#39;],[&#39;700&#39;,&#39;#164479&#39;],[&#39;800&#39;,&#39;#11375F&#39;],[&#39;900&#39;,&#39;#0C2845&#39;],[&#39;950&#39;,&#39;#081C30&#39;]],
   Red:    [[&#39;25&#39;,&#39;#FFF0F0&#39;],[&#39;50&#39;,&#39;#FFEBEB&#39;],[&#39;100&#39;,&#39;#FFE0E0&#39;],[&#39;200&#39;,&#39;#FFB8B8&#39;],[&#39;300&#39;,&#39;#FF7A7A&#39;],[&#39;400&#39;,&#39;#E75555&#39;],[&#39;500&#39;,&#39;#C93232&#39;],[&#39;600&#39;,&#39;#A32424&#39;],[&#39;700&#39;,&#39;#8A1F1F&#39;],[&#39;800&#39;,&#39;#641616&#39;],[&#39;900&#39;,&#39;#430F0F&#39;],[&#39;950&#39;,&#39;#211717&#39;]],
   Orange: [[&#39;25&#39;,&#39;#FFF4EB&#39;],[&#39;50&#39;,&#39;#FFECDB&#39;],[&#39;100&#39;,&#39;#FFE5CC&#39;],[&#39;200&#39;,&#39;#FFCC9E&#39;],[&#39;300&#39;,&#39;#F9A45A&#39;],[&#39;400&#39;,&#39;#E1710B&#39;],[&#39;500&#39;,&#39;#AE5300&#39;],[&#39;600&#39;,&#39;#7D420C&#39;],[&#39;700&#39;,&#39;#63360D&#39;],[&#39;800&#39;,&#39;#4F2C0D&#39;],[&#39;900&#39;,&#39;#3C220B&#39;],[&#39;950&#39;,&#39;#25190E&#39;]],
   Yellow: [[&#39;25&#39;,&#39;#FFFAE0&#39;],[&#39;50&#39;,&#39;#FFF7C7&#39;],[&#39;100&#39;,&#39;#FFF3AD&#39;],[&#39;200&#39;,&#39;#FFE680&#39;],[&#39;300&#39;,&#39;#F9CF46&#39;],[&#39;400&#39;,&#39;#BD8B04&#39;],[&#39;500&#39;,&#39;#906A00&#39;],[&#39;600&#39;,&#39;#674B13&#39;],[&#39;700&#39;,&#39;#513D15&#39;],[&#39;800&#39;,&#39;#3D3014&#39;],[&#39;900&#39;,&#39;#2E2614&#39;],[&#39;950&#39;,&#39;#221D11&#39;]],
-  Lime:   [[&#39;25&#39;,&#39;#F7FEE7&#39;],[&#39;50&#39;,&#39;#EEFBD0&#39;],[&#39;100&#39;,&#39;#E4F6BB&#39;],[&#39;200&#39;,&#39;#C9EA80&#39;],[&#39;300&#39;,&#39;#A6D349&#39;],[&#39;400&#39;,&#39;#67980B&#39;],[&#39;500&#39;,&#39;#54800C&#39;],[&#39;600&#39;,&#39;#446311&#39;],[&#39;700&#39;,&#39;#3A5413&#39;],[&#39;800&#39;,&#39;#2E430F&#39;],[&#39;900&#39;,&#39;#1D2E05&#39;],[&#39;950&#39;,&#39;#172108&#39;]],
+  Lime:   [[&#39;25&#39;,&#39;#F7FEE7&#39;],[&#39;50&#39;,&#39;#EEFBD0&#39;],[&#39;100&#39;,&#39;#E4F6BB&#39;],[&#39;200&#39;,&#39;#C9EA80&#39;],[&#39;300&#39;,&#39;#A6D349&#39;],[&#39;400&#39;,&#39;#67980B&#39;],[&#39;500&#39;,&#39;#507C07&#39;],[&#39;600&#39;,&#39;#446311&#39;],[&#39;700&#39;,&#39;#3A5413&#39;],[&#39;800&#39;,&#39;#2E430F&#39;],[&#39;900&#39;,&#39;#1D2E05&#39;],[&#39;950&#39;,&#39;#172108&#39;]],
   Green:  [[&#39;25&#39;,&#39;#EBFAED&#39;],[&#39;50&#39;,&#39;#DEF7E1&#39;],[&#39;100&#39;,&#39;#D2F4D5&#39;],[&#39;200&#39;,&#39;#B0E8B7&#39;],[&#39;300&#39;,&#39;#73CD7F&#39;],[&#39;400&#39;,&#39;#2EA53E&#39;],[&#39;500&#39;,&#39;#197E26&#39;],[&#39;600&#39;,&#39;#1F5C27&#39;],[&#39;700&#39;,&#39;#1B4C22&#39;],[&#39;800&#39;,&#39;#153C1B&#39;],[&#39;900&#39;,&#39;#0F2A13&#39;],[&#39;950&#39;,&#39;#0E2010&#39;]],
-  Teal:   [[&#39;25&#39;,&#39;#EBF8F9&#39;],[&#39;50&#39;,&#39;#D8F1F3&#39;],[&#39;100&#39;,&#39;#C8EDEF&#39;],[&#39;200&#39;,&#39;#AAE0E5&#39;],[&#39;300&#39;,&#39;#7CCED5&#39;],[&#39;400&#39;,&#39;#2C9FA9&#39;],[&#39;500&#39;,&#39;#057680&#39;],[&#39;600&#39;,&#39;#1B636A&#39;],[&#39;700&#39;,&#39;#194D52&#39;],[&#39;800&#39;,&#39;#173B3F&#39;],[&#39;900&#39;,&#39;#12292C&#39;],[&#39;950&#39;,&#39;#102123&#39;]],
+  Teal:   [[&#39;25&#39;,&#39;#EBF8F9&#39;],[&#39;50&#39;,&#39;#D8F1F3&#39;],[&#39;100&#39;,&#39;#C8EDEF&#39;],[&#39;200&#39;,&#39;#AAE0E5&#39;],[&#39;300&#39;,&#39;#65C5CD&#39;],[&#39;400&#39;,&#39;#2C9FA9&#39;],[&#39;500&#39;,&#39;#057680&#39;],[&#39;600&#39;,&#39;#1B636A&#39;],[&#39;700&#39;,&#39;#194D52&#39;],[&#39;800&#39;,&#39;#173B3F&#39;],[&#39;900&#39;,&#39;#12292C&#39;],[&#39;950&#39;,&#39;#102123&#39;]],
   Blue:   [[&#39;25&#39;,&#39;#F0F5FF&#39;],[&#39;50&#39;,&#39;#E5EEFF&#39;],[&#39;100&#39;,&#39;#D6E4FF&#39;],[&#39;200&#39;,&#39;#B9CEF8&#39;],[&#39;300&#39;,&#39;#789FED&#39;],[&#39;400&#39;,&#39;#4977D4&#39;],[&#39;500&#39;,&#39;#3163C9&#39;],[&#39;600&#39;,&#39;#264C97&#39;],[&#39;700&#39;,&#39;#1F3B75&#39;],[&#39;800&#39;,&#39;#192E57&#39;],[&#39;900&#39;,&#39;#131F3A&#39;],[&#39;950&#39;,&#39;#121826&#39;]],
   Purple: [[&#39;25&#39;,&#39;#F7F5FF&#39;],[&#39;50&#39;,&#39;#EFEBFF&#39;],[&#39;100&#39;,&#39;#E6E0FF&#39;],[&#39;200&#39;,&#39;#D1C9F2&#39;],[&#39;300&#39;,&#39;#AD9FE9&#39;],[&#39;400&#39;,&#39;#8973DB&#39;],[&#39;500&#39;,&#39;#6E56CC&#39;],[&#39;600&#39;,&#39;#4E39A8&#39;],[&#39;700&#39;,&#39;#42308D&#39;],[&#39;800&#39;,&#39;#31265F&#39;],[&#39;900&#39;,&#39;#231D3F&#39;],[&#39;950&#39;,&#39;#1B172B&#39;]],
-  Pink:   [[&#39;25&#39;,&#39;#FFF5FC&#39;],[&#39;50&#39;,&#39;#FFEBF8&#39;],[&#39;100&#39;,&#39;#FFE0F5&#39;],[&#39;200&#39;,&#39;#FCCAEB&#39;],[&#39;300&#39;,&#39;#EE9DD3&#39;],[&#39;400&#39;,&#39;#DC63B4&#39;],[&#39;500&#39;,&#39;#C5278F&#39;],[&#39;600&#39;,&#39;#91296E&#39;],[&#39;700&#39;,&#39;#702055&#39;],[&#39;800&#39;,&#39;#4F173C&#39;],[&#39;900&#39;,&#39;#331429&#39;],[&#39;950&#39;,&#39;#25131F&#39;]],
+  Pink:   [[&#39;25&#39;,&#39;#FFF5FC&#39;],[&#39;50&#39;,&#39;#FFEBF8&#39;],[&#39;100&#39;,&#39;#FFE0F5&#39;],[&#39;200&#39;,&#39;#FCCAEB&#39;],[&#39;300&#39;,&#39;#EE9DD3&#39;],[&#39;400&#39;,&#39;#DC63B4&#39;],[&#39;500&#39;,&#39;#BF2D8D&#39;],[&#39;600&#39;,&#39;#91296E&#39;],[&#39;700&#39;,&#39;#702055&#39;],[&#39;800&#39;,&#39;#4F173C&#39;],[&#39;900&#39;,&#39;#331429&#39;],[&#39;950&#39;,&#39;#25131F&#39;]],
 };
 
 const NEUTRALS = [[&#39;White&#39;,&#39;#FFFFFF&#39;],[&#39;Black&#39;,&#39;#000000&#39;]];
@@ -1826,9 +1917,9 @@ export const SemanticSizes = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> Effects</h2>
       <div class="badges">
-        <label for="c-5-foundation-effects-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-5-foundation-effects-info" class="badge info as-toggle">2 infos</label>
-        <label for="c-5-foundation-effects-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-6-foundation-effects-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-6-foundation-effects-info" class="badge info as-toggle">2 infos</label>
+        <label for="c-6-foundation-effects-stories" class="badge ok as-toggle">1 story</label>
         
         
       </div>
@@ -1840,9 +1931,9 @@ export const SemanticSizes = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-5-foundation-effects-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-5-foundation-effects-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-5-foundation-effects-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-6-foundation-effects-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-6-foundation-effects-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-6-foundation-effects-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
   
@@ -2049,9 +2140,9 @@ export const Shadows = {
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PageContent</h2>
       <div class="badges">
-        <label for="c-6-content-panel-props" class="badge ok as-toggle">1 prop type</label>
-        <label for="c-6-content-panel-info" class="badge info as-toggle">1 info</label>
-        <label for="c-6-content-panel-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-7-content-panel-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-7-content-panel-info" class="badge info as-toggle">1 info</label>
+        <label for="c-7-content-panel-stories" class="badge ok as-toggle">6 stories</label>
         
         
       </div>
@@ -2064,11 +2155,11 @@ export const Shadows = {
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-6-content-panel-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-6-content-panel-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-7-content-panel-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-7-content-panel-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-6-content-panel-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-7-content-panel-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2201,9 +2292,9 @@ export const Shadows = {
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PageHeader</h2>
       <div class="badges">
-        <label for="c-7-content-panel-page-header-props" class="badge ok as-toggle">12 prop types</label>
-        <label for="c-7-content-panel-page-header-info" class="badge info as-toggle">1 info</label>
-        <label for="c-7-content-panel-page-header-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-8-content-panel-page-header-props" class="badge ok as-toggle">12 prop types</label>
+        <label for="c-8-content-panel-page-header-info" class="badge info as-toggle">1 info</label>
+        <label for="c-8-content-panel-page-header-stories" class="badge ok as-toggle">7 stories</label>
         
         
       </div>
@@ -2216,11 +2307,11 @@ export const Shadows = {
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-7-content-panel-page-header-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-7-content-panel-page-header-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-8-content-panel-page-header-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-8-content-panel-page-header-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-7-content-panel-page-header-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-8-content-panel-page-header-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2275,7 +2366,7 @@ title?: any = &#39;Page Title&#39;</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { PageHeader } from "ai-assistant-storybook";</code></pre>
+                <pre><code>import { PageHeader, Tabs } from "ai-assistant-storybook";</code></pre>
               </div>
           
           
@@ -2371,6 +2462,25 @@ title?: any = &#39;Page Title&#39;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">With Tabs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithTabs = () =&gt; &lt;HeaderStory
+    title=&quot;Page Title&quot;
+    levelCount={1}
+    linksStartAt={1}
+    showSideNavTrigger
+    sidenavTriggerIcon=&quot;panel-left-open&quot;
+    showBreadcrumb
+    showStatusBadge={false}
+    statusBadgeLabel=&quot;Active&quot;
+    showAiTrigger
+    tabsSlot={&lt;Tabs items={TAB_ITEMS} variant=&quot;flush&quot; /&gt;} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">Full Featured</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -2404,9 +2514,9 @@ title?: any = &#39;Page Title&#39;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Shell</h2>
       <div class="badges">
-        <label for="c-8-shell-props" class="badge ok as-toggle">3 prop types</label>
-        <label for="c-8-shell-info" class="badge info as-toggle">1 info</label>
-        <label for="c-8-shell-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-9-shell-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-9-shell-info" class="badge info as-toggle">1 info</label>
+        <label for="c-9-shell-stories" class="badge ok as-toggle">2 stories</label>
         
         
       </div>
@@ -2419,11 +2529,11 @@ title?: any = &#39;Page Title&#39;</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-8-shell-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-8-shell-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-9-shell-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-9-shell-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-8-shell-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-9-shell-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2460,7 +2570,7 @@ showAiPanel?: any = true</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { PageHeader, Shell } from "ai-assistant-storybook";</code></pre>
+                <pre><code>import { PageHeader, Shell, Tabs } from "ai-assistant-storybook";</code></pre>
               </div>
           
           
@@ -2476,12 +2586,15 @@ showAiPanel?: any = true</code></pre>
     contentBreakpoint={720}
     navTrigger=&quot;floating&quot;
     aiUserName=&quot;John&quot;
+    // No page content — confirmed no-crash baseline. Nothing renders below the
+    // header on any page.
     header={
       &lt;PageHeader
         levels={buildLevels(args.levelCount)}
         showSideNavTrigger={args.showSideNavTrigger}
         sidenavTriggerIcon={args.sidenavTriggerIcon}
         showAiTrigger
+        tabsSlot={&lt;Tabs items={qualityTabItems} variant=&quot;flush&quot; /&gt;}
       /&gt;
     } /&gt;;</code></pre>
             </div>
@@ -2522,9 +2635,9 @@ showAiPanel?: any = true</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> SideNavigation</h2>
       <div class="badges">
-        <label for="c-9-shell-side-navigation-props" class="badge ok as-toggle">5 prop types</label>
-        <label for="c-9-shell-side-navigation-info" class="badge info as-toggle">1 info</label>
-        <label for="c-9-shell-side-navigation-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-10-shell-side-navigation-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-10-shell-side-navigation-info" class="badge info as-toggle">1 info</label>
+        <label for="c-10-shell-side-navigation-stories" class="badge ok as-toggle">4 stories</label>
         
         
       </div>
@@ -2537,11 +2650,11 @@ showAiPanel?: any = true</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-9-shell-side-navigation-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-9-shell-side-navigation-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-10-shell-side-navigation-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-10-shell-side-navigation-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-9-shell-side-navigation-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-10-shell-side-navigation-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2645,9 +2758,9 @@ version?: any = &#39;v1&#39;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Tabs</h2>
       <div class="badges">
-        <label for="c-10-components-tabs-props" class="badge ok as-toggle">2 prop types</label>
-        <label for="c-10-components-tabs-info" class="badge info as-toggle">1 info</label>
-        <label for="c-10-components-tabs-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-11-components-tabs-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-11-components-tabs-info" class="badge info as-toggle">1 info</label>
+        <label for="c-11-components-tabs-stories" class="badge ok as-toggle">7 stories</label>
         
         
       </div>
@@ -2660,11 +2773,11 @@ version?: any = &#39;v1&#39;</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-10-components-tabs-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-10-components-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-11-components-tabs-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-11-components-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-10-components-tabs-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-11-components-tabs-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2681,13 +2794,17 @@ version?: any = &#39;v1&#39;</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">2 prop types</span>
+              <span class="badge ok">4 prop types</span>
             </div>
             <pre><code>Component: src/components/Tabs.jsx::default</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>alignment?: any = &#39;left&#39;
 
-items?: any = []</code></pre>
+items?: any = []
+
+showBorder?: any = true
+
+variant?: any = &#39;default&#39;</code></pre>
           </div>
         </div>
     
@@ -2706,6 +2823,26 @@ import { Tabs } from "ai-assistant-storybook";</code></pre>
           
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">Demo</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Demo = () =&gt; &lt;Tabs
+    alignment=&quot;left&quot;
+    variant=&quot;default&quot;
+    showError={false}
+    showIcons
+    items={BASE_ITEMS.map((item) =&gt; {
+      const { icon, ...rest } = item;
+      return {
+        ...(showIcons ? item : rest),
+        ...(item.id === &#39;files&#39; ? { error: showError } : {}),
+      };
+    })} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">Default</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -2713,8 +2850,18 @@ import { Tabs } from "ai-assistant-storybook";</code></pre>
               
               <pre><code>const Default = () =&gt; &lt;Tabs
     alignment=&quot;left&quot;
+    variant=&quot;default&quot;
     showError={false}
     items={BASE_ITEMS.map((item) =&gt; (item.id === &#39;files&#39; ? { ...item, error: showError } : item))} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Variant — Flush</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const FlushVariant = () =&gt; &lt;Tabs alignment=&quot;left&quot; variant=&quot;flush&quot; showError={false} items={BASE_ITEMS} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -2723,7 +2870,7 @@ import { Tabs } from "ai-assistant-storybook";</code></pre>
               </div>
               
               
-              <pre><code>const FitAlignment = () =&gt; &lt;Tabs showError={false} items={BASE_ITEMS} alignment=&quot;fit&quot; /&gt;;</code></pre>
+              <pre><code>const FitAlignment = () =&gt; &lt;Tabs alignment=&quot;fit&quot; variant=&quot;default&quot; showError={false} items={BASE_ITEMS} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -2734,6 +2881,7 @@ import { Tabs } from "ai-assistant-storybook";</code></pre>
               
               <pre><code>const NoIcons = () =&gt; &lt;Tabs
     alignment=&quot;left&quot;
+    variant=&quot;default&quot;
     showError={false}
     items={BASE_ITEMS.map(({ icon, ...item }) =&gt; item)} /&gt;;</code></pre>
             </div>
@@ -2746,6 +2894,7 @@ import { Tabs } from "ai-assistant-storybook";</code></pre>
               
               <pre><code>const WithDisabledAndError = () =&gt; &lt;Tabs
     alignment=&quot;left&quot;
+    variant=&quot;default&quot;
     showError={false}
     items={[
       { id: &#39;overview&#39;, label: &#39;Overview&#39;, icon: &lt;Folder {...ICON_PROPS} /&gt; },
@@ -2774,14 +2923,207 @@ import { Tabs } from "ai-assistant-storybook";</code></pre>
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="Toolbar">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Toolbar</h2>
+      <div class="badges">
+        <label for="c-12-components-toolbar-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-12-components-toolbar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-12-components-toolbar-stories" class="badge ok as-toggle">6 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/Toolbar.stories.jsx">components-toolbar · ./src/components/Toolbar.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-12-components-toolbar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-12-components-toolbar-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-12-components-toolbar-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: src/components/Toolbar.jsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>disabled?: any = false
+
+loopFocus?: any = true
+
+orientation?: any = &#39;horizontal&#39;
+
+withBackground?: any = true</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Copy, Download, Share2, Trash2 } from "lucide-react";
+import { Toolbar } from "ai-assistant-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;Toolbar
+    withBackground
+    orientation=&quot;horizontal&quot;
+    loopFocus
+    disabled={false}
+    leftSlot={&lt;span className=&quot;lyra-body-md-em&quot;&gt;240 items&lt;/span&gt;}
+    rightSlot={
+      &lt;&gt;
+        &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot; leftIcon={&lt;Share2 size={16} /&gt;}&gt;Share&lt;/Toolbar.Button&gt;
+        &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot; leftIcon={&lt;Download size={16} /&gt;}&gt;Export&lt;/Toolbar.Button&gt;
+      &lt;/&gt;
+    } /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">No Background</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NoBackground = () =&gt; &lt;Toolbar
+    withBackground={false}
+    orientation=&quot;horizontal&quot;
+    loopFocus
+    disabled={false}
+    leftSlot={&lt;span className=&quot;lyra-body-md-em&quot;&gt;240 items&lt;/span&gt;}
+    rightSlot={
+      &lt;&gt;
+        &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot; leftIcon={&lt;Share2 size={16} /&gt;}&gt;Share&lt;/Toolbar.Button&gt;
+        &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot; leftIcon={&lt;Download size={16} /&gt;}&gt;Export&lt;/Toolbar.Button&gt;
+      &lt;/&gt;
+    } /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Custom Actions</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CustomActions = () =&gt; &lt;Toolbar
+    withBackground
+    orientation=&quot;horizontal&quot;
+    loopFocus
+    disabled={false}
+    leftSlot={&lt;span className=&quot;lyra-body-md-em&quot;&gt;Session — 240 items&lt;/span&gt;}
+    rightSlot={
+      &lt;&gt;
+        &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot; leftIcon={&lt;Download size={16} /&gt;}&gt;Export&lt;/Toolbar.Button&gt;
+        &lt;Toolbar.Button variant=&quot;primary&quot; size=&quot;md&quot;&gt;Save&lt;/Toolbar.Button&gt;
+      &lt;/&gt;
+    } /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Composed (Groups + Separator)</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ComposedWithGroups = () =&gt; &lt;Toolbar withBackground orientation=&quot;horizontal&quot; loopFocus disabled={false}&gt;
+    &lt;Toolbar.Group&gt;
+        &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot; iconOnly aria-label=&quot;Copy&quot;&gt;&lt;Copy size={16} /&gt;&lt;/Toolbar.Button&gt;
+        &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot; iconOnly aria-label=&quot;Share&quot;&gt;&lt;Share2 size={16} /&gt;&lt;/Toolbar.Button&gt;
+    &lt;/Toolbar.Group&gt;
+    &lt;Toolbar.Separator /&gt;
+    &lt;Toolbar.Group&gt;
+        &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot; iconOnly aria-label=&quot;Download&quot;&gt;&lt;Download size={16} /&gt;&lt;/Toolbar.Button&gt;
+        &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot; iconOnly aria-label=&quot;Delete&quot;&gt;&lt;Trash2 size={16} /&gt;&lt;/Toolbar.Button&gt;
+    &lt;/Toolbar.Group&gt;
+    &lt;div style={{ flex: &#39;1 0 0&#39; }} /&gt;
+    &lt;Toolbar.Link href=&quot;#&quot;&gt;Learn more&lt;/Toolbar.Link&gt;
+&lt;/Toolbar&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Vertical Orientation</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Vertical = () =&gt; &lt;div style={{ width: 240 }}&gt;
+    &lt;Toolbar withBackground orientation=&quot;vertical&quot; loopFocus disabled={false}&gt;
+        &lt;Toolbar.Group style={{ width: &#39;100%&#39; }}&gt;
+            &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot;&gt;First&lt;/Toolbar.Button&gt;
+            &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot;&gt;Second&lt;/Toolbar.Button&gt;
+            &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot;&gt;Third&lt;/Toolbar.Button&gt;
+        &lt;/Toolbar.Group&gt;
+    &lt;/Toolbar&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled Item</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const DisabledItem = () =&gt; &lt;Toolbar withBackground orientation=&quot;horizontal&quot; loopFocus disabled={false}&gt;
+    &lt;Toolbar.Group&gt;
+        &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot;&gt;First&lt;/Toolbar.Button&gt;
+        &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot; disabled&gt;Disabled&lt;/Toolbar.Button&gt;
+        &lt;Toolbar.Button variant=&quot;ghost&quot; size=&quot;md&quot;&gt;Third&lt;/Toolbar.Button&gt;
+    &lt;/Toolbar.Group&gt;
+&lt;/Toolbar&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="TreeGrid">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TreeGrid</h2>
       <div class="badges">
-        <label for="c-11-content-panel-tree-grid-props" class="badge ok as-toggle">13 prop types</label>
-        <label for="c-11-content-panel-tree-grid-info" class="badge info as-toggle">1 info</label>
-        <label for="c-11-content-panel-tree-grid-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-13-content-panel-tree-grid-props" class="badge ok as-toggle">13 prop types</label>
+        <label for="c-13-content-panel-tree-grid-info" class="badge info as-toggle">1 info</label>
+        <label for="c-13-content-panel-tree-grid-stories" class="badge ok as-toggle">10 stories</label>
         
         
       </div>
@@ -2794,11 +3136,11 @@ import { Tabs } from "ai-assistant-storybook";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-11-content-panel-tree-grid-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-11-content-panel-tree-grid-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-13-content-panel-tree-grid-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-13-content-panel-tree-grid-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-11-content-panel-tree-grid-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-13-content-panel-tree-grid-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3076,9 +3418,9 @@ import { TreeGrid } from "ai-assistant-storybook";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-err"></span> Typography</h2>
       <div class="badges">
-        <label for="c-12-foundation-typography-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-12-foundation-typography-info" class="badge info as-toggle">2 infos</label>
-        <label for="c-12-foundation-typography-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-14-foundation-typography-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-14-foundation-typography-info" class="badge info as-toggle">2 infos</label>
+        <label for="c-14-foundation-typography-stories" class="badge ok as-toggle">3 stories</label>
         
         
       </div>
@@ -3090,9 +3432,9 @@ import { TreeGrid } from "ai-assistant-storybook";</code></pre>
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-12-foundation-typography-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-12-foundation-typography-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-12-foundation-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-14-foundation-typography-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-14-foundation-typography-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-14-foundation-typography-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
   
@@ -3441,17 +3783,17 @@ const MONO = &quot;&#39;SF Mono&#39;,&#39;Fira Code&#39;,&#39;Consolas&#39;,mono
 /* ─── Base palette ─────────────────────────────────────────────────────────── */
 const PALETTE = {
   Gray:   [[&#39;25&#39;,&#39;#FAFAFA&#39;],[&#39;50&#39;,&#39;#F5F5F5&#39;],[&#39;100&#39;,&#39;#EDEDED&#39;],[&#39;200&#39;,&#39;#D1D1D1&#39;],[&#39;300&#39;,&#39;#B5B5B5&#39;],[&#39;400&#39;,&#39;#828282&#39;],[&#39;500&#39;,&#39;#5C5C5C&#39;],[&#39;600&#39;,&#39;#454545&#39;],[&#39;700&#39;,&#39;#2E2E2E&#39;],[&#39;800&#39;,&#39;#262626&#39;],[&#39;900&#39;,&#39;#1F1F1E&#39;],[&#39;950&#39;,&#39;#141414&#39;]],
-  Slate:  [[&#39;25&#39;,&#39;#FBFCFE&#39;],[&#39;50&#39;,&#39;#F3F5F7&#39;],[&#39;100&#39;,&#39;#E9EDF1&#39;],[&#39;200&#39;,&#39;#D0D6DC&#39;],[&#39;300&#39;,&#39;#ACB7C3&#39;],[&#39;400&#39;,&#39;#7F8B9A&#39;],[&#39;500&#39;,&#39;#677280&#39;],[&#39;600&#39;,&#39;#585F68&#39;],[&#39;700&#39;,&#39;#414950&#39;],[&#39;800&#39;,&#39;#323740&#39;],[&#39;900&#39;,&#39;#24282C&#39;],[&#39;950&#39;,&#39;#171A1C&#39;]],
+  Slate:  [[&#39;25&#39;,&#39;#FBFCFE&#39;],[&#39;50&#39;,&#39;#F3F5F7&#39;],[&#39;100&#39;,&#39;#E9EDF1&#39;],[&#39;200&#39;,&#39;#D0D6DC&#39;],[&#39;300&#39;,&#39;#ACB7C3&#39;],[&#39;400&#39;,&#39;#7F8B9A&#39;],[&#39;500&#39;,&#39;#66717F&#39;],[&#39;600&#39;,&#39;#585F68&#39;],[&#39;700&#39;,&#39;#414950&#39;],[&#39;800&#39;,&#39;#323740&#39;],[&#39;900&#39;,&#39;#24282C&#39;],[&#39;950&#39;,&#39;#171A1C&#39;]],
   Brand:  [[&#39;25&#39;,&#39;#F6FAFE&#39;],[&#39;50&#39;,&#39;#ECF4FE&#39;],[&#39;100&#39;,&#39;#E3EEFC&#39;],[&#39;200&#39;,&#39;#D3E6FD&#39;],[&#39;300&#39;,&#39;#A7D0FE&#39;],[&#39;400&#39;,&#39;#4896EC&#39;],[&#39;500&#39;,&#39;#166CCA&#39;],[&#39;600&#39;,&#39;#185BA4&#39;],[&#39;700&#39;,&#39;#164479&#39;],[&#39;800&#39;,&#39;#11375F&#39;],[&#39;900&#39;,&#39;#0C2845&#39;],[&#39;950&#39;,&#39;#081C30&#39;]],
   Red:    [[&#39;25&#39;,&#39;#FFF0F0&#39;],[&#39;50&#39;,&#39;#FFEBEB&#39;],[&#39;100&#39;,&#39;#FFE0E0&#39;],[&#39;200&#39;,&#39;#FFB8B8&#39;],[&#39;300&#39;,&#39;#FF7A7A&#39;],[&#39;400&#39;,&#39;#E75555&#39;],[&#39;500&#39;,&#39;#C93232&#39;],[&#39;600&#39;,&#39;#A32424&#39;],[&#39;700&#39;,&#39;#8A1F1F&#39;],[&#39;800&#39;,&#39;#641616&#39;],[&#39;900&#39;,&#39;#430F0F&#39;],[&#39;950&#39;,&#39;#211717&#39;]],
   Orange: [[&#39;25&#39;,&#39;#FFF4EB&#39;],[&#39;50&#39;,&#39;#FFECDB&#39;],[&#39;100&#39;,&#39;#FFE5CC&#39;],[&#39;200&#39;,&#39;#FFCC9E&#39;],[&#39;300&#39;,&#39;#F9A45A&#39;],[&#39;400&#39;,&#39;#E1710B&#39;],[&#39;500&#39;,&#39;#AE5300&#39;],[&#39;600&#39;,&#39;#7D420C&#39;],[&#39;700&#39;,&#39;#63360D&#39;],[&#39;800&#39;,&#39;#4F2C0D&#39;],[&#39;900&#39;,&#39;#3C220B&#39;],[&#39;950&#39;,&#39;#25190E&#39;]],
   Yellow: [[&#39;25&#39;,&#39;#FFFAE0&#39;],[&#39;50&#39;,&#39;#FFF7C7&#39;],[&#39;100&#39;,&#39;#FFF3AD&#39;],[&#39;200&#39;,&#39;#FFE680&#39;],[&#39;300&#39;,&#39;#F9CF46&#39;],[&#39;400&#39;,&#39;#BD8B04&#39;],[&#39;500&#39;,&#39;#906A00&#39;],[&#39;600&#39;,&#39;#674B13&#39;],[&#39;700&#39;,&#39;#513D15&#39;],[&#39;800&#39;,&#39;#3D3014&#39;],[&#39;900&#39;,&#39;#2E2614&#39;],[&#39;950&#39;,&#39;#221D11&#39;]],
-  Lime:   [[&#39;25&#39;,&#39;#F7FEE7&#39;],[&#39;50&#39;,&#39;#EEFBD0&#39;],[&#39;100&#39;,&#39;#E4F6BB&#39;],[&#39;200&#39;,&#39;#C9EA80&#39;],[&#39;300&#39;,&#39;#A6D349&#39;],[&#39;400&#39;,&#39;#67980B&#39;],[&#39;500&#39;,&#39;#54800C&#39;],[&#39;600&#39;,&#39;#446311&#39;],[&#39;700&#39;,&#39;#3A5413&#39;],[&#39;800&#39;,&#39;#2E430F&#39;],[&#39;900&#39;,&#39;#1D2E05&#39;],[&#39;950&#39;,&#39;#172108&#39;]],
+  Lime:   [[&#39;25&#39;,&#39;#F7FEE7&#39;],[&#39;50&#39;,&#39;#EEFBD0&#39;],[&#39;100&#39;,&#39;#E4F6BB&#39;],[&#39;200&#39;,&#39;#C9EA80&#39;],[&#39;300&#39;,&#39;#A6D349&#39;],[&#39;400&#39;,&#39;#67980B&#39;],[&#39;500&#39;,&#39;#507C07&#39;],[&#39;600&#39;,&#39;#446311&#39;],[&#39;700&#39;,&#39;#3A5413&#39;],[&#39;800&#39;,&#39;#2E430F&#39;],[&#39;900&#39;,&#39;#1D2E05&#39;],[&#39;950&#39;,&#39;#172108&#39;]],
   Green:  [[&#39;25&#39;,&#39;#EBFAED&#39;],[&#39;50&#39;,&#39;#DEF7E1&#39;],[&#39;100&#39;,&#39;#D2F4D5&#39;],[&#39;200&#39;,&#39;#B0E8B7&#39;],[&#39;300&#39;,&#39;#73CD7F&#39;],[&#39;400&#39;,&#39;#2EA53E&#39;],[&#39;500&#39;,&#39;#197E26&#39;],[&#39;600&#39;,&#39;#1F5C27&#39;],[&#39;700&#39;,&#39;#1B4C22&#39;],[&#39;800&#39;,&#39;#153C1B&#39;],[&#39;900&#39;,&#39;#0F2A13&#39;],[&#39;950&#39;,&#39;#0E2010&#39;]],
-  Teal:   [[&#39;25&#39;,&#39;#EBF8F9&#39;],[&#39;50&#39;,&#39;#D8F1F3&#39;],[&#39;100&#39;,&#39;#C8EDEF&#39;],[&#39;200&#39;,&#39;#AAE0E5&#39;],[&#39;300&#39;,&#39;#7CCED5&#39;],[&#39;400&#39;,&#39;#2C9FA9&#39;],[&#39;500&#39;,&#39;#057680&#39;],[&#39;600&#39;,&#39;#1B636A&#39;],[&#39;700&#39;,&#39;#194D52&#39;],[&#39;800&#39;,&#39;#173B3F&#39;],[&#39;900&#39;,&#39;#12292C&#39;],[&#39;950&#39;,&#39;#102123&#39;]],
+  Teal:   [[&#39;25&#39;,&#39;#EBF8F9&#39;],[&#39;50&#39;,&#39;#D8F1F3&#39;],[&#39;100&#39;,&#39;#C8EDEF&#39;],[&#39;200&#39;,&#39;#AAE0E5&#39;],[&#39;300&#39;,&#39;#65C5CD&#39;],[&#39;400&#39;,&#39;#2C9FA9&#39;],[&#39;500&#39;,&#39;#057680&#39;],[&#39;600&#39;,&#39;#1B636A&#39;],[&#39;700&#39;,&#39;#194D52&#39;],[&#39;800&#39;,&#39;#173B3F&#39;],[&#39;900&#39;,&#39;#12292C&#39;],[&#39;950&#39;,&#39;#102123&#39;]],
   Blue:   [[&#39;25&#39;,&#39;#F0F5FF&#39;],[&#39;50&#39;,&#39;#E5EEFF&#39;],[&#39;100&#39;,&#39;#D6E4FF&#39;],[&#39;200&#39;,&#39;#B9CEF8&#39;],[&#39;300&#39;,&#39;#789FED&#39;],[&#39;400&#39;,&#39;#4977D4&#39;],[&#39;500&#39;,&#39;#3163C9&#39;],[&#39;600&#39;,&#39;#264C97&#39;],[&#39;700&#39;,&#39;#1F3B75&#39;],[&#39;800&#39;,&#39;#192E57&#39;],[&#39;900&#39;,&#39;#131F3A&#39;],[&#39;950&#39;,&#39;#121826&#39;]],
   Purple: [[&#39;25&#39;,&#39;#F7F5FF&#39;],[&#39;50&#39;,&#39;#EFEBFF&#39;],[&#39;100&#39;,&#39;#E6E0FF&#39;],[&#39;200&#39;,&#39;#D1C9F2&#39;],[&#39;300&#39;,&#39;#AD9FE9&#39;],[&#39;400&#39;,&#39;#8973DB&#39;],[&#39;500&#39;,&#39;#6E56CC&#39;],[&#39;600&#39;,&#39;#4E39A8&#39;],[&#39;700&#39;,&#39;#42308D&#39;],[&#39;800&#39;,&#39;#31265F&#39;],[&#39;900&#39;,&#39;#231D3F&#39;],[&#39;950&#39;,&#39;#1B172B&#39;]],
-  Pink:   [[&#39;25&#39;,&#39;#FFF5FC&#39;],[&#39;50&#39;,&#39;#FFEBF8&#39;],[&#39;100&#39;,&#39;#FFE0F5&#39;],[&#39;200&#39;,&#39;#FCCAEB&#39;],[&#39;300&#39;,&#39;#EE9DD3&#39;],[&#39;400&#39;,&#39;#DC63B4&#39;],[&#39;500&#39;,&#39;#C5278F&#39;],[&#39;600&#39;,&#39;#91296E&#39;],[&#39;700&#39;,&#39;#702055&#39;],[&#39;800&#39;,&#39;#4F173C&#39;],[&#39;900&#39;,&#39;#331429&#39;],[&#39;950&#39;,&#39;#25131F&#39;]],
+  Pink:   [[&#39;25&#39;,&#39;#FFF5FC&#39;],[&#39;50&#39;,&#39;#FFEBF8&#39;],[&#39;100&#39;,&#39;#FFE0F5&#39;],[&#39;200&#39;,&#39;#FCCAEB&#39;],[&#39;300&#39;,&#39;#EE9DD3&#39;],[&#39;400&#39;,&#39;#DC63B4&#39;],[&#39;500&#39;,&#39;#BF2D8D&#39;],[&#39;600&#39;,&#39;#91296E&#39;],[&#39;700&#39;,&#39;#702055&#39;],[&#39;800&#39;,&#39;#4F173C&#39;],[&#39;900&#39;,&#39;#331429&#39;],[&#39;950&#39;,&#39;#25131F&#39;]],
 };
 
 const NEUTRALS = [[&#39;White&#39;,&#39;#FFFFFF&#39;],[&#39;Black&#39;,&#39;#000000&#39;]];
