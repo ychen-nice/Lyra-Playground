@@ -848,29 +848,7 @@ import { X } from "lucide-react";</code></pre>
               </div>
               
               
-              <pre><code>const AllColors = ({ children, showLeadingIcon, showTrailingIcon, labelSize, ...args }) =&gt; {
-  const size = resolveSize({ ...args, labelSize });
-  return (
-    &lt;div style={{ display: &#39;flex&#39;, flexWrap: &#39;wrap&#39;, gap: &#39;var(--lyra-spacing-2)&#39; }}&gt;
-      {COLORS.map((color, i) =&gt; {
-        if (args.type === &#39;icon&#39;) return &lt;Badge key={color} {...args} size={size} color={color} icon={&lt;X /&gt;} /&gt;;
-        if (args.type === &#39;counter&#39;) return &lt;Badge key={color} {...args} size={size} color={color}&gt;{i + 1}&lt;/Badge&gt;;
-        return (
-          &lt;Badge
-            key={color}
-            {...args}
-            size={size}
-            color={color}
-            leadingIcon={showLeadingIcon ? &lt;X /&gt; : undefined}
-            trailingIcon={showTrailingIcon ? &lt;X /&gt; : undefined}
-          &gt;
-            {color[0].toUpperCase() + color.slice(1)}
-          &lt;/Badge&gt;
-        );
-      })}
-    &lt;/div&gt;
-  );
-};</code></pre>
+              <pre><code>const AllColors = () =&gt; &lt;AllColorsDemo /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
