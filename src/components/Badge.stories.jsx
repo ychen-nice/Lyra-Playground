@@ -26,7 +26,11 @@ export default {
       description: "The label type has no small size",
       if: { arg: "type", eq: "label" },
     },
-    type: { control: "radio", options: ["label", "counter", "icon"] },
+    type: {
+      options: ["label", "counter", "icon"],
+      // Displayed as "Value" — "counter" is the internal Badge.jsx prop value.
+      control: { type: "radio", labels: { label: "Label", counter: "Value", icon: "Icon" } },
+    },
     children: { control: "text" },
     // Leading/trailing icons only exist on type="label" — hidden otherwise
     // rather than shown greyed-out and doing nothing.
