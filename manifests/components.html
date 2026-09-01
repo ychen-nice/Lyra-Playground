@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">3/15 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">14/15 infos</a><span class="filter-pill ok" aria-disabled="true">73 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">3/17 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">16/17 infos</a><span class="filter-pill ok" aria-disabled="true">87 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>0.4s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>0.5s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -742,14 +742,253 @@ width?: any = 400</code></pre>
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="Badge">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Badge</h2>
+      <div class="badges">
+        <label for="c-1-components-badge-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-1-components-badge-info" class="badge info as-toggle">1 info</label>
+        <label for="c-1-components-badge-stories" class="badge ok as-toggle">8 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/Badge.stories.jsx">components-badge · ./src/components/Badge.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-1-components-badge-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-1-components-badge-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-1-components-badge-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: src/components/Badge.jsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>color?: any = &#39;slate&#39;
+
+colorStyle?: any = &#39;subtle&#39;
+
+size?: any = &#39;large&#39;
+
+type?: any = &#39;label&#39;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Badge } from "ai-assistant-storybook";
+import { X } from "lucide-react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; {
+    const size = resolveSize({ ...args, labelSize });
+    if (args.type === &#39;icon&#39;) return &lt;Badge {...args} size={size} icon={&lt;X /&gt;} /&gt;;
+    if (args.type === &#39;counter&#39;) {
+      const content = children === &#39;Label&#39; ? &#39;9&#39; : children;
+      return &lt;Badge {...args} size={size}&gt;{content}&lt;/Badge&gt;;
+    }
+
+    return (
+        &lt;Badge
+            color=&quot;slate&quot;
+            colorStyle=&quot;subtle&quot;
+            labelSize=&quot;large&quot;
+            type=&quot;label&quot;
+            showLeadingIcon={false}
+            showTrailingIcon={false}
+            size={size}
+            leadingIcon={showLeadingIcon ? &lt;X /&gt; : undefined}
+            trailingIcon={showTrailingIcon ? &lt;X /&gt; : undefined}&gt;
+            {children}
+        &lt;/Badge&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">All Colors</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllColors = ({ children, showLeadingIcon, showTrailingIcon, labelSize, ...args }) =&gt; {
+  const size = resolveSize({ ...args, labelSize });
+  return (
+    &lt;div style={{ display: &#39;flex&#39;, flexWrap: &#39;wrap&#39;, gap: &#39;var(--lyra-spacing-2)&#39; }}&gt;
+      {COLORS.map((color, i) =&gt; {
+        if (args.type === &#39;icon&#39;) return &lt;Badge key={color} {...args} size={size} color={color} icon={&lt;X /&gt;} /&gt;;
+        if (args.type === &#39;counter&#39;) return &lt;Badge key={color} {...args} size={size} color={color}&gt;{i + 1}&lt;/Badge&gt;;
+        return (
+          &lt;Badge
+            key={color}
+            {...args}
+            size={size}
+            color={color}
+            leadingIcon={showLeadingIcon ? &lt;X /&gt; : undefined}
+            trailingIcon={showTrailingIcon ? &lt;X /&gt; : undefined}
+          &gt;
+            {color[0].toUpperCase() + color.slice(1)}
+          &lt;/Badge&gt;
+        );
+      })}
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Subtle vs. Strong</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SubtleVsStrong = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, flexDirection: &#39;column&#39;, gap: &#39;var(--lyra-spacing-3)&#39; }}&gt;
+    &lt;div style={{ display: &#39;flex&#39;, flexWrap: &#39;wrap&#39;, gap: &#39;var(--lyra-spacing-2)&#39; }}&gt;
+      {COLORS.map((color) =&gt; (
+        &lt;Badge key={color} color={color} colorStyle=&quot;subtle&quot;&gt;{color[0].toUpperCase() + color.slice(1)}&lt;/Badge&gt;
+      ))}
+    &lt;/div&gt;
+    &lt;div style={{ display: &#39;flex&#39;, flexWrap: &#39;wrap&#39;, gap: &#39;var(--lyra-spacing-2)&#39; }}&gt;
+      {COLORS.map((color) =&gt; (
+        &lt;Badge key={color} color={color} colorStyle=&quot;strong&quot;&gt;{color[0].toUpperCase() + color.slice(1)}&lt;/Badge&gt;
+      ))}
+    &lt;/div&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Label — Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const LabelSizes = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: &#39;var(--lyra-spacing-3)&#39; }}&gt;
+    &lt;Badge type=&quot;label&quot; size=&quot;large&quot;&gt;Large&lt;/Badge&gt;
+    &lt;Badge type=&quot;label&quot; size=&quot;medium&quot;&gt;Medium&lt;/Badge&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Label — With Icons</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const LabelWithIcons = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: &#39;var(--lyra-spacing-3)&#39; }}&gt;
+    &lt;Badge type=&quot;label&quot; leadingIcon={&lt;X /&gt;}&gt;Leading&lt;/Badge&gt;
+    &lt;Badge type=&quot;label&quot; trailingIcon={&lt;X /&gt;}&gt;Trailing&lt;/Badge&gt;
+    &lt;Badge type=&quot;label&quot; leadingIcon={&lt;X /&gt;} trailingIcon={&lt;X /&gt;}&gt;Both&lt;/Badge&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Counter — Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CounterSizes = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: &#39;var(--lyra-spacing-3)&#39; }}&gt;
+    &lt;Badge type=&quot;counter&quot; size=&quot;large&quot;&gt;9&lt;/Badge&gt;
+    &lt;Badge type=&quot;counter&quot; size=&quot;medium&quot;&gt;9&lt;/Badge&gt;
+    &lt;Badge type=&quot;counter&quot; size=&quot;small&quot;&gt;9&lt;/Badge&gt;
+    &lt;Badge type=&quot;counter&quot; size=&quot;large&quot;&gt;99+&lt;/Badge&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Icon — Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const IconSizes = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: &#39;var(--lyra-spacing-3)&#39; }}&gt;
+    &lt;Badge type=&quot;icon&quot; size=&quot;large&quot; icon={&lt;X /&gt;} /&gt;
+    &lt;Badge type=&quot;icon&quot; size=&quot;medium&quot; icon={&lt;X /&gt;} /&gt;
+    &lt;Badge type=&quot;icon&quot; size=&quot;small&quot; icon={&lt;X /&gt;} /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">All Types</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllTypes = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: &#39;var(--lyra-spacing-3)&#39; }}&gt;
+    &lt;Badge type=&quot;label&quot; color=&quot;blue&quot;&gt;Label&lt;/Badge&gt;
+    &lt;Badge type=&quot;counter&quot; color=&quot;blue&quot;&gt;9&lt;/Badge&gt;
+    &lt;Badge type=&quot;icon&quot; color=&quot;blue&quot; icon={&lt;X /&gt;} /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="BaseGrid">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> BaseGrid</h2>
       <div class="badges">
-        <label for="c-1-components-basegrid-props" class="badge ok as-toggle">3 prop types</label>
-        <label for="c-1-components-basegrid-info" class="badge info as-toggle">1 info</label>
-        <label for="c-1-components-basegrid-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-2-components-basegrid-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-2-components-basegrid-info" class="badge info as-toggle">1 info</label>
+        <label for="c-2-components-basegrid-stories" class="badge ok as-toggle">2 stories</label>
         
         
       </div>
@@ -762,11 +1001,11 @@ width?: any = 400</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-1-components-basegrid-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-1-components-basegrid-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-2-components-basegrid-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-2-components-basegrid-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-1-components-basegrid-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-2-components-basegrid-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -846,9 +1085,9 @@ showPagination?: any = true</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Breadcrumb</h2>
       <div class="badges">
-        <label for="c-2-navigation-title-breadcrumb-props" class="badge ok as-toggle">6 prop types</label>
-        <label for="c-2-navigation-title-breadcrumb-info" class="badge info as-toggle">1 info</label>
-        <label for="c-2-navigation-title-breadcrumb-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-3-navigation-title-breadcrumb-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-3-navigation-title-breadcrumb-info" class="badge info as-toggle">1 info</label>
+        <label for="c-3-navigation-title-breadcrumb-stories" class="badge ok as-toggle">5 stories</label>
         
         
       </div>
@@ -861,11 +1100,11 @@ showPagination?: any = true</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-2-navigation-title-breadcrumb-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-2-navigation-title-breadcrumb-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-3-navigation-title-breadcrumb-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-3-navigation-title-breadcrumb-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-2-navigation-title-breadcrumb-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-3-navigation-title-breadcrumb-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -1025,9 +1264,9 @@ title?: any = &#39;Page Title&#39;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Button</h2>
       <div class="badges">
-        <label for="c-3-components-button-props" class="badge ok as-toggle">6 prop types</label>
-        <label for="c-3-components-button-info" class="badge info as-toggle">1 info</label>
-        <label for="c-3-components-button-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-4-components-button-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-4-components-button-info" class="badge info as-toggle">1 info</label>
+        <label for="c-4-components-button-stories" class="badge ok as-toggle">12 stories</label>
         
         
       </div>
@@ -1040,11 +1279,11 @@ title?: any = &#39;Page Title&#39;</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-3-components-button-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-3-components-button-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-4-components-button-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-4-components-button-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-3-components-button-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-4-components-button-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -1311,9 +1550,9 @@ import { Button } from "ai-assistant-storybook";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ChatBubble</h2>
       <div class="badges">
-        <label for="c-4-components-chat-bubble-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-5-components-chat-bubble-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-4-components-chat-bubble-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-5-components-chat-bubble-stories" class="badge ok as-toggle">2 stories</label>
         
         
       </div>
@@ -1327,10 +1566,10 @@ import { Button } from "ai-assistant-storybook";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-4-components-chat-bubble-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-5-components-chat-bubble-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-4-components-chat-bubble-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-5-components-chat-bubble-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -1418,9 +1657,9 @@ variant?: any = &quot;user&quot;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-err"></span> Colors</h2>
       <div class="badges">
-        <label for="c-5-foundation-colors-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-5-foundation-colors-info" class="badge info as-toggle">2 infos</label>
-        <label for="c-5-foundation-colors-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-6-foundation-colors-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-6-foundation-colors-info" class="badge info as-toggle">2 infos</label>
+        <label for="c-6-foundation-colors-stories" class="badge ok as-toggle">3 stories</label>
         
         
       </div>
@@ -1432,9 +1671,9 @@ variant?: any = &quot;user&quot;</code></pre>
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-5-foundation-colors-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-5-foundation-colors-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-5-foundation-colors-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-6-foundation-colors-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-6-foundation-colors-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-6-foundation-colors-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
   
@@ -1580,7 +1819,7 @@ export const SemanticColors = {
             &lt;span style={COL_HDR}&gt;Description&lt;/span&gt;
           &lt;/div&gt;
 
-          {tokens.map(({ name, light, dark, desc }) =&gt; (
+          {tokens.map(({ name, light, dark, lightRef, darkRef, desc }) =&gt; (
             &lt;div key={name} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
               {/* Light swatch */}
               &lt;Swatch hex={light} size={28} /&gt;
@@ -1588,15 +1827,17 @@ export const SemanticColors = {
               &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;
                 {prefix}{name}
               &lt;/code&gt;
-              {/* Light value */}
+              {/* Light value — shows the referenced base/semantic token name (e.g.
+                  &quot;slate/25&quot;) instead of the resolved value, when the source value
+                  is a reference rather than a hand-picked literal. */}
               &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
                 &lt;Swatch hex={light} size={18} /&gt;
-                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{light}&lt;/span&gt;
+                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={lightRef ? light : undefined}&gt;{lightRef || light}&lt;/span&gt;
               &lt;/div&gt;
-              {/* Dark value */}
+              {/* Dark value — same reference-name rule as Light. */}
               &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
                 &lt;Swatch hex={dark} size={18} /&gt;
-                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{dark}&lt;/span&gt;
+                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={darkRef ? dark : undefined}&gt;{darkRef || dark}&lt;/span&gt;
               &lt;/div&gt;
               {/* Description */}
               &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39; }}&gt;
@@ -1832,7 +2073,7 @@ export const SemanticSizes = {
           &lt;span style={COL_HDR}&gt;Description&lt;/span&gt;
         &lt;/div&gt;
 
-        {tokens.map(({ name, light, dark, desc }) =&gt; (
+        {tokens.map(({ name, light, dark, lightRef, darkRef, desc }) =&gt; (
           &lt;div key={name} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
             {/* Light swatch */}
             &lt;Swatch hex={light} size={28} /&gt;
@@ -1840,15 +2081,17 @@ export const SemanticSizes = {
             &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;
               {prefix}{name}
             &lt;/code&gt;
-            {/* Light value */}
+            {/* Light value — shows the referenced base/semantic token name (e.g.
+                &quot;slate/25&quot;) instead of the resolved value, when the source value
+                is a reference rather than a hand-picked literal. */}
             &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
               &lt;Swatch hex={light} size={18} /&gt;
-              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{light}&lt;/span&gt;
+              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={lightRef ? light : undefined}&gt;{lightRef || light}&lt;/span&gt;
             &lt;/div&gt;
-            {/* Dark value */}
+            {/* Dark value — same reference-name rule as Light. */}
             &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
               &lt;Swatch hex={dark} size={18} /&gt;
-              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{dark}&lt;/span&gt;
+              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={darkRef ? dark : undefined}&gt;{darkRef || dark}&lt;/span&gt;
             &lt;/div&gt;
             {/* Description */}
             &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39; }}&gt;
@@ -1917,9 +2160,9 @@ export const SemanticSizes = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> Effects</h2>
       <div class="badges">
-        <label for="c-6-foundation-effects-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-6-foundation-effects-info" class="badge info as-toggle">2 infos</label>
-        <label for="c-6-foundation-effects-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-7-foundation-effects-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-7-foundation-effects-info" class="badge info as-toggle">2 infos</label>
+        <label for="c-7-foundation-effects-stories" class="badge ok as-toggle">1 story</label>
         
         
       </div>
@@ -1931,9 +2174,9 @@ export const SemanticSizes = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-6-foundation-effects-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-6-foundation-effects-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-6-foundation-effects-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-7-foundation-effects-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-7-foundation-effects-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-7-foundation-effects-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
   
@@ -2140,9 +2383,9 @@ export const Shadows = {
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PageContent</h2>
       <div class="badges">
-        <label for="c-7-content-panel-props" class="badge ok as-toggle">1 prop type</label>
-        <label for="c-7-content-panel-info" class="badge info as-toggle">1 info</label>
-        <label for="c-7-content-panel-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-8-content-panel-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-8-content-panel-info" class="badge info as-toggle">1 info</label>
+        <label for="c-8-content-panel-stories" class="badge ok as-toggle">6 stories</label>
         
         
       </div>
@@ -2155,11 +2398,11 @@ export const Shadows = {
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-7-content-panel-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-7-content-panel-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-8-content-panel-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-8-content-panel-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-7-content-panel-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-8-content-panel-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2292,9 +2535,9 @@ export const Shadows = {
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PageHeader</h2>
       <div class="badges">
-        <label for="c-8-content-panel-page-header-props" class="badge ok as-toggle">12 prop types</label>
-        <label for="c-8-content-panel-page-header-info" class="badge info as-toggle">1 info</label>
-        <label for="c-8-content-panel-page-header-stories" class="badge ok as-toggle">7 stories</label>
+        <label for="c-9-content-panel-page-header-props" class="badge ok as-toggle">12 prop types</label>
+        <label for="c-9-content-panel-page-header-info" class="badge info as-toggle">1 info</label>
+        <label for="c-9-content-panel-page-header-stories" class="badge ok as-toggle">7 stories</label>
         
         
       </div>
@@ -2307,11 +2550,11 @@ export const Shadows = {
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-8-content-panel-page-header-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-8-content-panel-page-header-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-9-content-panel-page-header-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-9-content-panel-page-header-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-8-content-panel-page-header-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-9-content-panel-page-header-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2509,14 +2752,186 @@ title?: any = &#39;Page Title&#39;</code></pre>
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="QueryChip">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> QueryChip</h2>
+      <div class="badges">
+        <label for="c-10-components-querychip-props" class="badge ok as-toggle">8 prop types</label>
+        <label for="c-10-components-querychip-info" class="badge info as-toggle">1 info</label>
+        <label for="c-10-components-querychip-stories" class="badge ok as-toggle">6 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/QueryChip.stories.jsx">components-querychip · ./src/components/QueryChip.stories.jsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-10-components-querychip-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-10-components-querychip-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-10-components-querychip-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">8 prop types</span>
+            </div>
+            <pre><code>Component: src/components/QueryChip.jsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>filterName?: any = &#39;Filter&#39;
+
+mandatory?: any = false
+
+operator?: any = &#39;Equal&#39;
+
+removable?: any = true
+
+showIcon?: any = false
+
+showOperator?: any = false
+
+status?: any = &#39;inactive&#39;
+
+value?: any = &#39;select...&#39;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Folder } from "lucide-react";
+import { QueryChip } from "ai-assistant-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;QueryChip
+    status=&quot;inactive&quot;
+    filterName=&quot;Filter&quot;
+    operator=&quot;Equal&quot;
+    value=&quot;select...&quot;
+    showOperator
+    showIcon={false}
+    removable
+    mandatory={false}
+    icon={args.showIcon ? &lt;Folder /&gt; : undefined} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">All Statuses</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllStatuses = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, flexDirection: &#39;column&#39;, gap: &#39;var(--lyra-spacing-3)&#39;, alignItems: &#39;flex-start&#39; }}&gt;
+    &lt;QueryChip status=&quot;inactive&quot; /&gt;
+    &lt;QueryChip status=&quot;inactiveShort&quot; mandatory /&gt;
+    &lt;QueryChip status=&quot;active&quot; value=&quot;Value&quot; /&gt;
+    &lt;QueryChip status=&quot;error&quot; value=&quot;Value&quot; /&gt;
+    &lt;QueryChip status=&quot;readOnly&quot; value=&quot;Value&quot; /&gt;
+    &lt;QueryChip status=&quot;disabled&quot; /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Operator</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithOperator = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, flexDirection: &#39;column&#39;, gap: &#39;var(--lyra-spacing-3)&#39;, alignItems: &#39;flex-start&#39; }}&gt;
+    &lt;QueryChip status=&quot;inactive&quot; showOperator /&gt;
+    &lt;QueryChip status=&quot;active&quot; showOperator value=&quot;Value&quot; /&gt;
+    &lt;QueryChip status=&quot;error&quot; showOperator value=&quot;Value&quot; /&gt;
+    &lt;QueryChip status=&quot;readOnly&quot; showOperator value=&quot;Value&quot; /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Leading Icon</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithIcon = () =&gt; (
+  &lt;div style={{ display: &#39;flex&#39;, flexDirection: &#39;column&#39;, gap: &#39;var(--lyra-spacing-3)&#39;, alignItems: &#39;flex-start&#39; }}&gt;
+    &lt;QueryChip status=&quot;active&quot; showIcon icon={&lt;Folder /&gt;} showOperator value=&quot;Value&quot; /&gt;
+    &lt;QueryChip status=&quot;inactive&quot; showIcon icon={&lt;Folder /&gt;} showOperator /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Not Removable</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NotRemovable = () =&gt; &lt;QueryChip status=&quot;active&quot; showOperator value=&quot;Value&quot; removable={false} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Filter Bar (composed)</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const FilterBar = () =&gt; &lt;FilterBarDemo /&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="Shell">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Shell</h2>
       <div class="badges">
-        <label for="c-9-shell-props" class="badge ok as-toggle">3 prop types</label>
-        <label for="c-9-shell-info" class="badge info as-toggle">1 info</label>
-        <label for="c-9-shell-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-11-shell-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-11-shell-info" class="badge info as-toggle">1 info</label>
+        <label for="c-11-shell-stories" class="badge ok as-toggle">2 stories</label>
         
         
       </div>
@@ -2529,11 +2944,11 @@ title?: any = &#39;Page Title&#39;</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-9-shell-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-9-shell-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-11-shell-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-11-shell-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-9-shell-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-11-shell-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2635,9 +3050,9 @@ showAiPanel?: any = true</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> SideNavigation</h2>
       <div class="badges">
-        <label for="c-10-shell-side-navigation-props" class="badge ok as-toggle">5 prop types</label>
-        <label for="c-10-shell-side-navigation-info" class="badge info as-toggle">1 info</label>
-        <label for="c-10-shell-side-navigation-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-12-shell-side-navigation-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-12-shell-side-navigation-info" class="badge info as-toggle">1 info</label>
+        <label for="c-12-shell-side-navigation-stories" class="badge ok as-toggle">4 stories</label>
         
         
       </div>
@@ -2650,11 +3065,11 @@ showAiPanel?: any = true</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-10-shell-side-navigation-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-10-shell-side-navigation-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-12-shell-side-navigation-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-12-shell-side-navigation-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-10-shell-side-navigation-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-12-shell-side-navigation-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2758,9 +3173,9 @@ version?: any = &#39;v1&#39;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Tabs</h2>
       <div class="badges">
-        <label for="c-11-components-tabs-props" class="badge ok as-toggle">4 prop types</label>
-        <label for="c-11-components-tabs-info" class="badge info as-toggle">1 info</label>
-        <label for="c-11-components-tabs-stories" class="badge ok as-toggle">7 stories</label>
+        <label for="c-13-components-tabs-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-13-components-tabs-info" class="badge info as-toggle">1 info</label>
+        <label for="c-13-components-tabs-stories" class="badge ok as-toggle">7 stories</label>
         
         
       </div>
@@ -2773,11 +3188,11 @@ version?: any = &#39;v1&#39;</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-11-components-tabs-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-11-components-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-13-components-tabs-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-13-components-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-11-components-tabs-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-13-components-tabs-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2928,9 +3343,9 @@ import { Tabs } from "ai-assistant-storybook";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Toolbar</h2>
       <div class="badges">
-        <label for="c-12-components-toolbar-props" class="badge ok as-toggle">4 prop types</label>
-        <label for="c-12-components-toolbar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-12-components-toolbar-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-14-components-toolbar-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-14-components-toolbar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-14-components-toolbar-stories" class="badge ok as-toggle">6 stories</label>
         
         
       </div>
@@ -2943,11 +3358,11 @@ import { Tabs } from "ai-assistant-storybook";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-12-components-toolbar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-12-components-toolbar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-14-components-toolbar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-14-components-toolbar-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-12-components-toolbar-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-14-components-toolbar-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3121,9 +3536,9 @@ import { Toolbar } from "ai-assistant-storybook";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TreeGrid</h2>
       <div class="badges">
-        <label for="c-13-content-panel-tree-grid-props" class="badge ok as-toggle">13 prop types</label>
-        <label for="c-13-content-panel-tree-grid-info" class="badge info as-toggle">1 info</label>
-        <label for="c-13-content-panel-tree-grid-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-15-content-panel-tree-grid-props" class="badge ok as-toggle">14 prop types</label>
+        <label for="c-15-content-panel-tree-grid-info" class="badge info as-toggle">1 info</label>
+        <label for="c-15-content-panel-tree-grid-stories" class="badge ok as-toggle">10 stories</label>
         
         
       </div>
@@ -3136,11 +3551,11 @@ import { Toolbar } from "ai-assistant-storybook";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-13-content-panel-tree-grid-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-13-content-panel-tree-grid-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-15-content-panel-tree-grid-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-15-content-panel-tree-grid-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-13-content-panel-tree-grid-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-15-content-panel-tree-grid-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3157,7 +3572,7 @@ import { Toolbar } from "ai-assistant-storybook";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">13 prop types</span>
+              <span class="badge ok">14 prop types</span>
             </div>
             <pre><code>Component: src/components/TreeGrid.jsx::default</code></pre>
             <pre><code>Props:</code></pre>
@@ -3185,7 +3600,9 @@ showInfoColumn?: any = true
 
 showMenuColumn?: any = false
 
-showSearch?: any = false</code></pre>
+showSearch?: any = false
+
+showSelectedCountOnly?: any = false</code></pre>
           </div>
         </div>
     
@@ -3197,8 +3614,8 @@ showSearch?: any = false</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Database, FileText, Folder, Settings, Users } from "lucide-react";
-import { TreeGrid } from "ai-assistant-storybook";</code></pre>
+                <pre><code>import { Button, TreeGrid } from "ai-assistant-storybook";
+import { Database, FileText, Folder, Settings, Users } from "lucide-react";</code></pre>
               </div>
           
           
@@ -3418,9 +3835,9 @@ import { TreeGrid } from "ai-assistant-storybook";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-err"></span> Typography</h2>
       <div class="badges">
-        <label for="c-14-foundation-typography-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-14-foundation-typography-info" class="badge info as-toggle">2 infos</label>
-        <label for="c-14-foundation-typography-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-16-foundation-typography-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-16-foundation-typography-info" class="badge info as-toggle">2 infos</label>
+        <label for="c-16-foundation-typography-stories" class="badge ok as-toggle">3 stories</label>
         
         
       </div>
@@ -3432,9 +3849,9 @@ import { TreeGrid } from "ai-assistant-storybook";</code></pre>
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-14-foundation-typography-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-14-foundation-typography-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-14-foundation-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-16-foundation-typography-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-16-foundation-typography-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-16-foundation-typography-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
   
@@ -3899,7 +4316,7 @@ export const SemanticColors = {
             &lt;span style={COL_HDR}&gt;Description&lt;/span&gt;
           &lt;/div&gt;
 
-          {tokens.map(({ name, light, dark, desc }) =&gt; (
+          {tokens.map(({ name, light, dark, lightRef, darkRef, desc }) =&gt; (
             &lt;div key={name} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
               {/* Light swatch */}
               &lt;Swatch hex={light} size={28} /&gt;
@@ -3907,15 +4324,17 @@ export const SemanticColors = {
               &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;
                 {prefix}{name}
               &lt;/code&gt;
-              {/* Light value */}
+              {/* Light value — shows the referenced base/semantic token name (e.g.
+                  &quot;slate/25&quot;) instead of the resolved value, when the source value
+                  is a reference rather than a hand-picked literal. */}
               &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
                 &lt;Swatch hex={light} size={18} /&gt;
-                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{light}&lt;/span&gt;
+                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={lightRef ? light : undefined}&gt;{lightRef || light}&lt;/span&gt;
               &lt;/div&gt;
-              {/* Dark value */}
+              {/* Dark value — same reference-name rule as Light. */}
               &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
                 &lt;Swatch hex={dark} size={18} /&gt;
-                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{dark}&lt;/span&gt;
+                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={darkRef ? dark : undefined}&gt;{darkRef || dark}&lt;/span&gt;
               &lt;/div&gt;
               {/* Description */}
               &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39; }}&gt;
@@ -4151,7 +4570,7 @@ export const SemanticSizes = {
           &lt;span style={COL_HDR}&gt;Description&lt;/span&gt;
         &lt;/div&gt;
 
-        {tokens.map(({ name, light, dark, desc }) =&gt; (
+        {tokens.map(({ name, light, dark, lightRef, darkRef, desc }) =&gt; (
           &lt;div key={name} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
             {/* Light swatch */}
             &lt;Swatch hex={light} size={28} /&gt;
@@ -4159,15 +4578,17 @@ export const SemanticSizes = {
             &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;
               {prefix}{name}
             &lt;/code&gt;
-            {/* Light value */}
+            {/* Light value — shows the referenced base/semantic token name (e.g.
+                &quot;slate/25&quot;) instead of the resolved value, when the source value
+                is a reference rather than a hand-picked literal. */}
             &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
               &lt;Swatch hex={light} size={18} /&gt;
-              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{light}&lt;/span&gt;
+              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={lightRef ? light : undefined}&gt;{lightRef || light}&lt;/span&gt;
             &lt;/div&gt;
-            {/* Dark value */}
+            {/* Dark value — same reference-name rule as Light. */}
             &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
               &lt;Swatch hex={dark} size={18} /&gt;
-              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{dark}&lt;/span&gt;
+              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={darkRef ? dark : undefined}&gt;{darkRef || dark}&lt;/span&gt;
             &lt;/div&gt;
             {/* Description */}
             &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39; }}&gt;
