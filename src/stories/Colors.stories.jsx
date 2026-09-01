@@ -123,7 +123,7 @@ export const SemanticColors = {
             <span style={COL_HDR}>Description</span>
           </div>
 
-          {tokens.map(({ name, light, dark, desc }) => (
+          {tokens.map(({ name, light, dark, lightRef, darkRef, desc }) => (
             <div key={name} style={{ display: 'grid', gridTemplateColumns: '32px 200px 140px 140px 1fr', gap: '0 16px', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
               {/* Light swatch */}
               <Swatch hex={light} size={28} />
@@ -131,15 +131,17 @@ export const SemanticColors = {
               <code style={{ fontSize: '0.6875rem', fontFamily: MONO, color: 'var(--lyra-color-fg-default)', background: 'rgba(0,0,0,0.04)', padding: '2px 5px', borderRadius: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {prefix}{name}
               </code>
-              {/* Light value */}
+              {/* Light value — shows the referenced base/semantic token name (e.g.
+                  "slate/25") instead of the resolved value, when the source value
+                  is a reference rather than a hand-picked literal. */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Swatch hex={light} size={18} />
-                <span style={{ fontSize: 10, fontFamily: MONO, color: 'var(--lyra-color-fg-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{light}</span>
+                <span style={{ fontSize: 10, fontFamily: MONO, color: 'var(--lyra-color-fg-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lightRef ? light : undefined}>{lightRef || light}</span>
               </div>
-              {/* Dark value */}
+              {/* Dark value — same reference-name rule as Light. */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Swatch hex={dark} size={18} />
-                <span style={{ fontSize: 10, fontFamily: MONO, color: 'var(--lyra-color-fg-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{dark}</span>
+                <span style={{ fontSize: 10, fontFamily: MONO, color: 'var(--lyra-color-fg-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={darkRef ? dark : undefined}>{darkRef || dark}</span>
               </div>
               {/* Description */}
               <span style={{ fontSize: '0.6875rem', color: 'var(--lyra-color-fg-secondary)', lineHeight: 1.5, fontStyle: desc ? 'italic' : 'normal' }}>

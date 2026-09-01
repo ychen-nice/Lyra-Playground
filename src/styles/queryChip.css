@@ -1,0 +1,24 @@
+.lyra-query-chip-segment {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.lyra-query-chip-segment:focus-visible {
+  outline: 2px solid var(--lyra-color-border-focus-default);
+  outline-offset: 2px;
+}
+
+/* Figma: https://www.figma.com/design/qyCq4jUOrpYcpHhpNCdgA5/Lyra-Foundations--V1-?node-id=17074-36856
+   Per-flavor hover/pressed backgrounds for the filter/operator/value segments —
+   'neutral' for inactive chips, 'active'/'error' matching their chip's own accent. */
+.lyra-query-chip-segment--neutral:hover { background: var(--lyra-color-state-bg-hover-opacity); }
+.lyra-query-chip-segment--neutral:active { background: var(--lyra-color-state-bg-pressed-opacity); }
+
+.lyra-query-chip-segment--active:hover { background: var(--lyra-color-state-bg-hover-active-subtle); }
+.lyra-query-chip-segment--active:active { background: var(--lyra-color-state-bg-pressed-active-subtle); }
+
+.lyra-query-chip-segment--error:hover { background: var(--lyra-color-state-bg-hover-critical-subtle); }
+.lyra-query-chip-segment--error:active { background: var(--lyra-color-state-bg-pressed-critical-subtle); }

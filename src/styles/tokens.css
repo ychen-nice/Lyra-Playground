@@ -57,7 +57,7 @@
   --lyra-color-border-none: rgba(0,0,0,0);
   --lyra-color-border-active: #185BA4;
   --lyra-color-border-field-ai: #4E39A8;
-  --lyra-color-border-inverse: rgba(255,255,255,0.8);
+  --lyra-color-border-inverse: #FFFFFF;
 
   /* Focus */
   --lyra-color-border-focus-default: #185BA4;

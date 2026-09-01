@@ -55,10 +55,32 @@ function computeCheckState(node, selectedIds) {
 /* ─── Tree helpers — AG Grid Community has no tree-data mode (Enterprise-only),
    so the hierarchy is flattened into plain rows ourselves, one level at a time,
    skipping any subtree whose parent isn't expanded. ────────────────────────── */
-function flatten(nodes, expandedIds, selectedIds, selectionMode, searchQuery, level = 0, parentId = null, out = []) {
+// A parent's info reads as a plain count of its direct (first-level) children,
+// or an "x/y" split the moment any of them carry a selection of their own —
+// leaves carry no info at all, since "Edited 2d ago"/"Live"/etc. content was
+// dropped from the column. A child folder counts toward x as soon as any of
+// its own descendants are selected, not only once it's fully checked.
+// When `selectedCountOnly` is set (e.g. a "selected items only" filtered
+// view, where every visible child is selected-related by definition and the
+// "/y" half would always just echo the total), the plain selected count x is
+// shown on its own instead.
+function formatChildCounter(node, selectedIds, selectedCountOnly) {
+  const total = node.children.length;
+  const selectedCount = node.children.reduce((n, child) => {
+    const childSelected = child.children?.length
+      ? computeCheckState(child, selectedIds) !== 'unchecked'
+      : selectedIds.has(child.id);
+    return n + (childSelected ? 1 : 0);
+  }, 0);
+  if (selectedCountOnly) return `${selectedCount}`;
+  return selectedCount > 0 ? `${selectedCount}/${total}` : `${total}`;
+}
+
+function flatten(nodes, expandedIds, selectedIds, selectionMode, searchQuery, selectedCountOnly, level = 0, parentId = null, out = []) {
   for (const node of nodes) {
     const hasChildren = !!node.children?.length;
     const expanded = hasChildren && expandedIds.has(node.id);
+    const leafIds = hasChildren ? collectLeafIds(node) : null;
     // Only multi-select cascades into a tri-state; single/none reduce to a plain toggle.
     const checkState = selectionMode === 'none'
       ? 'unchecked'
@@ -69,17 +91,17 @@ function flatten(nodes, expandedIds, selectedIds, selectionMode, searchQuery, le
       id: node.id,
       label: node.label,
       icon: node.icon,
-      info: node.info,
+      info: hasChildren ? formatChildCounter(node, selectedIds, selectedCountOnly) : undefined,
       level,
       parentId,
       hasChildren,
       expanded,
       checkState,
       selected: checkState === 'checked',
-      leafIds: hasChildren ? collectLeafIds(node) : null,
+      leafIds,
       searchQuery,
     });
-    if (expanded) flatten(node.children, expandedIds, selectedIds, selectionMode, searchQuery, level + 1, node.id, out);
+    if (expanded) flatten(node.children, expandedIds, selectedIds, selectionMode, searchQuery, selectedCountOnly, level + 1, node.id, out);
   }
   return out;
 }
@@ -513,6 +535,12 @@ export default function TreeGrid({
   // field icons, menu alignment) and enables ag-grid's own RTL engine
   // (column order, native scroll direction) for right-to-left locales.
   rtl                 = false,
+  // The info column's per-parent counter normally reads "x/y" once part of a
+  // parent's children are selected — set this when the tree itself has
+  // already been filtered down to just the selection (e.g. an "only show
+  // selected" view), where every visible child is selected-related and the
+  // "/y" half would just echo the total right back.
+  showSelectedCountOnly = false,
 }) {
   const [searchInput, setSearchInput] = useState('');
   const searchQuery = searchInput.trim().toLowerCase();
@@ -680,11 +708,11 @@ export default function TreeGrid({
   );
 
   const rowData = useMemo(() => {
-    const flat = flatten(searchedData, effectiveExpandedIds, selectedIds, selectionMode, searchQuery);
+    const flat = flatten(searchedData, effectiveExpandedIds, selectedIds, selectionMode, searchQuery, showSelectedCountOnly);
     return Object.keys(labelOverrides).length
       ? flat.map((row) => (labelOverrides[row.id] !== undefined ? { ...row, label: labelOverrides[row.id] } : row))
       : flat;
-  }, [searchedData, effectiveExpandedIds, selectedIds, selectionMode, searchQuery, labelOverrides]);
+  }, [searchedData, effectiveExpandedIds, selectedIds, selectionMode, searchQuery, showSelectedCountOnly, labelOverrides]);
   const rowDataRef = useRef(rowData);
   rowDataRef.current = rowData;
 

@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Folder, FileText, Database, Users, Settings } from 'lucide-react';
 import TreeGrid from './TreeGrid';
+import Button from './Button';
 import '../styles/typography.css';
 
 const iconProps = { size: 14 };
@@ -139,6 +140,20 @@ export const WithMenuColumn = {
   args: { showMenuColumn: true },
 };
 
+// Keeps a node when it's itself selected or any descendant is — pruning
+// unselected siblings out of its children — so a selected leaf's ancestor
+// chain survives even though the ancestors themselves weren't picked.
+function pruneToSelected(nodes, selectedIds) {
+  const out = [];
+  for (const node of nodes) {
+    const filteredChildren = node.children ? pruneToSelected(node.children, selectedIds) : undefined;
+    if (selectedIds.has(node.id) || filteredChildren?.length) {
+      out.push(filteredChildren ? { ...node, children: filteredChildren } : node);
+    }
+  }
+  return out;
+}
+
 function Field({ label, children }) {
   return (
     <label style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lyra-spacing-1)' }}>
@@ -176,6 +191,18 @@ function TreeGridDemo() {
   const [selectableParent, setSelectableParent] = useState(true);
   const [showSearch, setShowSearch] = useState(true);
   const [rtl, setRtl] = useState(false);
+  const [selectedIds, setSelectedIds] = useState(() => new Set());
+  const [filterMode, setFilterMode] = useState('all'); // 'all' | 'selected'
+  const treeData = filterMode === 'selected' ? pruneToSelected(SAMPLE_DATA, selectedIds) : SAMPLE_DATA;
+
+  // The "Selected" view stops making sense the moment nothing is left picked
+  // (the disabled toggle would otherwise stay stuck showing an empty tree),
+  // or the moment selection drops out of multi mode (single/none can only
+  // ever have the whole tree's worth of relevance, so the control is hidden
+  // there entirely — see below).
+  useEffect(() => {
+    if (filterMode === 'selected' && (selectedIds.size === 0 || selectionMode !== 'multiple')) setFilterMode('all');
+  }, [filterMode, selectedIds, selectionMode]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lyra-spacing-4)' }}>
@@ -198,13 +225,34 @@ function TreeGridDemo() {
         <CheckboxField label="Show Search" checked={showSearch} onChange={setShowSearch} />
         <CheckboxField label="Right to Left" checked={rtl} onChange={setRtl} />
       </div>
+      {selectionMode === 'multiple' && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--lyra-spacing-2)' }}>
+          <div style={{ display: 'flex', gap: 4 }}>
+            <Button variant="toggle" size="sm" active={filterMode === 'all'} onClick={() => setFilterMode('all')}>
+              All
+            </Button>
+            <Button
+              variant="toggle"
+              size="sm"
+              active={filterMode === 'selected'}
+              disabled={selectedIds.size === 0}
+              onClick={() => setFilterMode('selected')}
+            >
+              Selected
+            </Button>
+          </div>
+          <Button variant="ghost" size="sm" disabled={selectedIds.size === 0} onClick={() => setSelectedIds(new Set())}>
+            Clear
+          </Button>
+        </div>
+      )}
       <TreeGrid
         // Remounts (fresh expand/selection/search state) whenever selection
         // mode changes, or search is switched off — turning search off
         // should show every row again, not leave a stale filter applied
         // underneath the now-hidden search field.
         key={`${selectionMode}-${showSearch}-${rtl}`}
-        data={SAMPLE_DATA}
+        data={treeData}
         selectionMode={selectionMode}
         showIcons={showIcons}
         showInfoColumn={showInfoColumn}
@@ -212,6 +260,9 @@ function TreeGridDemo() {
         selectableParent={selectableParent}
         showSearch={showSearch}
         rtl={rtl}
+        showSelectedCountOnly={filterMode === 'selected'}
+        selectedIds={selectedIds}
+        onSelectionChange={(ids) => setSelectedIds(new Set(ids))}
         onMenuAction={(action, row) => alert(`${action}: ${row.label}`)}
       />
     </div>
