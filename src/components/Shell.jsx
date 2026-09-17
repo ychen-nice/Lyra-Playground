@@ -1,9 +1,12 @@
 import React, { useState, useRef, useLayoutEffect, useEffect, useCallback } from 'react';
+import { CircleQuestionMark, LayoutDashboard, Bell } from 'lucide-react';
 import PageContent, { DEFAULT_SIDEBAR_W, MIN_SIDEBAR_W } from './PageContent';
 import AiAssistantPanel from './AiAssistantPanel';
 import PageHeader from './PageHeader';
 import SideNavigation, { DEFAULT_NAV_ITEMS } from './SideNavigation';
 import DashboardList, { DEFAULT_DASHBOARD_NAMES } from './DashboardList';
+import Button from './Button';
+import Avatar from './Avatar';
 
 // ── Icons (top bar only) ─────────────────────────────────────────────────────
 
@@ -13,29 +16,34 @@ const ChevronDown = () => (
   </svg>
 );
 
-const GridIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.4"/>
-    <rect x="11" y="2" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.4"/>
-    <rect x="2" y="11" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.4"/>
-    <rect x="11" y="11" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.4"/>
-  </svg>
-);
-
-const BellIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <path d="M10 2.5C7.24 2.5 5 4.74 5 7.5V12L3.5 13.5V14.5H16.5V13.5L15 12V7.5C15 4.74 12.76 2.5 10 2.5Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
-    <path d="M8.5 14.5C8.5 15.33 9.17 16 10 16C10.83 16 11.5 15.33 11.5 14.5" stroke="currentColor" strokeWidth="1.4"/>
-  </svg>
-);
-
-const QuestionIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.4"/>
-    <path d="M8 8C8 6.9 8.9 6 10 6C11.1 6 12 6.9 12 8C12 9.1 11.1 10 10 10V11.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
-    <circle cx="10" cy="13.5" r="0.75" fill="currentColor"/>
-  </svg>
-);
+// Profile dropdown trigger (avatar + chevron) — Figma's _shellbar/profile has no
+// matching component in the codebase (it's not a plain icon+label ghost button:
+// Button's ghost variant always uses a 4px internal gap, but this trigger's spec
+// calls for 8px regardless of variant), so it's kept as its own small trigger here
+// rather than forced through Button. Height/padding/radius and the ghost hover/press
+// tokens still match Button's 'xl' size exactly, so it reads as the same control family.
+function ProfileTrigger() {
+  const [hovered, setHovered] = useState(false);
+  const [pressed, setPressed] = useState(false);
+  return (
+    <button
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => { setHovered(false); setPressed(false); }}
+      onMouseDown={() => setPressed(true)}
+      onMouseUp={() => setPressed(false)}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 'var(--lyra-spacing-2)',
+        padding: '0 var(--lyra-spacing-2)', height: 'var(--lyra-control-height-xl)',
+        borderRadius: 'var(--lyra-radius-md)', border: 'none',
+        background: pressed ? 'var(--lyra-color-state-bg-pressed-opacity)' : hovered ? 'var(--lyra-color-state-bg-hover-opacity)' : 'transparent',
+        cursor: 'pointer',
+      }}
+    >
+      <Avatar initials="JS" />
+      <span style={{ color: 'var(--lyra-color-fg-secondary, rgba(0,0,0,0.6))' }}><ChevronDown /></span>
+    </button>
+  );
+}
 
 // ── Shell ────────────────────────────────────────────────────────────────────
 
@@ -447,32 +455,22 @@ export default function Shell({
           </div>
         </div>
 
-        {/* Right utilities */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          {[QuestionIcon, GridIcon, BellIcon].map((Icon, i) => (
-            <button key={i} style={{
-              width: 40, height: 40, borderRadius: 8, border: 'none', background: 'transparent',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: 'var(--lyra-color-fg-secondary, rgba(0,0,0,0.6))', cursor: 'pointer',
-            }}>
-              <Icon />
-            </button>
-          ))}
-          <div style={{ width: 1, height: 20, background: 'var(--lyra-color-border-subtle, rgba(0,0,0,0.1))', margin: '0 4px' }} />
-          <button style={{
-            display: 'flex', alignItems: 'center', gap: 4,
-            padding: '0 8px', height: 40, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer',
-          }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: 20, flexShrink: 0,
-              background: 'var(--lyra-color-fg-action, #5d6a79)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: 'rgba(255,255,255,0.9)', fontSize: 13, fontWeight: 500,
-            }}>
-              JS
-            </div>
-            <span style={{ color: 'var(--lyra-color-fg-secondary, rgba(0,0,0,0.6))' }}><ChevronDown /></span>
-          </button>
+        {/* Right utilities ("Utilities slot2", node 17643:44156) — help/dashboard/
+            notifications use the shared Button at its 'xl' size (2.5rem tall, 1.25rem
+            icons — see Button.jsx's SIZE_STYLES.xl). Per spec the 3 service buttons sit
+            in their own zero-gap group (node 17643:44157 has no gap between children),
+            with the outer row's own var(--lyra-spacing-2) [8px] gap applying only once,
+            between that group and the profile trigger — no divider between them in the
+            design. */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--lyra-spacing-2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {[CircleQuestionMark, LayoutDashboard, Bell].map((Icon, i) => (
+              <Button key={i} variant="ghost" size="xl" iconOnly>
+                <Icon size={20} />
+              </Button>
+            ))}
+          </div>
+          <ProfileTrigger />
         </div>
       </div>
 

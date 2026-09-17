@@ -71,6 +71,20 @@ const SIZE_STYLES = {
     lineHeight:    '1.25rem',
     letterSpacing: '0',
   },
+  // control-height-xl / icon-size-md / body-lg-emphasis (lyra-body-lg-em) — largest
+  // control size, used e.g. by the shell-bar utility buttons (help/dashboard/
+  // notifications) per the Lyra Foundations spec.
+  xl: {
+    height:        'var(--lyra-control-height-xl)', // 2.5rem / 40px
+    padding:       '0 var(--lyra-spacing-4)',
+    iconPx:        20, // icon-size-md — 1.25rem
+    minWidth:      '5rem',
+    borderRadius:  'var(--lyra-radius-md)',
+    fontSize:      '1rem',      // body-lg-emphasis
+    fontWeight:    500,
+    lineHeight:    '1.5rem',
+    letterSpacing: '-0.01rem',
+  },
 };
 
 export default function Button({
@@ -137,7 +151,9 @@ export default function Button({
         display:        'inline-flex',
         alignItems:     'center',
         justifyContent: 'center',
-        gap:            iconOnly ? 0 : (size === 'sm' || variant === 'ghost') ? 'var(--lyra-spacing-1)' : 'var(--lyra-spacing-2)',
+        // xl always uses the larger gap, even as ghost — matches the shell-bar profile
+        // trigger's spec (avatar + chevron), which needs 8px regardless of variant.
+        gap:            iconOnly ? 0 : size === 'xl' ? 'var(--lyra-spacing-2)' : (size === 'sm' || variant === 'ghost') ? 'var(--lyra-spacing-1)' : 'var(--lyra-spacing-2)',
         height:         s.height,
         width:          iconOnly ? s.height : undefined,
         padding:        iconOnly ? 0 : (variant === 'ghost' ? '0 var(--lyra-spacing-2)' : s.padding),

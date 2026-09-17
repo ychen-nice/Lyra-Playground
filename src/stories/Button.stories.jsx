@@ -8,7 +8,7 @@ export default {
   parameters: { layout: 'centered' },
   argTypes: {
     variant:  { control: 'select', options: ['primary', 'secondary', 'ghost', 'destructive', 'toggle'] },
-    size:     { control: 'select', options: ['sm', 'md', 'lg'] },
+    size:     { control: 'select', options: ['sm', 'md', 'lg', 'xl'] },
     iconOnly: { control: 'boolean' },
     disabled: { control: 'boolean' },
     active:   { control: 'boolean', description: '`toggle` variant only — the pressed/on look' },
@@ -190,7 +190,7 @@ export const Disabled = {
 export const Matrix = {
   render: () => {
     const variants = ['primary', 'secondary', 'ghost', 'destructive'];
-    const sizes    = ['sm', 'md', 'lg'];
+    const sizes    = ['sm', 'md', 'lg', 'xl'];
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {sizes.map(size => (
