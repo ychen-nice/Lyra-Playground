@@ -26,19 +26,24 @@ const Icon = {
       <circle cx="8" cy="12" r="1.25" fill="currentColor"/>
     </svg>
   ),
+  // These are hand-written, not lucide-react icons, so the global icon-stroke-width
+  // toolbar control (which drives every lucide icon via LucideProvider) can't reach
+  // them the normal way — read the same value back out of the CSS var the preview
+  // decorator mirrors it into instead, falling back to each icon's own original
+  // weight when that var isn't set (e.g. outside Storybook).
   Close: () => (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M3.5 3.5L12.5 12.5M12.5 3.5L3.5 12.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+      <path d="M3.5 3.5L12.5 12.5M12.5 3.5L3.5 12.5" stroke="currentColor" style={{ strokeWidth: "var(--lyra-icon-stroke-width, 1.6)" }} strokeLinecap="round"/>
     </svg>
   ),
   Plus: () => (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+      <path d="M8 3V13M3 8H13" stroke="currentColor" style={{ strokeWidth: "var(--lyra-icon-stroke-width, 1.6)" }} strokeLinecap="round"/>
     </svg>
   ),
   Send: () => (
     <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-      <path d="M7.5 12.5V2.5M3 7L7.5 2.5L12 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M7.5 12.5V2.5M3 7L7.5 2.5L12 7" stroke="currentColor" style={{ strokeWidth: "var(--lyra-icon-stroke-width, 1.8)" }} strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
 };
@@ -540,7 +545,7 @@ export default function AiAssistantPanel({ width = 400, initialMessages = INITIA
                         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") sparkleKeyboardRef.current = true; }}
                         onClick={(e) => { e.stopPropagation(); const kb = sparkleKeyboardRef.current; sparkleKeyboardRef.current = false; setPopoverKeyboard(kb); setPopoverOpen(o => !o); }}
                       >
-                        <Sparkles size={16} strokeWidth={1} color="var(--lyra-color-bg-primary)" />
+                        <Sparkles size={16} color="var(--lyra-color-bg-primary)" />
                       </Button>
                     </div>
                   )}

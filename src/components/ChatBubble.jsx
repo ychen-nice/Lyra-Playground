@@ -64,7 +64,7 @@ function ReasoningSection({ reasoning, isThinking = false }) {
             transform: open ? "rotate(90deg)" : "rotate(0deg)",
             transition: "transform 0.2s ease",
           }}>
-          <path d="M5 3L9 7L5 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M5 3L9 7L5 11" stroke="currentColor" style={{ strokeWidth: "var(--lyra-icon-stroke-width, 1.5)" }} strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </Button>
 
@@ -111,11 +111,11 @@ function AIActionBar({ content }) {
   };
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
-      <Button variant="ghost" size="md" aria-label="Thumbs up"><ThumbsUp size={16} strokeWidth={1} /></Button>
-      <Button variant="ghost" size="md" aria-label="Thumbs down"><ThumbsDown size={16} strokeWidth={1} /></Button>
-      <Button variant="ghost" size="md" aria-label="Regenerate"><RotateCcw size={16} strokeWidth={1} /></Button>
+      <Button variant="ghost" size="md" aria-label="Thumbs up"><ThumbsUp size={16} /></Button>
+      <Button variant="ghost" size="md" aria-label="Thumbs down"><ThumbsDown size={16} /></Button>
+      <Button variant="ghost" size="md" aria-label="Regenerate"><RotateCcw size={16} /></Button>
       <Button variant="ghost" size="md" aria-label={copied ? "Copied" : "Copy"} onClick={handleCopy}>
-        <Copy size={16} strokeWidth={1} />
+        <Copy size={16} />
       </Button>
     </div>
   );
@@ -175,7 +175,7 @@ export default function ChatBubble({ variant = "user", content = "", reasoning =
           marginTop: "var(--lyra-spacing-1)",
         }}>
           <Button variant="ghost" size="md" aria-label={copied ? "Copied" : "Copy"} onClick={handleCopy}>
-            <Copy size={16} strokeWidth={1} />
+            <Copy size={16} />
           </Button>
         </div>
       </div>

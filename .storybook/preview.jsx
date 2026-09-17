@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { LucideProvider } from "lucide-react";
 import "../src/styles/typography.css";
 import "../src/styles/tokens.css";
 import { SEMANTIC_SECTIONS, SHADOWS, SIZE_SECTIONS } from "../src/tokens.js";
@@ -75,6 +76,39 @@ export const globalTypes = {
       dynamicTitle: true,
     },
   },
+  // Every lucide-react icon in the library is wrapped in a single LucideProvider
+  // (below) driven by these two globals — nothing in component code sets its own
+  // strokeWidth, so this is the one place that controls it everywhere at once.
+  iconStrokeWidth: {
+    name: "Icon Stroke",
+    description: "Icon stroke width in px",
+    defaultValue: 1,
+    toolbar: {
+      icon: "ruler",
+      items: [
+        { value: 0.75, title: "0.75px" },
+        { value: 1,    title: "1px" },
+        { value: 1.25, title: "1.25px" },
+        { value: 1.5,  title: "1.5px" },
+        { value: 1.75, title: "1.75px" },
+        { value: 2,    title: "2px (Lucide default)" },
+      ],
+      dynamicTitle: true,
+    },
+  },
+  iconAbsoluteStroke: {
+    name: "Absolute Stroke",
+    description: "Absolute: stroke stays a fixed px width at every icon size. Relative: stroke scales with the icon (Lucide's own default).",
+    defaultValue: true,
+    toolbar: {
+      icon: "lock",
+      items: [
+        { value: true,  icon: "lock",   title: "Absolute" },
+        { value: false, icon: "unlock", title: "Relative" },
+      ],
+      dynamicTitle: true,
+    },
+  },
 };
 
 /* ─── Global decorator ─────────────────────────────────────────────────────── */
@@ -84,6 +118,8 @@ export const decorators = [
     const forceLight = context.parameters?.forceLight === true;
     const theme = forceLight ? "light" : (context.globals.theme || "light");
     const isDark = theme === "dark";
+    const iconStrokeWidth = context.globals.iconStrokeWidth ?? 1;
+    const iconAbsoluteStroke = context.globals.iconAbsoluteStroke ?? true;
 
     // Set the iframe canvas background to the lyra/color/bg/surface/canvas token.
     // Also target the Storybook layout wrapper div (100vw × 100vh centering shell)
@@ -112,9 +148,14 @@ export const decorators = [
     // all descendants without affecting flex/grid or centering behaviour.
     // Inline styles always win over :root stylesheet rules, so dark-mode vars
     // override any light defaults injected by the component's own <style> tag.
+    // --lyra-icon-stroke-width mirrors the same global into a CSS var, for the handful of
+    // hand-written inline SVGs (not lucide-react icons) that LucideProvider below can't
+    // reach — see their `style={{ strokeWidth: 'var(--lyra-icon-stroke-width, ...)' }}`.
     return (
-      <div style={{ display: "contents", ...(isDark ? DARK_VARS : {}) }}>
-        <Story />
+      <div style={{ display: "contents", "--lyra-icon-stroke-width": iconStrokeWidth, ...(isDark ? DARK_VARS : {}) }}>
+        <LucideProvider strokeWidth={iconStrokeWidth} absoluteStrokeWidth={iconAbsoluteStroke}>
+          <Story />
+        </LucideProvider>
       </div>
     );
   },

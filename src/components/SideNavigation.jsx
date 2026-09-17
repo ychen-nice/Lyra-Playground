@@ -381,7 +381,7 @@ export default function SideNavigation({
           flexShrink: 0,
           color: 'var(--lyra-color-fg-action)',
         }}>
-          {minimized ? <ChevronRight size="0.75rem" /> : <ChevronLeft size="0.75rem" />}
+          {minimized ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
         </div>
         {toggleHovered && (
           <Tooltip label={minimized ? 'Expand navigation' : 'Collapse navigation'} anchorRef={toggleBtnRef} />
