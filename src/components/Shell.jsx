@@ -126,6 +126,9 @@ export default function Shell({
   const closeSidebarRef = useRef(null);
   const sidebarCloseTimerRef = useRef(null); // debounces closeSidebarIfNoRoom against a transient mid-reflow reading
   const bodyRef = useRef(null);
+  // Nav rail's own expanded/collapsed widths — must match SideNavigation's.
+  const NAV_EXPANDED_W  = 256;
+  const NAV_COLLAPSED_W = 60;
 
   // ── AI panel resize (flex mode only — overlay mode has no handle) ──────────
   const AI_PANEL_MIN_W = 400; // 25rem
@@ -302,6 +305,37 @@ export default function Shell({
     if (aiPanelHasNoRoom()) setAiPanelOpenAnimated(false);
   }, [aiPanelHasNoRoom, setAiPanelOpenAnimated]);
 
+  // True once the outer row (nav + content sidebar + AI panel, all together) can no longer
+  // fit nav at its full expanded width alongside the content sidebar at its own full,
+  // unshrunk width and the content breakpoint. Deliberately uses the sidebar's full desired
+  // width (sidebarInfoRef's width, not its live-shrunk clamp value) rather than its current
+  // rendered width — that's what makes nav's own collapse trip at the same row width the
+  // sidebar's clamp would otherwise start binding at, so nav always finishes collapsing
+  // before the sidebar gives up any of its own space, matching the intended cascade order.
+  const navHasNoRoom = useCallback(() => {
+    const rowWidth = bodyRef.current?.getBoundingClientRect().width ?? Infinity;
+    const bp = contentBreakpointRef.current;
+    const { isOpen: sidebarOpen, isOverlay: sidebarIsOverlay, width: sidebarWidth } = sidebarInfoRef.current;
+    const sidebarRowWidth = (sidebarOpen && !sidebarIsOverlay) ? sidebarWidth : 0;
+    return rowWidth < NAV_EXPANDED_W + sidebarRowWidth + bp;
+  }, []);
+
+  // Collapses the nav rail the instant there's no room for it, ahead of the sidebar or AI
+  // panel giving up any of their own space — one-way, like the rest of the cascade, so it
+  // never re-expands on its own. Sets cascadeCancelRef for nav's own 350ms collapse
+  // transition, gating the sidebar/AI-panel close checks below until nav's width has
+  // actually settled (see their own comments for why that matters).
+  const collapseNavIfNoRoom = useCallback(() => {
+    if (navCollapsedRef.current || !navHasNoRoom()) return;
+    setNavCollapsed(true);
+    clearTimeout(cascadeCancelRef.current);
+    cascadeCancelRef.current = setTimeout(() => {
+      cascadeCancelRef.current = null;
+      closeSidebarIfNoRoom();
+      closeAiPanelIfNoRoom();
+    }, 350);
+  }, [navHasNoRoom, closeSidebarIfNoRoom, closeAiPanelIfNoRoom]);
+
   // Continuously watches the row itself (see aiPanelHasNoRoom above) so narrowing is caught
   // even after content and the AI panel have both already hit their min-width floors, at
   // which point their own ResizeObservers stop firing.
@@ -336,28 +370,21 @@ export default function Shell({
     // above the breakpoint; this is a belt-and-suspenders guard against measurement jitter.
     if (isResizingAiPanelRef.current) return;
 
-    // On the crossing into narrow, kick off nav's own collapse (if it hasn't already) and,
-    // if that's what's happening, set the cascade gate *before* the fast path below runs
-    // this same tick — both the sidebar's and the AI panel's close decisions read live DOM
-    // widths that are genuinely, if temporarily, narrower while nav is mid-transition
-    // (256px -> 60px over 350ms) than they'll be once it settles. Gating first, in this
-    // same synchronous call, means the very first fast-path check below (not just later
-    // ones) already respects it — closeSidebarIfNoRoom/closeAiPanelIfNoRoom themselves
-    // bail out while cascadeCancelRef is non-null, and this timer re-runs them once nav's
-    // width has actually settled.
+    // Checked on every measurement, not gated on `narrow` — navHasNoRoom trips at a wider
+    // row width than `narrow` itself does (it's judged against the sidebar's full, unshrunk
+    // width rather than PageContent's own already-sidebar-protected content-area reading),
+    // so nav needs to be free to collapse before `narrow` would ever flip true. This is
+    // what makes nav finish collapsing first, with the sidebar's own live shrink only
+    // starting once nav has already given up its space and it still isn't enough.
+    collapseNavIfNoRoom();
+
+    // Cancel a still-pending nav-collapse cascade timer if the window widens back out
+    // before it fires — closeSidebarIfNoRoom/closeAiPanelIfNoRoom read live state when it
+    // does fire, so this isn't required for correctness, just avoids gating them for up to
+    // 350ms on a resize that's already reversed.
     if (narrow !== prevNarrowRef.current) {
       prevNarrowRef.current = narrow;
-      if (narrow) {
-        if (!navCollapsedRef.current) {
-          setNavCollapsed(true);
-          clearTimeout(cascadeCancelRef.current);
-          cascadeCancelRef.current = setTimeout(() => {
-            cascadeCancelRef.current = null;
-            closeSidebarIfNoRoom();
-            closeAiPanelIfNoRoom();
-          }, 350);
-        }
-      } else {
+      if (!narrow) {
         clearTimeout(cascadeCancelRef.current);
         cascadeCancelRef.current = null;
       }
@@ -367,12 +394,12 @@ export default function Shell({
     // flip (which fires once per crossing) — the sidebar's own shrink is pure CSS and
     // needs no staging, and the dedicated row observer above only covers content/AI
     // panel once they're already floored. Both calls internally respect cascadeCancelRef
-    // while nav is still settling (see above).
+    // while nav is still settling (see collapseNavIfNoRoom above).
     if (narrow) {
       closeSidebarIfNoRoom();
       closeAiPanelIfNoRoom();
     }
-  }, [closeSidebarIfNoRoom, closeAiPanelIfNoRoom]);
+  }, [collapseNavIfNoRoom, closeSidebarIfNoRoom, closeAiPanelIfNoRoom]);
 
   return (
     <>
@@ -467,7 +494,7 @@ export default function Shell({
               // the same way the internal sidebar's own pin button falls back to an overlay
               // when there isn't room to pin.
               if (o) {
-                const NAV_EXPAND_DELTA = 256 - 60; // must match SideNavigation's expanded/collapsed widths
+                const NAV_EXPAND_DELTA = NAV_EXPANDED_W - NAV_COLLAPSED_W;
                 const bp = contentBreakpointRef.current;
                 // A pinned ('opened') content sidebar consumes row width the same as the
                 // nav would — an 'overlay' sidebar floats above content and consumes none,
