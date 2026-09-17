@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">3/17 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">16/17 infos</a><span class="filter-pill ok" aria-disabled="true">87 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">3/17 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">16/17 infos</a><span class="filter-pill ok" aria-disabled="true">88 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>0.5s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>0.6s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -1663,13 +1663,13 @@ variant?: any = &quot;user&quot;</code></pre>
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>We could not detect the component from your story file. Specify meta.component.
-  45 |
-  46 | /* ─── Stories ──────────────────────────────────────────────────────────────── */
-&gt; 47 | export default {
-     | ^
-  48 |   title: &#39;Foundation/Colors&#39;,
-  49 |   parameters: {
-  50 |     layout: &#39;padded&#39;,
+  103 |
+  104 | /* ─── Stories ──────────────────────────────────────────────────────────────── */
+&gt; 105 | export default {
+      | ^
+  106 |   title: &#39;Foundation/Colors&#39;,
+  107 |   parameters: {
+  108 |     layout: &#39;padded&#39;,
 
 ./src/stories/Colors.stories.jsx:
 import &quot;../styles/typography.css&quot;;
@@ -1712,10 +1712,68 @@ function Swatch({ hex, size = 32 }) {
   );
 }
 
+// A full-bleed row swatch (square corners, spans the row&#39;s true height by
+// bleeding past its own row&#39;s vertical padding via negative margins) — used
+// in the Semantic Colors token rows instead of the inset, rounded Swatch.
+function RowSwatch({ hex, rowPadding }) {
+  const isTransparent = hex === &#39;rgba(0,0,0,0)&#39; || hex === &#39;rgba(255,255,255,0)&#39;;
+  return (
+    &lt;div style={{
+      alignSelf: &#39;stretch&#39;, width: &#39;100%&#39;, flexShrink: 0,
+      marginTop: -rowPadding, marginBottom: -rowPadding,
+      border: &#39;1px solid rgba(0,0,0,0.1)&#39;,
+      background: isTransparent
+        ? &#39;linear-gradient(45deg,#ddd 25%,#fff 25%,#fff 75%,#ddd 75%), linear-gradient(45deg,#ddd 25%,#fff 25%,#fff 75%,#ddd 75%)&#39;
+        : hex,
+      backgroundSize: isTransparent ? &#39;8px 8px&#39; : undefined,
+      backgroundPosition: isTransparent ? &#39;0 0, 4px 4px&#39; : undefined,
+    }} /&gt;
+  );
+}
+
 const PAGE_TITLE = { fontSize: 11, fontWeight: 600, letterSpacing: &#39;0.08em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, marginBottom: 32 };
-const SECTION_HDR = { fontSize: &#39;0.875rem&#39;, fontWeight: 600, color: &#39;var(--lyra-color-fg-default)&#39;, marginBottom: 4, paddingBottom: 8, borderBottom: &#39;2px solid rgba(0,0,0,0.08)&#39;, marginTop: 40 };
+// The divider now sits under the title+description pair as a group, rather
+// than directly under the title, so it still lands in the right place
+// whether or not a section has a description.
+const SECTION_HEADER_BLOCK = { marginTop: 40, paddingBottom: 12, borderBottom: &#39;2px solid rgba(0,0,0,0.08)&#39; };
+const SECTION_HDR = { fontSize: &#39;0.875rem&#39;, fontWeight: 600, color: &#39;var(--lyra-color-fg-default)&#39;, margin: 0 };
+const SECTION_DESC = { fontSize: &#39;0.8125rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.6, maxWidth: 720, marginTop: 6 };
 const COL_HDR = { fontSize: &#39;0.6875rem&#39;, fontWeight: 600, letterSpacing: &#39;0.06em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, fontFamily: FF };
 const GROUP_HDR = { fontSize: &#39;0.6875rem&#39;, fontWeight: 600, letterSpacing: &#39;0.06em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, marginBottom: 8 };
+// Fixed token-row height for the Semantic Colors page — tall enough to fit a
+// 3-line clamped description plus its vertical padding, so every row (and
+// its full-bleed swatch) ends up the same height regardless of content.
+const ROW_HEIGHT = 72;
+
+// Figma: https://www.figma.com/design/qyCq4jUOrpYcpHhpNCdgA5/Lyra-Foundations--V1-?node-id=33552-120619
+// One short blurb per section, shown under its title. Keyed by the exact
+// SEMANTIC_SECTIONS title — a section with no matching Figma blurb (e.g.
+// Conversation, Interactive States) simply renders without one.
+const SECTION_DESCRIPTIONS = {
+  Surface: &#39;The surface layers are the visual &quot;ground&quot; on which UI content sits - used for page backgrounds, navigation panels, sidebars, cards and secondary panels. Brand-tintable.&#39;,
+  Background: &#39;Role-based background tokens for UI elements that reside on surface backgrounds.&#39;,
+  &#39;Active Background&#39;: &#39;Background tokens for active, selected, or currently-in-effect states. Used for active filters, selected nav items, highlighted rows, and pressed toggle states. Value is brand-derived and themeable.&#39;,
+  Foreground: &#39;Foreground tokens for text, icons, and decorative elements. Foreground stays neutral in almost all cases and color is reserved for status, links, and active states.&#39;,
+  &#39;Active Foreground&#39;: &#39;Foreground tokens for active or selected states on elements with with active background or no background - tabs with underlines, active navigation text, selected filter labels.&#39;,
+  Border: &#39;A graduated border scale from near-invisible to high-contrast, plus semantic tokens for inverse, transparent, and active states. The scale is designed so adjacent steps are meaningfully different.&#39;,
+  Focus: &quot;Keyboard focus ring colors. Separated from the main border scale to ensure focus rings are always visible and distinct, regardless of the component&#39;s resting border state&quot;,
+  Status: (
+    &lt;&gt;
+      Semantic status colors. Each status has a strong, moderate and subtle variants designed to work across all three property types — &lt;strong&gt;background, foreground, and border&lt;/strong&gt; without duplication. Strong tokens meet 4.5:1 contrast for text use on the subtle status backgrounds. Subtle tokens are calibrated for backgrounds and decorative borders.
+    &lt;/&gt;
+  ),
+  Accent: (
+    &lt;&gt;
+      &lt;p style={{ margin: &#39;0 0 8px&#39; }}&gt;A set of hues with no fixed semantic meaning intended for small elements rather than large surfaces.&lt;/p&gt;
+      &lt;p style={{ margin: &#39;0 0 8px&#39; }}&gt;Used to distinguish one item, group, or value from another (&lt;strong&gt;e.g., tags, categories, labels, avatars)&lt;/strong&gt;, and it&#39;s up to the consuming context to decide what each hue represents.&lt;/p&gt;
+      &lt;p style={{ margin: &#39;0 0 6px&#39; }}&gt;&lt;strong&gt;Every hue is available in two versions, made up of a background/foreground token pair used together:&lt;/strong&gt;&lt;/p&gt;
+      &lt;ul style={{ margin: 0, paddingLeft: 18 }}&gt;
+        &lt;li&gt;&lt;strong&gt;Subtle&lt;/strong&gt; — a light background paired with a corresponding foreground (text/icon) token, intended for larger surface areas (chips, rows, containers) where the color needs to differentiate without competing with surrounding content.&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Strong&lt;/strong&gt; — an emphasized background paired with a corresponding foreground (text/icon) token, intended for smaller, higher-emphasis surfaces (badges, dots, small tags) where the category needs to stand out or be scanned quickly.&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/&gt;
+  ),
+};
 
 /* ─── Stories ──────────────────────────────────────────────────────────────── */
 export default {
@@ -1780,45 +1838,41 @@ export const SemanticColors = {
 
       {SEMANTIC_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
         &lt;div key={title}&gt;
-          &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+          &lt;div style={SECTION_HEADER_BLOCK}&gt;
+            &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+            {SECTION_DESCRIPTIONS[title] &amp;&amp; &lt;div style={SECTION_DESC}&gt;{SECTION_DESCRIPTIONS[title]}&lt;/div&gt;}
+          &lt;/div&gt;
 
-          {/* Column headers: swatch | token | light | dark | description */}
-          &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+          {/* Column headers: swatch | token | value | description */}
+          &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;100px 240px 140px 1fr&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
             &lt;span /&gt;
             &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
-            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-              &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#FFFFFF&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
-              &lt;span style={COL_HDR}&gt;Light&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-              &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#2A2D32&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
-              &lt;span style={COL_HDR}&gt;Dark&lt;/span&gt;
-            &lt;/div&gt;
+            &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
             &lt;span style={COL_HDR}&gt;Description&lt;/span&gt;
           &lt;/div&gt;
 
-          {tokens.map(({ name, light, dark, lightRef, darkRef, desc }) =&gt; (
-            &lt;div key={name} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
-              {/* Light swatch */}
-              &lt;Swatch hex={light} size={28} /&gt;
+          {tokens.map(({ name, light, desc }) =&gt; (
+            &lt;div key={name} style={{
+              display: &#39;grid&#39;, gridTemplateColumns: &#39;100px 240px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;,
+              height: ROW_HEIGHT, boxSizing: &#39;border-box&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39;,
+            }}&gt;
+              {/* Swatch — full-bleed to the row&#39;s own top/bottom edges */}
+              &lt;RowSwatch hex={light} rowPadding={8} /&gt;
               {/* Token name */}
               &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;
                 {prefix}{name}
               &lt;/code&gt;
-              {/* Light value — shows the referenced base/semantic token name (e.g.
-                  &quot;slate/25&quot;) instead of the resolved value, when the source value
-                  is a reference rather than a hand-picked literal. */}
-              &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-                &lt;Swatch hex={light} size={18} /&gt;
-                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={lightRef ? light : undefined}&gt;{lightRef || light}&lt;/span&gt;
-              &lt;/div&gt;
-              {/* Dark value — same reference-name rule as Light. */}
-              &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-                &lt;Swatch hex={dark} size={18} /&gt;
-                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={darkRef ? dark : undefined}&gt;{darkRef || dark}&lt;/span&gt;
-              &lt;/div&gt;
-              {/* Description */}
-              &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39; }}&gt;
+              {/* Value — the absolute resolved value, not the reference token name. */}
+              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{light}&lt;/span&gt;
+              {/* Description — clamped to 3 lines so a long note can&#39;t grow the
+                  row past the shared fixed height; full text is on hover. */}
+              &lt;span
+                title={desc || undefined}
+                style={{
+                  fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39;,
+                  display: &#39;-webkit-box&#39;, WebkitLineClamp: 3, WebkitBoxOrient: &#39;vertical&#39;, overflow: &#39;hidden&#39;, whiteSpace: &#39;pre-line&#39;,
+                }}
+              &gt;
                 {desc || &#39;&#39;}
               &lt;/span&gt;
             &lt;/div&gt;
@@ -2034,45 +2088,41 @@ export const SemanticSizes = {
 
     {SEMANTIC_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
       &lt;div key={title}&gt;
-        &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+        &lt;div style={SECTION_HEADER_BLOCK}&gt;
+          &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+          {SECTION_DESCRIPTIONS[title] &amp;&amp; &lt;div style={SECTION_DESC}&gt;{SECTION_DESCRIPTIONS[title]}&lt;/div&gt;}
+        &lt;/div&gt;
 
-        {/* Column headers: swatch | token | light | dark | description */}
-        &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+        {/* Column headers: swatch | token | value | description */}
+        &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;100px 240px 140px 1fr&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
           &lt;span /&gt;
           &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
-          &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-            &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#FFFFFF&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
-            &lt;span style={COL_HDR}&gt;Light&lt;/span&gt;
-          &lt;/div&gt;
-          &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-            &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#2A2D32&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
-            &lt;span style={COL_HDR}&gt;Dark&lt;/span&gt;
-          &lt;/div&gt;
+          &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
           &lt;span style={COL_HDR}&gt;Description&lt;/span&gt;
         &lt;/div&gt;
 
-        {tokens.map(({ name, light, dark, lightRef, darkRef, desc }) =&gt; (
-          &lt;div key={name} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
-            {/* Light swatch */}
-            &lt;Swatch hex={light} size={28} /&gt;
+        {tokens.map(({ name, light, desc }) =&gt; (
+          &lt;div key={name} style={{
+            display: &#39;grid&#39;, gridTemplateColumns: &#39;100px 240px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;,
+            height: ROW_HEIGHT, boxSizing: &#39;border-box&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39;,
+          }}&gt;
+            {/* Swatch — full-bleed to the row&#39;s own top/bottom edges */}
+            &lt;RowSwatch hex={light} rowPadding={8} /&gt;
             {/* Token name */}
             &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;
               {prefix}{name}
             &lt;/code&gt;
-            {/* Light value — shows the referenced base/semantic token name (e.g.
-                &quot;slate/25&quot;) instead of the resolved value, when the source value
-                is a reference rather than a hand-picked literal. */}
-            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-              &lt;Swatch hex={light} size={18} /&gt;
-              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={lightRef ? light : undefined}&gt;{lightRef || light}&lt;/span&gt;
-            &lt;/div&gt;
-            {/* Dark value — same reference-name rule as Light. */}
-            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-              &lt;Swatch hex={dark} size={18} /&gt;
-              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={darkRef ? dark : undefined}&gt;{darkRef || dark}&lt;/span&gt;
-            &lt;/div&gt;
-            {/* Description */}
-            &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39; }}&gt;
+            {/* Value — the absolute resolved value, not the reference token name. */}
+            &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{light}&lt;/span&gt;
+            {/* Description — clamped to 3 lines so a long note can&#39;t grow the
+                row past the shared fixed height; full text is on hover. */}
+            &lt;span
+              title={desc || undefined}
+              style={{
+                fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39;,
+                display: &#39;-webkit-box&#39;, WebkitLineClamp: 3, WebkitBoxOrient: &#39;vertical&#39;, overflow: &#39;hidden&#39;, whiteSpace: &#39;pre-line&#39;,
+              }}
+            &gt;
               {desc || &#39;&#39;}
             &lt;/span&gt;
           &lt;/div&gt;
@@ -2909,7 +2959,7 @@ import { QueryChip } from "ai-assistant-storybook";</code></pre>
       <div class="badges">
         <label for="c-11-shell-props" class="badge ok as-toggle">3 prop types</label>
         <label for="c-11-shell-info" class="badge info as-toggle">1 info</label>
-        <label for="c-11-shell-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-11-shell-stories" class="badge ok as-toggle">3 stories</label>
         
         
       </div>
@@ -3010,6 +3060,31 @@ showAiPanel?: any = true</code></pre>
         showAiTrigger={false}
       /&gt;
     } /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Shell — Responsive Behavior</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ResponsiveBehavior = () =&gt; (
+  &lt;div style={{ maxWidth: 640, margin: &quot;0 auto&quot;, padding: &quot;40px 0&quot; }}&gt;
+    &lt;h1 className=&quot;lyra-heading-md&quot; style={{ color: &quot;var(--lyra-color-fg-default)&quot;, marginBottom: 8 }}&gt;
+      Responsive Layout Guidelines
+    &lt;/h1&gt;
+    &lt;p className=&quot;lyra-body-md&quot; style={{ color: &quot;var(--lyra-color-fg-secondary)&quot;, marginBottom: 24 }}&gt;
+      What happens to this page when the browser window gets smaller, or the browser is zoomed in.
+    &lt;/p&gt;
+    &lt;ul style={{ margin: 0, paddingLeft: 20, display: &quot;flex&quot;, flexDirection: &quot;column&quot;, gap: 12 }}&gt;
+      {RESPONSIVE_GUIDELINES.map((line) =&gt; (
+        &lt;li key={line} className=&quot;lyra-body-md&quot; style={{ color: &quot;var(--lyra-color-fg-default)&quot;, lineHeight: 1.6 }}&gt;
+          {line}
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  &lt;/div&gt;
+);</code></pre>
             </div>
         </div>
     
@@ -4160,13 +4235,13 @@ export const Body = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>We could not detect the component from your story file. Specify meta.component.
-  45 |
-  46 | /* ─── Stories ──────────────────────────────────────────────────────────────── */
-&gt; 47 | export default {
-     | ^
-  48 |   title: &#39;Foundation/Colors&#39;,
-  49 |   parameters: {
-  50 |     layout: &#39;padded&#39;,
+  103 |
+  104 | /* ─── Stories ──────────────────────────────────────────────────────────────── */
+&gt; 105 | export default {
+      | ^
+  106 |   title: &#39;Foundation/Colors&#39;,
+  107 |   parameters: {
+  108 |     layout: &#39;padded&#39;,
 
 ./src/stories/Colors.stories.jsx:
 import &quot;../styles/typography.css&quot;;
@@ -4209,10 +4284,68 @@ function Swatch({ hex, size = 32 }) {
   );
 }
 
+// A full-bleed row swatch (square corners, spans the row&#39;s true height by
+// bleeding past its own row&#39;s vertical padding via negative margins) — used
+// in the Semantic Colors token rows instead of the inset, rounded Swatch.
+function RowSwatch({ hex, rowPadding }) {
+  const isTransparent = hex === &#39;rgba(0,0,0,0)&#39; || hex === &#39;rgba(255,255,255,0)&#39;;
+  return (
+    &lt;div style={{
+      alignSelf: &#39;stretch&#39;, width: &#39;100%&#39;, flexShrink: 0,
+      marginTop: -rowPadding, marginBottom: -rowPadding,
+      border: &#39;1px solid rgba(0,0,0,0.1)&#39;,
+      background: isTransparent
+        ? &#39;linear-gradient(45deg,#ddd 25%,#fff 25%,#fff 75%,#ddd 75%), linear-gradient(45deg,#ddd 25%,#fff 25%,#fff 75%,#ddd 75%)&#39;
+        : hex,
+      backgroundSize: isTransparent ? &#39;8px 8px&#39; : undefined,
+      backgroundPosition: isTransparent ? &#39;0 0, 4px 4px&#39; : undefined,
+    }} /&gt;
+  );
+}
+
 const PAGE_TITLE = { fontSize: 11, fontWeight: 600, letterSpacing: &#39;0.08em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, marginBottom: 32 };
-const SECTION_HDR = { fontSize: &#39;0.875rem&#39;, fontWeight: 600, color: &#39;var(--lyra-color-fg-default)&#39;, marginBottom: 4, paddingBottom: 8, borderBottom: &#39;2px solid rgba(0,0,0,0.08)&#39;, marginTop: 40 };
+// The divider now sits under the title+description pair as a group, rather
+// than directly under the title, so it still lands in the right place
+// whether or not a section has a description.
+const SECTION_HEADER_BLOCK = { marginTop: 40, paddingBottom: 12, borderBottom: &#39;2px solid rgba(0,0,0,0.08)&#39; };
+const SECTION_HDR = { fontSize: &#39;0.875rem&#39;, fontWeight: 600, color: &#39;var(--lyra-color-fg-default)&#39;, margin: 0 };
+const SECTION_DESC = { fontSize: &#39;0.8125rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.6, maxWidth: 720, marginTop: 6 };
 const COL_HDR = { fontSize: &#39;0.6875rem&#39;, fontWeight: 600, letterSpacing: &#39;0.06em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, fontFamily: FF };
 const GROUP_HDR = { fontSize: &#39;0.6875rem&#39;, fontWeight: 600, letterSpacing: &#39;0.06em&#39;, textTransform: &#39;uppercase&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, marginBottom: 8 };
+// Fixed token-row height for the Semantic Colors page — tall enough to fit a
+// 3-line clamped description plus its vertical padding, so every row (and
+// its full-bleed swatch) ends up the same height regardless of content.
+const ROW_HEIGHT = 72;
+
+// Figma: https://www.figma.com/design/qyCq4jUOrpYcpHhpNCdgA5/Lyra-Foundations--V1-?node-id=33552-120619
+// One short blurb per section, shown under its title. Keyed by the exact
+// SEMANTIC_SECTIONS title — a section with no matching Figma blurb (e.g.
+// Conversation, Interactive States) simply renders without one.
+const SECTION_DESCRIPTIONS = {
+  Surface: &#39;The surface layers are the visual &quot;ground&quot; on which UI content sits - used for page backgrounds, navigation panels, sidebars, cards and secondary panels. Brand-tintable.&#39;,
+  Background: &#39;Role-based background tokens for UI elements that reside on surface backgrounds.&#39;,
+  &#39;Active Background&#39;: &#39;Background tokens for active, selected, or currently-in-effect states. Used for active filters, selected nav items, highlighted rows, and pressed toggle states. Value is brand-derived and themeable.&#39;,
+  Foreground: &#39;Foreground tokens for text, icons, and decorative elements. Foreground stays neutral in almost all cases and color is reserved for status, links, and active states.&#39;,
+  &#39;Active Foreground&#39;: &#39;Foreground tokens for active or selected states on elements with with active background or no background - tabs with underlines, active navigation text, selected filter labels.&#39;,
+  Border: &#39;A graduated border scale from near-invisible to high-contrast, plus semantic tokens for inverse, transparent, and active states. The scale is designed so adjacent steps are meaningfully different.&#39;,
+  Focus: &quot;Keyboard focus ring colors. Separated from the main border scale to ensure focus rings are always visible and distinct, regardless of the component&#39;s resting border state&quot;,
+  Status: (
+    &lt;&gt;
+      Semantic status colors. Each status has a strong, moderate and subtle variants designed to work across all three property types — &lt;strong&gt;background, foreground, and border&lt;/strong&gt; without duplication. Strong tokens meet 4.5:1 contrast for text use on the subtle status backgrounds. Subtle tokens are calibrated for backgrounds and decorative borders.
+    &lt;/&gt;
+  ),
+  Accent: (
+    &lt;&gt;
+      &lt;p style={{ margin: &#39;0 0 8px&#39; }}&gt;A set of hues with no fixed semantic meaning intended for small elements rather than large surfaces.&lt;/p&gt;
+      &lt;p style={{ margin: &#39;0 0 8px&#39; }}&gt;Used to distinguish one item, group, or value from another (&lt;strong&gt;e.g., tags, categories, labels, avatars)&lt;/strong&gt;, and it&#39;s up to the consuming context to decide what each hue represents.&lt;/p&gt;
+      &lt;p style={{ margin: &#39;0 0 6px&#39; }}&gt;&lt;strong&gt;Every hue is available in two versions, made up of a background/foreground token pair used together:&lt;/strong&gt;&lt;/p&gt;
+      &lt;ul style={{ margin: 0, paddingLeft: 18 }}&gt;
+        &lt;li&gt;&lt;strong&gt;Subtle&lt;/strong&gt; — a light background paired with a corresponding foreground (text/icon) token, intended for larger surface areas (chips, rows, containers) where the color needs to differentiate without competing with surrounding content.&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Strong&lt;/strong&gt; — an emphasized background paired with a corresponding foreground (text/icon) token, intended for smaller, higher-emphasis surfaces (badges, dots, small tags) where the category needs to stand out or be scanned quickly.&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/&gt;
+  ),
+};
 
 /* ─── Stories ──────────────────────────────────────────────────────────────── */
 export default {
@@ -4277,45 +4410,41 @@ export const SemanticColors = {
 
       {SEMANTIC_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
         &lt;div key={title}&gt;
-          &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+          &lt;div style={SECTION_HEADER_BLOCK}&gt;
+            &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+            {SECTION_DESCRIPTIONS[title] &amp;&amp; &lt;div style={SECTION_DESC}&gt;{SECTION_DESCRIPTIONS[title]}&lt;/div&gt;}
+          &lt;/div&gt;
 
-          {/* Column headers: swatch | token | light | dark | description */}
-          &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+          {/* Column headers: swatch | token | value | description */}
+          &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;100px 240px 140px 1fr&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
             &lt;span /&gt;
             &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
-            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-              &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#FFFFFF&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
-              &lt;span style={COL_HDR}&gt;Light&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-              &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#2A2D32&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
-              &lt;span style={COL_HDR}&gt;Dark&lt;/span&gt;
-            &lt;/div&gt;
+            &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
             &lt;span style={COL_HDR}&gt;Description&lt;/span&gt;
           &lt;/div&gt;
 
-          {tokens.map(({ name, light, dark, lightRef, darkRef, desc }) =&gt; (
-            &lt;div key={name} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
-              {/* Light swatch */}
-              &lt;Swatch hex={light} size={28} /&gt;
+          {tokens.map(({ name, light, desc }) =&gt; (
+            &lt;div key={name} style={{
+              display: &#39;grid&#39;, gridTemplateColumns: &#39;100px 240px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;,
+              height: ROW_HEIGHT, boxSizing: &#39;border-box&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39;,
+            }}&gt;
+              {/* Swatch — full-bleed to the row&#39;s own top/bottom edges */}
+              &lt;RowSwatch hex={light} rowPadding={8} /&gt;
               {/* Token name */}
               &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;
                 {prefix}{name}
               &lt;/code&gt;
-              {/* Light value — shows the referenced base/semantic token name (e.g.
-                  &quot;slate/25&quot;) instead of the resolved value, when the source value
-                  is a reference rather than a hand-picked literal. */}
-              &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-                &lt;Swatch hex={light} size={18} /&gt;
-                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={lightRef ? light : undefined}&gt;{lightRef || light}&lt;/span&gt;
-              &lt;/div&gt;
-              {/* Dark value — same reference-name rule as Light. */}
-              &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-                &lt;Swatch hex={dark} size={18} /&gt;
-                &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={darkRef ? dark : undefined}&gt;{darkRef || dark}&lt;/span&gt;
-              &lt;/div&gt;
-              {/* Description */}
-              &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39; }}&gt;
+              {/* Value — the absolute resolved value, not the reference token name. */}
+              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{light}&lt;/span&gt;
+              {/* Description — clamped to 3 lines so a long note can&#39;t grow the
+                  row past the shared fixed height; full text is on hover. */}
+              &lt;span
+                title={desc || undefined}
+                style={{
+                  fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39;,
+                  display: &#39;-webkit-box&#39;, WebkitLineClamp: 3, WebkitBoxOrient: &#39;vertical&#39;, overflow: &#39;hidden&#39;, whiteSpace: &#39;pre-line&#39;,
+                }}
+              &gt;
                 {desc || &#39;&#39;}
               &lt;/span&gt;
             &lt;/div&gt;
@@ -4531,45 +4660,41 @@ export const SemanticSizes = {
 
     {SEMANTIC_SECTIONS.map(({ title, prefix, tokens }) =&gt; (
       &lt;div key={title}&gt;
-        &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+        &lt;div style={SECTION_HEADER_BLOCK}&gt;
+          &lt;h2 style={SECTION_HDR}&gt;{title}&lt;/h2&gt;
+          {SECTION_DESCRIPTIONS[title] &amp;&amp; &lt;div style={SECTION_DESC}&gt;{SECTION_DESCRIPTIONS[title]}&lt;/div&gt;}
+        &lt;/div&gt;
 
-        {/* Column headers: swatch | token | light | dark | description */}
-        &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
+        {/* Column headers: swatch | token | value | description */}
+        &lt;div style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;100px 240px 140px 1fr&#39;, gap: &#39;0 16px&#39;, padding: &#39;4px 0 6px&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.06)&#39; }}&gt;
           &lt;span /&gt;
           &lt;span style={COL_HDR}&gt;Token&lt;/span&gt;
-          &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-            &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#FFFFFF&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
-            &lt;span style={COL_HDR}&gt;Light&lt;/span&gt;
-          &lt;/div&gt;
-          &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-            &lt;div style={{ width: 10, height: 10, borderRadius: 2, background: &#39;#2A2D32&#39;, border: &#39;1px solid rgba(0,0,0,0.15)&#39;, flexShrink: 0 }} /&gt;
-            &lt;span style={COL_HDR}&gt;Dark&lt;/span&gt;
-          &lt;/div&gt;
+          &lt;span style={COL_HDR}&gt;Value&lt;/span&gt;
           &lt;span style={COL_HDR}&gt;Description&lt;/span&gt;
         &lt;/div&gt;
 
-        {tokens.map(({ name, light, dark, lightRef, darkRef, desc }) =&gt; (
-          &lt;div key={name} style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;32px 200px 140px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39; }}&gt;
-            {/* Light swatch */}
-            &lt;Swatch hex={light} size={28} /&gt;
+        {tokens.map(({ name, light, desc }) =&gt; (
+          &lt;div key={name} style={{
+            display: &#39;grid&#39;, gridTemplateColumns: &#39;100px 240px 140px 1fr&#39;, gap: &#39;0 16px&#39;, alignItems: &#39;center&#39;,
+            height: ROW_HEIGHT, boxSizing: &#39;border-box&#39;, padding: &#39;8px 0&#39;, borderBottom: &#39;1px solid rgba(0,0,0,0.05)&#39;,
+          }}&gt;
+            {/* Swatch — full-bleed to the row&#39;s own top/bottom edges */}
+            &lt;RowSwatch hex={light} rowPadding={8} /&gt;
             {/* Token name */}
             &lt;code style={{ fontSize: &#39;0.6875rem&#39;, fontFamily: MONO, color: &#39;var(--lyra-color-fg-default)&#39;, background: &#39;rgba(0,0,0,0.04)&#39;, padding: &#39;2px 5px&#39;, borderRadius: 3, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;
               {prefix}{name}
             &lt;/code&gt;
-            {/* Light value — shows the referenced base/semantic token name (e.g.
-                &quot;slate/25&quot;) instead of the resolved value, when the source value
-                is a reference rather than a hand-picked literal. */}
-            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-              &lt;Swatch hex={light} size={18} /&gt;
-              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={lightRef ? light : undefined}&gt;{lightRef || light}&lt;/span&gt;
-            &lt;/div&gt;
-            {/* Dark value — same reference-name rule as Light. */}
-            &lt;div style={{ display: &#39;flex&#39;, alignItems: &#39;center&#39;, gap: 6 }}&gt;
-              &lt;Swatch hex={dark} size={18} /&gt;
-              &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }} title={darkRef ? dark : undefined}&gt;{darkRef || dark}&lt;/span&gt;
-            &lt;/div&gt;
-            {/* Description */}
-            &lt;span style={{ fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39; }}&gt;
+            {/* Value — the absolute resolved value, not the reference token name. */}
+            &lt;span style={{ fontSize: 10, fontFamily: MONO, color: &#39;var(--lyra-color-fg-secondary)&#39;, overflow: &#39;hidden&#39;, textOverflow: &#39;ellipsis&#39;, whiteSpace: &#39;nowrap&#39; }}&gt;{light}&lt;/span&gt;
+            {/* Description — clamped to 3 lines so a long note can&#39;t grow the
+                row past the shared fixed height; full text is on hover. */}
+            &lt;span
+              title={desc || undefined}
+              style={{
+                fontSize: &#39;0.6875rem&#39;, color: &#39;var(--lyra-color-fg-secondary)&#39;, lineHeight: 1.5, fontStyle: desc ? &#39;italic&#39; : &#39;normal&#39;,
+                display: &#39;-webkit-box&#39;, WebkitLineClamp: 3, WebkitBoxOrient: &#39;vertical&#39;, overflow: &#39;hidden&#39;, whiteSpace: &#39;pre-line&#39;,
+              }}
+            &gt;
               {desc || &#39;&#39;}
             &lt;/span&gt;
           &lt;/div&gt;
