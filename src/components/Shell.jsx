@@ -1,5 +1,5 @@
 import React, { useState, useRef, useLayoutEffect, useEffect, useCallback } from 'react';
-import PageContent, { DEFAULT_SIDEBAR_W } from './PageContent';
+import PageContent, { DEFAULT_SIDEBAR_W, MIN_SIDEBAR_W } from './PageContent';
 import AiAssistantPanel from './AiAssistantPanel';
 import PageHeader from './PageHeader';
 import SideNavigation, { DEFAULT_NAV_ITEMS } from './SideNavigation';
@@ -124,6 +124,7 @@ export default function Shell({
   const contentWidthRef = useRef(Infinity); // latest content area width from PageContent
   const contentBreakpointRef = useRef(contentBreakpoint);
   const closeSidebarRef = useRef(null);
+  const sidebarCloseTimerRef = useRef(null); // debounces closeSidebarIfNoRoom against a transient mid-reflow reading
   const bodyRef = useRef(null);
 
   // ── AI panel resize (flex mode only — overlay mode has no handle) ──────────
@@ -256,6 +257,38 @@ export default function Shell({
     return available < bp + AI_PANEL_GAP + AI_PANEL_MIN_W;
   }, []);
 
+  // Closes the pinned sidebar once it's already been shrunk to its own CSS floor
+  // (MIN_SIDEBAR_W — see PageContent's pinnedWidthCss clamp) and content is still
+  // narrower than its breakpoint even so. Called on every measurement (not staged
+  // behind the nav-collapse timer chain) so it reacts the instant the live CSS shrink
+  // actually bottoms out — exactly the same "native shrink, JS only decides the final
+  // close" split used for the AI panel below. A short local debounce guards against a
+  // single large resize reporting a transient too-narrow reading mid-reflow, before
+  // the clamp's own layout has fully settled.
+  //
+  // cascadeCancelRef also gates this (same as closeAiPanelIfNoRoom below): while nav is
+  // mid-collapse (256px -> 60px over 350ms), the page-shell is genuinely, if temporarily,
+  // narrower than its settled width — the sidebar's own clamp legitimately bottoms out at
+  // MIN_SIDEBAR_W during that window even though there's plenty of room once nav finishes
+  // giving its space back. Without this guard the 100ms debounce fires on that transient
+  // floor reading and closes the sidebar for good, well before nav has settled.
+  const closeSidebarIfNoRoom = useCallback(() => {
+    const { isOpen, atFloor } = sidebarInfoRef.current;
+    if (cascadeCancelRef.current !== null || !navCollapsedRef.current || !isOpen || !atFloor || contentWidthRef.current >= contentBreakpointRef.current) {
+      clearTimeout(sidebarCloseTimerRef.current);
+      sidebarCloseTimerRef.current = null;
+      return;
+    }
+    if (sidebarCloseTimerRef.current === null) {
+      sidebarCloseTimerRef.current = setTimeout(() => {
+        sidebarCloseTimerRef.current = null;
+        if (cascadeCancelRef.current === null && sidebarInfoRef.current.isOpen && sidebarInfoRef.current.atFloor && contentWidthRef.current < contentBreakpointRef.current) {
+          closeSidebarRef.current?.();
+        }
+      }, 100);
+    }
+  }, []);
+
   // Closes the AI panel once neither floor (content's breakpoint, the panel's own min-width)
   // can be honored simultaneously anymore. Reads live refs so it gives credit for space
   // already freed by the nav/sidebar steps, and is safe to call repeatedly.
@@ -303,45 +336,43 @@ export default function Shell({
     // above the breakpoint; this is a belt-and-suspenders guard against measurement jitter.
     if (isResizingAiPanelRef.current) return;
 
-    // Fast path: nav + sidebar are already collapsed, so keep checking on every measurement —
-    // not just the initial narrow/wide flip, which fires once per crossing. (The dedicated
-    // row observer above also covers this once content/AI panel are floored; this covers the
-    // case where content is still resizing normally, before hitting its own floor.)
-    if (narrow) closeAiPanelIfNoRoom();
-
-    if (narrow === prevNarrowRef.current) return;
-    prevNarrowRef.current = narrow;
-
-    if (!narrow) {
-      clearTimeout(cascadeCancelRef.current);
-      cascadeCancelRef.current = null;
-      return;
-    }
-    if (cascadeCancelRef.current !== null) return;
-
-    const step3 = () => {
-      cascadeCancelRef.current = null;
-      closeAiPanelIfNoRoom();
-    };
-
-    const step2 = () => {
-      cascadeCancelRef.current = null;
-      closeSidebarRef.current?.();
-      cascadeCancelRef.current = setTimeout(step3, 350);
-    };
-
-    const step1 = () => {
-      cascadeCancelRef.current = null;
-      if (!navCollapsedRef.current) {
-        setNavCollapsed(true);
-        cascadeCancelRef.current = setTimeout(step2, 350);
+    // On the crossing into narrow, kick off nav's own collapse (if it hasn't already) and,
+    // if that's what's happening, set the cascade gate *before* the fast path below runs
+    // this same tick — both the sidebar's and the AI panel's close decisions read live DOM
+    // widths that are genuinely, if temporarily, narrower while nav is mid-transition
+    // (256px -> 60px over 350ms) than they'll be once it settles. Gating first, in this
+    // same synchronous call, means the very first fast-path check below (not just later
+    // ones) already respects it — closeSidebarIfNoRoom/closeAiPanelIfNoRoom themselves
+    // bail out while cascadeCancelRef is non-null, and this timer re-runs them once nav's
+    // width has actually settled.
+    if (narrow !== prevNarrowRef.current) {
+      prevNarrowRef.current = narrow;
+      if (narrow) {
+        if (!navCollapsedRef.current) {
+          setNavCollapsed(true);
+          clearTimeout(cascadeCancelRef.current);
+          cascadeCancelRef.current = setTimeout(() => {
+            cascadeCancelRef.current = null;
+            closeSidebarIfNoRoom();
+            closeAiPanelIfNoRoom();
+          }, 350);
+        }
       } else {
-        step2();
+        clearTimeout(cascadeCancelRef.current);
+        cascadeCancelRef.current = null;
       }
-    };
+    }
 
-    step1();
-  }, [closeAiPanelIfNoRoom]);
+    // Fast path: keep checking on every measurement, not just the initial narrow/wide
+    // flip (which fires once per crossing) — the sidebar's own shrink is pure CSS and
+    // needs no staging, and the dedicated row observer above only covers content/AI
+    // panel once they're already floored. Both calls internally respect cascadeCancelRef
+    // while nav is still settling (see above).
+    if (narrow) {
+      closeSidebarIfNoRoom();
+      closeAiPanelIfNoRoom();
+    }
+  }, [closeSidebarIfNoRoom, closeAiPanelIfNoRoom]);
 
   return (
     <>
@@ -577,12 +608,12 @@ export default function Shell({
                   const W  = getLiveContentAreaWidth();
                   const bp = contentBreakpointRef.current;
                   const { isOpen: sidebarOpen, width: sidebarWidth } = sidebarInfoRef.current;
-                  if (W >= bp + AI_PANEL_MIN_W + AI_PANEL_GAP) {
-                    // Wide enough as-is — flex mode
-                    setAiPanelOpenAnimated(true);
-                  } else if (sidebarOpen && W + sidebarWidth >= bp + AI_PANEL_MIN_W + AI_PANEL_GAP) {
-                    // Closing the sidebar frees enough room for the AI panel in flex mode
-                    closeSidebarRef.current?.();
+                  // Best case assumes the sidebar (if pinned) can shrink all the way to
+                  // MIN_SIDEBAR_W for free via its own CSS clamp — no need to pre-close or
+                  // pre-shrink it here; if that's still not enough once it actually settles
+                  // at its floor, the normal narrow-cascade closes it outright afterward.
+                  const bestCaseW = sidebarOpen ? W + (sidebarWidth - MIN_SIDEBAR_W) : W;
+                  if (bestCaseW >= bp + AI_PANEL_MIN_W + AI_PANEL_GAP) {
                     setAiPanelOpenAnimated(true);
                   } else {
                     // Not enough room either way — overlay mode

@@ -1,6 +1,7 @@
 import { cloneElement } from 'react';
-import { ChevronDown, X, AlertCircle } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import Button from './Button';
+import Badge from './Badge';
 import '../styles/typography.css';
 import '../styles/queryChip.css';
 
@@ -128,12 +129,8 @@ export default function QueryChip({
     // rounded corners instead of spilling past them as a hard rectangle.
     <div style={{ position: 'relative', display: 'inline-flex' }}>
       {isError && (
-        <span style={{
-          position: 'absolute', left: -6, top: -6, display: 'flex', zIndex: 1,
-          color: 'var(--lyra-color-status-critical-strong)',
-          background: 'var(--lyra-color-bg-surface-base)', borderRadius: 'var(--lyra-radius-round)',
-        }}>
-          <AlertCircle size={12} fill="var(--lyra-color-status-critical-strong)" stroke="var(--lyra-color-bg-surface-base)" />
+        <span style={{ position: 'absolute', left: -6, top: -6, display: 'flex', zIndex: 1 }}>
+          <Badge color="red" colorStyle="strong" type="counter" size="small">!</Badge>
         </span>
       )}
       <div style={{

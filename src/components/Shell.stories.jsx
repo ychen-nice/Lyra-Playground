@@ -1,6 +1,19 @@
 import Shell from "./Shell";
 import PageHeader from "./PageHeader";
 import Tabs from "./Tabs";
+import "../styles/typography.css";
+
+const RESPONSIVE_GUIDELINES = [
+  "The content panel always gets priority — every other panel gives up space before the content panel has to.",
+  "As the viewport gets narrower, whether from resizing the window or zooming in, primary navigation collapses down to an icon-only rail first.",
+  "If there's still not enough room, the secondary sidebar contracts next. It shrinks continuously as the viewport narrows. It only gets closed once it's hit its minimum width and space is still tight.",
+  "If there's still not enough room, the AI assistant panel follows the same pattern — it contracts first, and only gets closed once it's fully collapsed.",
+  "Zooming in is treated the same as narrowing the viewport — it triggers this same sequence, in the same order.",
+  "Anything closed automatically stays closed — it won't reappear on its own, only when the user brings it back.",
+  "If the user brings back primary navigation or the secondary sidebar and there isn't room for it, it opens as an overlay on top of the content panel instead of pushing the layout aside.",
+  "If the user brings back the AI assistant panel and there isn't room for it, it takes over the content panel's space instead of sitting next to it.",
+  "Getting more room back — a bigger window or less zoom — doesn't automatically restore anything that was closed; that's still on the user.",
+];
 
 const qualityTabItems = [
   { id: 'overview', label: 'Overview' },
@@ -121,5 +134,27 @@ export const NoAiPanel = {
         />
       }
     />
+  ),
+};
+
+export const ResponsiveBehavior = {
+  name: "Shell — Responsive Behavior",
+  parameters: { layout: "padded", controls: { disable: true } },
+  render: () => (
+    <div style={{ maxWidth: 640, margin: "0 auto", padding: "40px 0" }}>
+      <h1 className="lyra-heading-md" style={{ color: "var(--lyra-color-fg-default)", marginBottom: 8 }}>
+        Responsive Layout Guidelines
+      </h1>
+      <p className="lyra-body-md" style={{ color: "var(--lyra-color-fg-secondary)", marginBottom: 24 }}>
+        What happens to this page when the browser window gets smaller, or the browser is zoomed in.
+      </p>
+      <ul style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+        {RESPONSIVE_GUIDELINES.map((line) => (
+          <li key={line} className="lyra-body-md" style={{ color: "var(--lyra-color-fg-default)", lineHeight: 1.6 }}>
+            {line}
+          </li>
+        ))}
+      </ul>
+    </div>
   ),
 };

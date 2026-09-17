@@ -13,7 +13,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import InternalSidebar from './InternalSidebar';
 
 export const DEFAULT_SIDEBAR_W = 256; // 16rem
-const MIN_SIDEBAR_W     = 192; // 12rem
+export const MIN_SIDEBAR_W = 192; // 12rem
 const MAX_SIDEBAR_W     = 400; // 25rem
 
 export default function PageContent({
@@ -55,16 +55,21 @@ export default function PageContent({
     setState(controlledState ?? initialSidebarState ?? 'hidden');
   }, [pageKey]);
 
-  // Imperative close handle — Shell calls this in cascade step 2
-  if (closeSidebarRef) closeSidebarRef.current = () => setState('hidden');
-  if (sidebarInfoRef) sidebarInfoRef.current = { isOpen: state === 'opened', isOverlay: state === 'overlay', width: sidebarWidth };
-
   const closeTimerRef     = useRef(null);
   const sidebarTransitionTimerRef = useRef(null);
   const containerRef      = useRef(null);
   const contentAreaRef    = useRef(null); // the content panel div — measures true content area width
   const stateRef          = useRef(state);       // always-current mirror of state, for ResizeObserver
   const sidebarWidthRef   = useRef(DEFAULT_SIDEBAR_W); // always-current mirror of sidebarWidth
+  // Whether the pinned sidebar's live CSS-clamped width has actually bottomed out at
+  // MIN_SIDEBAR_W — set by the ResizeObserver's measure() below from the real resolved
+  // padding-left, not re-derived math, so Shell knows there's truly no more shrinking
+  // left to do before it's allowed to close the sidebar outright.
+  const atFloorRef        = useRef(false);
+
+  // Imperative close handle — Shell calls this in cascade step 2
+  if (closeSidebarRef) closeSidebarRef.current = () => setState('hidden');
+  if (sidebarInfoRef) sidebarInfoRef.current = { isOpen: state === 'opened', isOverlay: state === 'overlay', width: sidebarWidth, atFloor: atFloorRef.current };
   const isDraggingRef     = useRef(false);        // used synchronously in event handlers
   const [isNarrow, setIsNarrow]         = useState(false);
   const [isPinDisabled, setIsPinDisabled] = useState(false);
@@ -88,6 +93,15 @@ export default function PageContent({
   // and so openOverlay ignores hover events while the layout is animating.
   const isOpened = state === 'opened';
   const isSidebarTransitioningRef = useRef(false);
+  // isSidebarTransitioning (state, below) is set from an effect, which commits one render
+  // after this one — too late to gate the paddingLeft transition on the render where isOpened
+  // actually flips and the target value changes. Without this, the browser paints the new
+  // paddingLeft with transitions still off, then turns transitions on with nothing left to
+  // animate, so the open/close animation silently never plays. Comparing against a ref here
+  // catches the flip synchronously, in the same render as the value change.
+  const prevIsOpenedRef = useRef(isOpened);
+  const openedJustToggled = prevIsOpenedRef.current !== isOpened;
+  prevIsOpenedRef.current = isOpened;
   useEffect(() => {
     isSidebarTransitioningRef.current = true;
     setIsSidebarTransitioning(true);
@@ -112,6 +126,22 @@ export default function PageContent({
       const cb = onNarrowRef.current;
       const narrow = w < contentBreakpoint + (stateRef.current === 'opened' ? 0 : sidebarWidthRef.current);
       prevNarrowRef.current = narrow;
+
+      // The pinned sidebar's live width is a CSS clamp (pinnedWidthCss) — it can read as
+      // just barely below contentBreakpoint from border-box/content-box rounding in the
+      // cqw calc alone, well before the sidebar has actually shrunk anywhere near its own
+      // floor. Reading the *resolved* padding-left directly (rather than re-deriving it
+      // from container/content-breakpoint arithmetic) tells Shell whether there's
+      // genuinely no more shrinking left to do before it's allowed to close the sidebar.
+      atFloorRef.current = stateRef.current === 'opened'
+        && parseFloat(getComputedStyle(el).paddingLeft) <= MIN_SIDEBAR_W + 0.5;
+
+      // Write straight into the shared ref (not just local state) — setIsNarrow/
+      // setIsPinDisabled below bail out of re-rendering once their booleans stop
+      // changing, which would otherwise leave sidebarInfoRef.current.atFloor stuck
+      // at whatever it was on the last render, even as the CSS clamp keeps shrinking
+      // toward its floor on every subsequent tick.
+      if (sidebarInfoRef?.current) sidebarInfoRef.current.atFloor = atFloorRef.current;
 
       if (!isDraggingRef.current) {
         setIsNarrow(w < contentBreakpoint);
@@ -245,6 +275,15 @@ export default function PageContent({
     document.addEventListener('pointerup',   onUp);
   };
 
+  // Pinned width is a live CSS clamp, not a fixed JS value — it shrinks continuously (via
+  // the CSS engine, same layout pass as the resize, zero JS lag) as the container narrows,
+  // down to MIN_SIDEBAR_W, floored there without ever pushing content below
+  // contentBreakpoint. This is the exact same "native shrink, JS only decides the final
+  // close" split used by the AI assistant panel elsewhere in Shell. Requires
+  // container-type: inline-size below so `cqw` resolves against this element's own width
+  // rather than the viewport.
+  const pinnedWidthCss = `clamp(${MIN_SIDEBAR_W}px, calc(100cqw - ${contentBreakpoint}px), ${sidebarWidth}px)`;
+
   return (
     <div ref={containerRef} className="page-shell" style={{
       background:    'var(--lyra-color-bg-surface-base)',
@@ -257,6 +296,7 @@ export default function PageContent({
       height:        '100%',
       display:       'flex',
       flexDirection: 'column',
+      containerType: 'inline-size',
     }}>
 
       {/* Transparent backdrop — catches clicks outside the sidebar to dismiss it */}
@@ -271,7 +311,11 @@ export default function PageContent({
       {/* Content panel — shifts right when the sidebar is in opened (locked) mode.
           box-sizing: border-box ensures paddingLeft shrinks the content area rather
           than expanding the total width, keeping the header flush with the right edge.
-          Transition is suppressed during resize drag so paddingLeft tracks the handle live. */}
+          Transition only plays for the discrete open/close toggle (isSidebarTransitioning) —
+          during a drag OR a live container-narrowing shrink, paddingLeft must track its
+          target (the drag handle, or the pinnedWidthCss clamp) with zero lag, matching the
+          sidebar's own width, which is never CSS-transitioned. Easing here while the sidebar
+          itself jumps instantly is exactly what makes the header look like it's "catching up". */}
       <div ref={contentAreaRef} className="main-content" style={{
         flex:          '1 0 0',
         display:       'flex',
@@ -279,8 +323,8 @@ export default function PageContent({
         boxSizing:     'border-box',
         width:         '100%',
         height:        '100%',
-        paddingLeft:   isOpened ? `${sidebarWidth}px` : '0',
-        transition:    isDragging ? 'none' : 'padding-left 300ms ease',
+        paddingLeft:   isOpened ? pinnedWidthCss : '0',
+        transition:    (isSidebarTransitioning || openedJustToggled) ? 'padding-left 300ms ease' : 'none',
         minWidth:      0,
       }}>
         {enhancedHeader}
@@ -293,7 +337,7 @@ export default function PageContent({
           Pin button is the only control for overlay ↔ opened; sidenav trigger opens as overlay. */}
       <InternalSidebar
         state={state}
-        width={sidebarWidth}
+        width={isOpened ? pinnedWidthCss : `${sidebarWidth}px`}
         isDragging={isDragging}
         isTransitioning={isSidebarTransitioning}
         onResizeStart={handleResizeStart}

@@ -8,7 +8,7 @@ import { PanelLeftClose } from 'lucide-react';
 import Button from './Button';
 import Tooltip from './Tooltip';
 
-export default function InternalSidebar({ state = 'hidden', width = 256, isDragging = false, isTransitioning = false, onResizeStart, title = 'Dashboards', onPinClick, pinDisabled = false, onMouseEnter, onMouseLeave, children }) {
+export default function InternalSidebar({ state = 'hidden', width = '256px', isDragging = false, isTransitioning = false, onResizeStart, title = 'Dashboards', onPinClick, pinDisabled = false, onMouseEnter, onMouseLeave, children }) {
   const isHidden  = state === 'hidden';
   const isOverlay = state === 'overlay';
   const isOpened  = state === 'opened';
@@ -23,7 +23,7 @@ export default function InternalSidebar({ state = 'hidden', width = 256, isDragg
       left:          '-1px',
       top:           '-1px',
       bottom:        '-1px',
-      width:         `${width}px`,
+      width,
       background:    'var(--lyra-color-bg-surface-container-subtle)',
       borderRight:   'var(--lyra-border-default) solid var(--lyra-color-border-subtle)',
       boxShadow:     isOverlay ? 'var(--lyra-shadow-xl)' : 'none',
