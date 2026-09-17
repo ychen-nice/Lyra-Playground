@@ -307,17 +307,22 @@ export default function Shell({
 
   // True once the outer row (nav + content sidebar + AI panel, all together) can no longer
   // fit nav at its full expanded width alongside the content sidebar at its own full,
-  // unshrunk width and the content breakpoint. Deliberately uses the sidebar's full desired
-  // width (sidebarInfoRef's width, not its live-shrunk clamp value) rather than its current
-  // rendered width — that's what makes nav's own collapse trip at the same row width the
-  // sidebar's clamp would otherwise start binding at, so nav always finishes collapsing
-  // before the sidebar gives up any of its own space, matching the intended cascade order.
+  // unshrunk width, the AI panel (if open) at its current width, and the content breakpoint.
+  // Deliberately uses the sidebar's full desired width (sidebarInfoRef's width, not its
+  // live-shrunk clamp value) rather than its current rendered width — that's what makes
+  // nav's own collapse trip at the same row width the sidebar's clamp would otherwise start
+  // binding at, so nav always finishes collapsing before the sidebar gives up any of its own
+  // space. The AI panel's width has to be counted too, even though it's lower priority than
+  // the sidebar and gives up its own space later — otherwise, whenever it's open, it quietly
+  // eats into the row without nav ever accounting for it, and the sidebar (or content) ends
+  // up absorbing that squeeze alone while nav sits at full width, uninvolved.
   const navHasNoRoom = useCallback(() => {
     const rowWidth = bodyRef.current?.getBoundingClientRect().width ?? Infinity;
     const bp = contentBreakpointRef.current;
     const { isOpen: sidebarOpen, isOverlay: sidebarIsOverlay, width: sidebarWidth } = sidebarInfoRef.current;
     const sidebarRowWidth = (sidebarOpen && !sidebarIsOverlay) ? sidebarWidth : 0;
-    return rowWidth < NAV_EXPANDED_W + sidebarRowWidth + bp;
+    const aiPanelRowWidth = (aiPanelOpenRef.current && !aiPanelOverlayRef.current) ? aiPanelWidthRef.current + AI_PANEL_GAP : 0;
+    return rowWidth < NAV_EXPANDED_W + sidebarRowWidth + aiPanelRowWidth + bp;
   }, []);
 
   // Collapses the nav rail the instant there's no room for it, ahead of the sidebar or AI
